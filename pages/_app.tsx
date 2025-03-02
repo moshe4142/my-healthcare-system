@@ -1,6 +1,12 @@
-import "@/styles/globals.css";
-import type { AppProps } from "next/app";
+import React from 'react'
 
-export default function App({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />;
+const _app = () => {
+  return (
+    <div className='bg-black text-xl'>
+ <h1 className="text-3xl font-bold underline">
+      Hello world!
+    </h1>    </div>
+  )
 }
+
+export default _app
