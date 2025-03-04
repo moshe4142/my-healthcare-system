@@ -1,12 +1,13 @@
-import React from 'react'
+import type { AppProps } from 'next/app';
+import { ThemeProvider } from '../context/ThemeContext';
+import '../styles/globals.css';
 
-const _app = () => {
+export default function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <div className='bg-black text-xl'>
- <h1 className="text-3xl font-bold underline">
-      Hello world!
-    </h1>    </div>
-  )
+    <ThemeProvider>
+      <div className="bg-white text-black dark:bg-black dark:text-white min-h-screen transition-colors duration-300">
+        <Component {...pageProps} />
+      </div>
+    </ThemeProvider>
+  );
 }
-
-export default _app
