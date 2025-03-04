@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import ToggleButton from '../context/ThemeToggle'; // Import the ToggleButton
+// import ToggleButton from '../context/ThemeToggle'; // Import the ToggleButton
 
 export default function HomePage() {
   return (
@@ -8,7 +8,7 @@ export default function HomePage() {
 
       {/* Toggle Button for Dark Mode */}
       <div className="mt-4">
-        <ToggleButton />
+        {/* <ToggleButton /> */}
       </div>
 
       {/* Navigation Links */}
