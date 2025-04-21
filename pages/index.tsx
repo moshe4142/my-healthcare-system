@@ -1,25 +1,16 @@
-import Link from 'next/link';
-import ToggleButton from '../context/ThemeToggle'; // Import the ToggleButton
+// pages/index.tsx
+import React from 'react';
+import { Container, Typography } from '@mui/material';
 
-export default function HomePage() {
+export default function Home() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <h1 className="text-3xl font-bold underline">Welcome to the Homepage</h1>
-
-      Toggle Button for Dark Mode
-      <div className="mt-4">
-        <ToggleButton />
-      </div>
-
-      Navigation Links
-      <nav className="mt-4 flex space-x-4">
-        <Link href="/login" className="text-blue-400 hover:underline">
-          Login
-        </Link>
-        <Link href="/appointments" className="text-blue-400 hover:underline">
-          Appointments
-        </Link>
-      </nav>
-    </div>
+    <Container>
+      <Typography variant="h4" sx={{ marginTop: 4 }}>
+        Welcome to the Pharmacy Home Page
+      </Typography>
+      <Typography sx={{ mt: 2 }}>
+        Find all the products and services you need for your health and wellness.
+      </Typography>
+    </Container>
   );
 }

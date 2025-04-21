@@ -1,16 +1,17 @@
 import type { AppProps } from 'next/app';
 import { ThemeProvider } from '../context/ThemeContext';
 import '../styles/globals.css';
-import NavBar from '../components/NavBar';
+import AuthGuard from '../components/AuthGuard';
+import Layout from '../components/Layout'; // ADD THIS
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ThemeProvider>
-    <NavBar />
-      <div className="bg-white text-black dark:bg-black dark:text-white min-h-screen transition-colors duration-300">
-        <Component {...pageProps} />
-      </div>
+      <AuthGuard>
+        <Layout> {/* WRAP EVERYTHING IN LAYOUT */}
+          <Component {...pageProps} />
+        </Layout>
+      </AuthGuard>
     </ThemeProvider>
-    
   );
 }

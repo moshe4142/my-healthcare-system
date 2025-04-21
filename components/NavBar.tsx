@@ -1,62 +1,38 @@
-import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import ClickAwayListener from '@mui/material/ClickAwayListener';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 
-export default function ButtonAppBar() {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
+const NavBar = () => {
+  const router = useRouter();
 
-  // Specify the event type as React.MouseEvent<HTMLButtonElement>
-  const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
+  const navItems = [
+    { label: 'Home', href: '/' },
+    { label: 'Medical Records', href: '/medicalRecords' },
+    { label: 'Medical Equipment', href: '/medicalEquipment' },
+    { label: 'Appointments', href: '/appointments' },
+    { label: 'Payments', href: '/payments' },
+    { label: 'Login', href: '/login' },
+  ];
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ mr: 2 }}
-            onClick={handleMenuClick}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            News
-          </Typography>
-          <Button color="inherit">Login</Button>
-        </Toolbar>
-      </AppBar>
-      <ClickAwayListener onClickAway={handleMenuClose}>
-        <Menu
-          anchorEl={anchorEl}
-          open={open}
-          onClose={handleMenuClose}
-          MenuListProps={{
-            'aria-labelledby': 'menu-button',
-          }}
-        >
-          <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-          <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-          <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
-        </Menu>
-      </ClickAwayListener>
-    </Box>
+    <nav className="bg-gray-800 text-white shadow-md">
+      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+        <h1 className="text-lg font-bold text-green-400">Healthcare System</h1>
+        <div className="space-x-6 text-sm font-medium">
+          {navItems.map((item) => (
+            <Link key={item.href} href={item.href}>
+              <span
+                className={`cursor-pointer hover:text-green-400 transition-colors ${
+                  router.pathname === item.href ? 'text-green-400 underline' : ''
+                }`}
+              >
+                {item.label}
+              </span>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </nav>
   );
-}
+};
+
+export default NavBar;
