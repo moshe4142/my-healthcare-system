@@ -18,12 +18,12 @@ const NavBar = ({ onMenuClick }: NavBarProps) => {
     <AppBar
       position="fixed"
       sx={{
-        backgroundColor: '#1f2937', // צבע כהה (gray-800)
+        backgroundColor: '#1f2937', // Dark background
         zIndex: (theme) => theme.zIndex.drawer + 1,
       }}
     >
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        {/* המבורגר בצד שמאל */}
+        {/* Hamburger Menu */}
         <IconButton
           color="inherit"
           edge="start"
@@ -33,18 +33,48 @@ const NavBar = ({ onMenuClick }: NavBarProps) => {
           <MenuIcon />
         </IconButton>
 
-        {/* כותרת */}
-        <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+        {/* Pharmacy System Logo/Text */}
+        <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, color: '#66bb6a' }}>
           Pharmacy System
         </Typography>
 
-        {/* כפתורי ניווט */}
+        {/* Navigation Buttons */}
         <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button color="inherit" onClick={() => router.push('/')}>Home</Button>
-          <Button color="inherit" onClick={() => router.push('/appointments')}>Appointments</Button>
-          <Button color="inherit" onClick={() => router.push('/payments')}>Payments</Button>
-          <Button color="inherit" onClick={() => router.push('/medicalRecords')}>Medical Records</Button>
-          <Button color="inherit" onClick={() => router.push('/medicalEquipment')}>Medical Equipment</Button>
+          <Button
+            color="inherit"
+            onClick={() => router.push('/')}
+            sx={{ color: '#ef5350', ':hover': { backgroundColor: '#374151' }, transition: 'background-color 0.3s ease' }}
+          >
+            Home
+          </Button>
+          <Button
+            color="inherit"
+            onClick={() => router.push('/appointments')}
+            sx={{ color: '#66bb6a', ':hover': { backgroundColor: '#374151' }, transition: 'background-color 0.3s ease' }}
+          >
+            Appointments
+          </Button>
+          <Button
+            color="inherit"
+            onClick={() => router.push('/payments')}
+            sx={{ color: '#42a5f5', ':hover': { backgroundColor: '#374151' }, transition: 'background-color 0.3s ease' }}
+          >
+            Payments
+          </Button>
+          <Button
+            color="inherit"
+            onClick={() => router.push('/medicalRecords')}
+            sx={{ color: '#ef5350', ':hover': { backgroundColor: '#374151' }, transition: 'background-color 0.3s ease' }}
+          >
+            Medical Records
+          </Button>
+          <Button
+            color="inherit"
+            onClick={() => router.push('/medicalEquipment')}
+            sx={{ color: '#66bb6a', ':hover': { backgroundColor: '#374151' }, transition: 'background-color 0.3s ease' }}
+          >
+            Medical Equipment
+          </Button>
         </Box>
       </Toolbar>
     </AppBar>
