@@ -110,7 +110,7 @@ const HomePage = () => {
             color: "#0d47a1",
           }}
         >
-          Featured Products
+          Popular Products
         </Typography>
 
         <Grid container spacing={4} justifyContent="center">
@@ -281,3 +281,9 @@ const HomePage = () => {
 };
 
 export default HomePage;
+export async function getServerSideProps() {
+  // Fetch any necessary data here
+  return {
+    props: {}, // Pass the data as props to the component
+  };
+}
