@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from 'react';
-
-type Appointment = {
-  date: string;
-  time: string;
-};
+import { Box, Button, TextField, Typography } from '@mui/material';
 
 const AppointmentsPage = () => {
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [appointments, setAppointments] = useState<any[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [selectedTime, setSelectedTime] = useState<string>('');
 
@@ -17,17 +13,14 @@ const AppointmentsPage = () => {
     }
   }, []);
 
-  const saveAppointments = (items: Appointment[]) => {
+  const saveAppointments = (items: any[]) => {
     setAppointments(items);
     localStorage.setItem('appointments', JSON.stringify(items));
   };
 
   const handleAppointment = () => {
     if (!selectedDate || !selectedTime) return;
-    const newAppointment: Appointment = {
-      date: new Date(selectedDate).toDateString(),
-      time: selectedTime,
-    };
+    const newAppointment = { date: new Date(selectedDate).toDateString(), time: selectedTime };
     const updated = [...appointments, newAppointment];
     saveAppointments(updated);
     setSelectedDate('');
@@ -40,61 +33,58 @@ const AppointmentsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
-      <div className="bg-gray-800 p-6 rounded-lg shadow w-full max-w-md mx-auto">
-        <h3 className="text-xl font-semibold mb-4">📅 Book a New Appointment</h3>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', padding: 3 }}>
+      <Box sx={{ bgcolor: 'background.paper', p: 3, borderRadius: 2, boxShadow: 3 }}>
+        <Typography variant="h5" gutterBottom>📅 Book a New Appointment</Typography>
 
-        <div className="mb-4">
-          <label className="block mb-1 text-white">Date</label>
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-            className="w-full p-2 rounded bg-gray-700 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block mb-1 text-white">Time</label>
-          <input
-            type="time"
-            value={selectedTime}
-            onChange={(e) => setSelectedTime(e.target.value)}
-            className="w-full p-2 rounded bg-gray-700 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
-        </div>
-
-        <button
+        <TextField
+          type="date"
+          value={selectedDate}
+          onChange={(e) => setSelectedDate(e.target.value)}
+          label="Select Date"
+          fullWidth
+          sx={{ mb: 2 }}
+        />
+        <TextField
+          type="time"
+          value={selectedTime}
+          onChange={(e) => setSelectedTime(e.target.value)}
+          label="Select Time"
+          fullWidth
+          sx={{ mb: 2 }}
+        />
+        <Button
+          variant="contained"
+          color="primary"
           onClick={handleAppointment}
-          className="bg-green-500 hover:bg-green-400 text-white font-semibold py-2 px-4 rounded w-full transition"
+          fullWidth
+          sx={{ mb: 2 }}
         >
           ➕ Book Appointment
-        </button>
+        </Button>
 
-        <div className="mt-8">
-          <h3 className="text-lg font-semibold mb-2">📖 Your Appointments</h3>
-          <ul className="space-y-2">
-            {appointments.length === 0 && (
-              <li className="text-gray-400">No appointments yet.</li>
-            )}
-            {appointments.map((a, index) => (
-              <li
-                key={index}
-                className="flex justify-between items-center bg-gray-700 p-2 rounded"
-              >
-                <span>{a.date} at {a.time}</span>
-                <button
-                  onClick={() => handleRemove(index)}
-                  className="text-white hover:text-red-400 text-sm transition"
-                >
-                  ✖
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </div>
+        <Box>
+          <Typography variant="h6">📖 Your Appointments</Typography>
+          {appointments.length === 0 ? (
+            <Typography color="text.secondary">No appointments yet.</Typography>
+          ) : (
+            <Box>
+              {appointments.map((a, index) => (
+                <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', bgcolor: 'background.default', p: 2, borderRadius: 1, mb: 1 }}>
+                  <Typography>{a.date} at {a.time}</Typography>
+                  <Button
+                    onClick={() => handleRemove(index)}
+                    color="error"
+                  >
+                    ✖
+                  </Button>
+                </Box>
+              ))}
+            </Box>
+          )}
+        </Box>
+      </Box>
+    </Box>
   );
 };
 

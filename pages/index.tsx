@@ -1,16 +1,13 @@
-// pages/index.tsx
-import React from 'react';
-import { Container, Typography } from '@mui/material';
+import { useRouter } from 'next/router';
 
-export default function Home() {
+const HomePage = () => {
+  const router = useRouter();
+  console.log(router.pathname); // ייתן לך את הנתיב הנוכחי
   return (
-    <Container>
-      <Typography variant="h4" sx={{ marginTop: 4 }}>
-        Welcome to the Pharmacy Home Page
-      </Typography>
-      <Typography sx={{ mt: 2 }}>
-        Find all the products and services you need for your health and wellness.
-      </Typography>
-    </Container>
+    <div>
+      <h1>Welcome to the Pharmacy System</h1>
+    </div>
   );
-}
+};
+
+export default HomePage;

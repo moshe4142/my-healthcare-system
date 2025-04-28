@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import ButtonAppBar from '../components/ButtonAppBar';
 
-const medicalEquipmentPage = () => {
-  
-
+const MedicalEquipmentPage = () => {
   return (
-   <>
-   <h1>medicalEquipmentPage</h1></>
-  )
+    <>
+      <div className="p-6">
+        <h1 className="text-xl font-semibold">Medical Equipment</h1>
+        <p>Details about medical equipment will be listed here.</p>
+      </div>
+    </>
+  );
 };
 
-export default medicalEquipmentPage;
+export default MedicalEquipmentPage;
