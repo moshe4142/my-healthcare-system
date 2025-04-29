@@ -18,7 +18,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ContactMailIcon from "@mui/icons-material/ContactMail";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { useRouter } from "next/router"; // Import useRouter
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart"; // ✅ עגלת קניות
+import { useRouter } from "next/router";
 
 const ButtonAppBar = () => {
   const [open, setOpen] = useState(false);
@@ -34,9 +35,8 @@ const ButtonAppBar = () => {
   };
 
   const handleLogout = () => {
-    // Clear token/localStorage if needed
-    localStorage.removeItem("userToken"); // Make sure to remove the token from localStorage
-    router.push("/login"); // Navigate to the login page
+    localStorage.removeItem("userToken");
+    router.push("/login");
     setOpen(false);
   };
 
@@ -44,23 +44,41 @@ const ButtonAppBar = () => {
     <>
       <AppBar position="static" sx={{ backgroundColor: "#1f2937" }}>
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-          <IconButton
-            color="inherit"
-            edge="start"
-            onClick={toggleDrawer(true)}
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            <button
+          {/* צד שמאל: תפריט + עגלת קניות */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <IconButton
               color="inherit"
-              onClick={() => router.push("/")}
+              edge="start"
+              onClick={toggleDrawer(true)}
             >
+              <MenuIcon />
+            </IconButton>
+
+            <IconButton
+              color="inherit"
+              onClick={() => router.push("/cart")}
+              sx={{
+                ":hover": { backgroundColor: "#374151" },
+                transition: "background-color 0.3s ease",
+              }}
+            >
+              <ShoppingCartIcon />
+            </IconButton>
+          </Box>
+
+          {/* כותרת במרכז */}
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{ flexGrow: 1, textAlign: "center" }}
+          >
+            <button color="inherit" onClick={() => router.push("/")}>
               Pharmacy System
             </button>
           </Typography>
-          {/* New Navigation Buttons */}
+
+          {/* צד ימין: כפתורי ניווט */}
           <Box sx={{ display: "flex", gap: 2 }}>
             <Button
               color="inherit"
@@ -106,6 +124,7 @@ const ButtonAppBar = () => {
         </Toolbar>
       </AppBar>
 
+      {/* Drawer */}
       <Drawer
         anchor="left"
         open={open}
@@ -117,13 +136,10 @@ const ButtonAppBar = () => {
             color: "white",
             width: 260,
             transition: "all 0.3s ease",
-            marginTop: 0,
-            marginLeft: 0,
             borderRight: "1px solid #374151",
           },
         }}
       >
-        {/* Close button */}
         <Box sx={{ display: "flex", justifyContent: "flex-end", p: 2 }}>
           <IconButton onClick={toggleDrawer(false)} sx={{ color: "white" }}>
             <CloseIcon />
@@ -132,47 +148,22 @@ const ButtonAppBar = () => {
 
         <Divider sx={{ backgroundColor: "gray", marginBottom: 2 }} />
 
-        {/* Navigation buttons */}
         <List>
-          <ListItem
-            button
-            onClick={() => handleNavigate("/profile")}
-            sx={{
-              cursor: "pointer",
-              ":hover": { backgroundColor: "#374151" },
-              transition: "background-color 0.3s ease",
-            }}
-          >
+          <ListItem button onClick={() => handleNavigate("/profile")}>
             <ListItemIcon sx={{ color: "white" }}>
               <AccountCircleIcon />
             </ListItemIcon>
             <ListItemText primary="Profile" />
           </ListItem>
 
-          <ListItem
-            button
-            onClick={() => handleNavigate("/contact")}
-            sx={{
-              cursor: "pointer",
-              ":hover": { backgroundColor: "#374151" },
-              transition: "background-color 0.3s ease",
-            }}
-          >
+          <ListItem button onClick={() => handleNavigate("/contact")}>
             <ListItemIcon sx={{ color: "white" }}>
               <ContactMailIcon />
             </ListItemIcon>
             <ListItemText primary="Contact" />
           </ListItem>
 
-          <ListItem
-            button
-            onClick={handleLogout}
-            sx={{
-              cursor: "pointer",
-              ":hover": { backgroundColor: "#374151" },
-              transition: "background-color 0.3s ease",
-            }}
-          >
+          <ListItem button onClick={handleLogout}>
             <ListItemIcon sx={{ color: "white" }}>
               <LogoutIcon />
             </ListItemIcon>
