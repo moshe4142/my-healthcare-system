@@ -18,9 +18,11 @@ import {
   Favorite,
   EmojiPeople,
 } from "@mui/icons-material";
+import { useShoppingCart } from "../context/shoppingCartContext";
 
 const HomePage = () => {
   const router = useRouter();
+  const { addToCart } = useShoppingCart();
 
   const products = [
     {
@@ -28,21 +30,21 @@ const HomePage = () => {
       name: "Aspirin",
       description: "Effective pain relief and anti-inflammatory.",
       imageUrl: "https://placehold.co/300x200?text=Aspirin",
-      price: "10.99",
+      price: 10.99,
     },
     {
       id: 2,
       name: "Cough Syrup",
       description: "Fast-acting cough and cold relief syrup.",
       imageUrl: "https://placehold.co/300x200?text=Cough+Syrup",
-      price: "8.49",
+      price: 8.49,
     },
     {
       id: 3,
       name: "Antibiotics",
       description: "Prescription antibiotics for infections.",
       imageUrl: "https://placehold.co/300x200?text=Antibiotics",
-      price: "15.99",
+      price: 15.99,
     },
   ];
 
@@ -59,7 +61,6 @@ const HomePage = () => {
         flexDirection: "column",
       }}
     >
-      {/* Header Section */}
       <Box
         sx={{
           textAlign: "center",
@@ -99,7 +100,7 @@ const HomePage = () => {
         </IconButton>
       </Box>
 
-      {/* Featured Products */}
+      {/* Products */}
       <Box sx={{ px: 5 }}>
         <Typography
           variant="h4"
@@ -134,33 +135,38 @@ const HomePage = () => {
                   sx={{ objectFit: "cover" }}
                 />
                 <CardContent>
-                  <Typography
-                    variant="h6"
-                    sx={{ fontWeight: 700, color: "#0d47a1" }}
-                  >
+                  <Typography variant="h6" sx={{ fontWeight: 700, color: "#0d47a1" }}>
                     {product.name}
                   </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{ color: "#555", mt: 1, mb: 2 }}
-                  >
+                  <Typography variant="body2" sx={{ color: "#555", mt: 1, mb: 2 }}>
                     {product.description}
                   </Typography>
                   <Typography variant="h6" color="primary" sx={{ mb: 2 }}>
                     ${product.price}
                   </Typography>
                   <Button
-                    variant="contained"
+                    variant="outlined"
                     color="primary"
                     fullWidth
+                    sx={{ mb: 1 }}
                     onClick={() => navigateToProductPage(product.id)}
-                    sx={{
-                      fontWeight: 600,
-                      backgroundColor: "#1976d2",
-                      "&:hover": { backgroundColor: "#1565c0" },
-                    }}
                   >
                     View Product
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    fullWidth
+                    onClick={() =>
+                      addToCart({
+                        id: String(product.id),
+                        name: product.name,
+                        price: product.price,
+                        quantity: 1,
+                      })
+                    }
+                  >
+                    Add to Cart
                   </Button>
                 </CardContent>
               </Card>
@@ -169,92 +175,43 @@ const HomePage = () => {
         </Grid>
       </Box>
 
-      {/* Why Choose Us Section */}
-      <Box
-        sx={{
-          backgroundColor: "#e3f2fd",
-          py: 6,
-          mt: 8,
-          px: 3,
-          textAlign: "center",
-        }}
-      >
-        <Typography
-          variant="h4"
-          sx={{ fontWeight: 700, color: "#0d47a1", mb: 4 }}
-        >
+      {/* Why Choose Us */}
+      <Box sx={{ backgroundColor: "#e3f2fd", py: 6, mt: 8, px: 3, textAlign: "center" }}>
+        <Typography variant="h4" sx={{ fontWeight: 700, color: "#0d47a1", mb: 4 }}>
           Why Choose Us?
         </Typography>
-
         <Grid container spacing={4} justifyContent="center">
           <Grid item xs={12} sm={4}>
             <Favorite sx={{ fontSize: 50, color: "#ef5350" }} />
-            <Typography
-              variant="h6"
-              sx={{ fontWeight: 600, mt: 2, color: "black" }}
-            >
+            <Typography variant="h6" sx={{ fontWeight: 600, mt: 2 }}>
               Quality Care
             </Typography>
-            <Typography variant="body2" sx={{ mt: 1, color: "black" }}>
+            <Typography variant="body2">
               We ensure the highest quality healthcare products and services.
             </Typography>
           </Grid>
-
           <Grid item xs={12} sm={4}>
             <LocalHospital sx={{ fontSize: 50, color: "#66bb6a" }} />
-            <Typography
-              variant="h6"
-              sx={{ fontWeight: 600, mt: 2, color: "black" }}
-            >
+            <Typography variant="h6" sx={{ fontWeight: 600, mt: 2 }}>
               Certified Pharmacists
             </Typography>
-            <Typography variant="body2" sx={{ mt: 1, color: "black" }}>
+            <Typography variant="body2">
               Our pharmacists are certified professionals ready to assist you.
             </Typography>
           </Grid>
-
           <Grid item xs={12} sm={4}>
             <EmojiPeople sx={{ fontSize: 50, color: "#42a5f5" }} />
-            <Typography
-              variant="h6"
-              sx={{ fontWeight: 600, mt: 2, color: "black" }}
-            >
+            <Typography variant="h6" sx={{ fontWeight: 600, mt: 2 }}>
               Customer Focused
             </Typography>
-            <Typography variant="body2" sx={{ mt: 1, color: "black" }}>
+            <Typography variant="body2">
               We value our customers and prioritize their health and satisfaction.
             </Typography>
           </Grid>
         </Grid>
       </Box>
 
-      {/* About Section */}
-      <Box
-        sx={{
-          textAlign: "center",
-          backgroundColor: "#ffffff",
-          py: 6,
-          px: 4,
-        }}
-      >
-        <Typography
-          variant="h4"
-          sx={{ fontWeight: 700, color: "#0d47a1", mb: 3 }}
-        >
-          About Our Pharmacy
-        </Typography>
-        <Typography
-          variant="body1"
-          sx={{ color: "#555", maxWidth: "800px", mx: "auto" }}
-        >
-          Our pharmacy is committed to providing high-quality healthcare products,
-          personalized customer service, and expert guidance. Whether you need
-          prescription medications, over-the-counter remedies, or professional
-          advice, we are here to support your health journey every step of the way.
-        </Typography>
-      </Box>
-
-      {/* Footer Section */}
+      {/* Footer */}
       <Box
         sx={{
           textAlign: "center",
@@ -267,11 +224,9 @@ const HomePage = () => {
         <Typography variant="body2" sx={{ mb: 1 }}>
           Contact us: pharmacy@example.com | +1 (234) 567-890
         </Typography>
-        <Box>
-          <IconButton color="inherit" sx={{ mx: 1 }}>
-            <ShoppingCart />
-          </IconButton>
-        </Box>
+        <IconButton color="inherit" sx={{ mx: 1 }}>
+          <ShoppingCart />
+        </IconButton>
         <Typography variant="body2" sx={{ mt: 2 }}>
           © 2025 Pharmacy System | All rights reserved.
         </Typography>
@@ -281,9 +236,9 @@ const HomePage = () => {
 };
 
 export default HomePage;
+
 export async function getServerSideProps() {
-  // Fetch any necessary data here
   return {
-    props: {}, // Pass the data as props to the component
+    props: {},
   };
 }

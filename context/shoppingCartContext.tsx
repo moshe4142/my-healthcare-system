@@ -1,4 +1,4 @@
-import React, { createContext, useState, ReactNode } from "react";
+import React, { createContext, useState, ReactNode, useContext } from "react";
 
 interface CartItem {
   id: string;
@@ -58,3 +58,6 @@ export const ShoppingCartProvider = ({ children }: { children: ReactNode }) => {
     </ShoppingCartContext.Provider>
   );
 };
+
+// ✅ זה ה-hook שחסר לך
+export const useShoppingCart = () => useContext(ShoppingCartContext);
