@@ -1,107 +1,137 @@
 // pages/medicalEquipment.tsx
-import { Box, Grid, Typography, Card, CardContent, CardMedia, Button } from "@mui/material";
-import Link from "next/link";
+import React from 'react';
+import {
+  Box,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Chip,
+  Stack,
+  Divider,
+  Badge,
+} from '@mui/material';
+import Inventory2Icon from '@mui/icons-material/Inventory2';
+import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 
 // ציוד רפואי לדוגמה
-const equipmentData = [
+interface Equipment {
+  id: number;
+  name: string;
+  description: string;
+  price: string;
+  availability: 'In Stock' | 'Out of Stock';
+}
+
+const equipmentData: Equipment[] = [
   {
     id: 1,
-    name: "X-ray Machine",
-    description: "High-resolution X-ray machine for diagnostic purposes.",
-    imageUrl: "https://placehold.co/300x200?text=X-ray+Machine",
-    price: "$5000",
+    name: 'X-ray Machine',
+    description: 'High-resolution X-ray machine for diagnostic purposes.',
+    price: '$5000',
+    availability: 'In Stock',
   },
   {
     id: 2,
-    name: "MRI Scanner",
-    description: "MRI scanner for detailed imaging of internal organs.",
-    imageUrl: "https://placehold.co/300x200?text=MRI+Scanner",
-    price: "$12000",
+    name: 'MRI Scanner',
+    description: 'MRI scanner for detailed imaging of internal organs.',
+    price: '$12000',
+    availability: 'Out of Stock',
   },
   {
     id: 3,
-    name: "Defibrillator",
-    description: "Used to deliver a dose of electric current to the heart in case of emergency.",
-    imageUrl: "https://placehold.co/300x200?text=Defibrillator",
-    price: "$3000",
+    name: 'Defibrillator',
+    description: 'Delivers electric shock to the heart in emergencies.',
+    price: '$3000',
+    availability: 'In Stock',
   },
 ];
+
+const getAvailabilityChip = (status: Equipment['availability']) => {
+  return status === 'In Stock' ? (
+    <Chip
+      label="In Stock"
+      color="success"
+      variant="outlined"
+      size="small"
+    />
+  ) : (
+    <Chip
+      label="Out of Stock"
+      color="error"
+      variant="outlined"
+      size="small"
+    />
+  );
+};
 
 const MedicalEquipmentPage = () => {
   return (
     <Box
       sx={{
-        background: "linear-gradient(to bottom, #e0f2f1, #ffffff)",
-        minHeight: "100vh",
+        background: 'linear-gradient(to bottom, #e0f7fa, #ffffff)',
+        minHeight: '100vh',
         py: 6,
         px: { xs: 2, md: 6 },
+        color: '#212121',
       }}
     >
-      <Typography
-        variant="h3"
+      <Paper
+        elevation={3}
         sx={{
-          fontWeight: 800,
-          textAlign: "center",
-          mb: 6,
-          color: "#1976d2",
+          p: { xs: 3, md: 5 },
+          borderRadius: 3,
+          backgroundColor: '#ffffff',
+          color: '#212121',
         }}
       >
-        Medical Equipment
-      </Typography>
+        <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Typography variant="h4" fontWeight={600}>
+            🏥 Medical Equipment Inventory
+          </Typography>
+        </Stack>
 
-      <Grid container spacing={4} justifyContent="center">
-        {equipmentData.map((equipment) => (
-          <Grid item xs={12} sm={6} md={4} key={equipment.id}>
-            <Card
-              sx={{
-                maxWidth: 360,
-                mx: "auto",
-                borderRadius: 3,
-                boxShadow: 3,
-                transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                "&:hover": {
-                  transform: "scale(1.03)",
-                  boxShadow: 6,
-                },
-              }}
-            >
-              <CardMedia
-                component="img"
-                alt={equipment.name}
-                height="200"
-                image={equipment.imageUrl}
-                sx={{ objectFit: "cover", borderTopLeftRadius: 12, borderTopRightRadius: 12 }}
-              />
-              <CardContent>
-                <Typography variant="h6" sx={{ fontWeight: 700, color: "#0d47a1", mb: 1 }}>
-                  {equipment.name}
-                </Typography>
-                <Typography variant="body2" sx={{ color: "text.secondary", mb: 2 }}>
-                  {equipment.description}
-                </Typography>
-                <Typography variant="h6" color="primary" sx={{ mb: 2 }}>
-                  {equipment.price}
-                </Typography>
-                <Link href={`/medicalEquipmentProduct/${equipment.id}`} passHref>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                    sx={{
-                      fontWeight: 600,
-                      textTransform: "none",
-                      backgroundColor: "#1976d2",
-                      "&:hover": { backgroundColor: "#1565c0" },
-                    }}
-                  >
-                    View Product
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+        <Typography variant="body1" sx={{ color: '#212121', my: 2 }}>
+          This table displays available equipment for pharmacy technical staff.
+        </Typography>
+
+        <Divider sx={{ mb: 3 }} />
+
+        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+          <Badge badgeContent={equipmentData.length} color="primary">
+            <Typography variant="subtitle1" sx={{ color: '#212121' }}>
+              🧰 Total Equipment
+            </Typography>
+          </Badge>
+        </Stack>
+
+        <TableContainer component={Paper} variant="outlined" sx={{ bgcolor: '#fafafa' }}>
+          <Table>
+            <TableHead>
+              <TableRow sx={{ bgcolor: '#e3f2fd' }}>
+                <TableCell sx={{ color: '#212121' }}>Name</TableCell>
+                <TableCell sx={{ color: '#212121' }}>Description</TableCell>
+                <TableCell sx={{ color: '#212121' }}>Price</TableCell>
+                <TableCell sx={{ color: '#212121' }}>Availability</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {equipmentData.map((item) => (
+                <TableRow key={item.id} hover>
+                  <TableCell sx={{ color: '#212121' }}>{item.name}</TableCell>
+                  <TableCell sx={{ color: '#212121' }}>{item.description}</TableCell>
+                  <TableCell sx={{ color: '#212121' }}>{item.price}</TableCell>
+                  <TableCell>{getAvailabilityChip(item.availability)}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
     </Box>
   );
 };

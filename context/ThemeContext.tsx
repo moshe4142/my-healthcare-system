@@ -1,32 +1,57 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+// context/ThemeProvider.tsx
+import React, { createContext, useContext, useState, useMemo } from "react";
+import { ThemeProvider as MuiThemeProvider, createTheme } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
 
-const ThemeContext = createContext<{ theme: string; toggleTheme: () => void }>({
-  theme: 'light',
+const ThemeContext = createContext({
+  theme: "dark",
   toggleTheme: () => {},
 });
 
-export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [theme, setTheme] = useState<string>(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('theme') || 'light';
-    }
-    return 'light';
-  });
+export const useTheme = () => useContext(ThemeContext);
 
-  useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    localStorage.setItem('theme', theme);
-  }, [theme]);
+export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
+  const [mode, setMode] = useState<"light" | "dark">("dark");
 
   const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
+    setMode((prev) => (prev === "light" ? "dark" : "light"));
   };
 
-  return <ThemeContext.Provider value={{ theme, toggleTheme }}>{children}</ThemeContext.Provider>;
-};
+  const muiTheme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode: mode,
+          ...(mode === "dark"
+            ? {
+                background: {
+                  default: "#121212",
+                  paper: "#1e1e1e",
+                },
+                text: {
+                  primary: "#ffffff",
+                },
+              }
+            : {
+                background: {
+                  default: "#f5f5f5",
+                  paper: "#ffffff",
+                },
+                text: {
+                  primary: "#000000",
+                },
+              }),
+        },
+      }),
+    [mode]
+  );
 
-export const useTheme = () => useContext(ThemeContext);
+  return (
+    <ThemeContext.Provider value={{ theme: mode, toggleTheme }}>
+      <MuiThemeProvider theme={muiTheme}>
+        <CssBaseline />
+        {children}
+      </MuiThemeProvider>
+    </ThemeContext.Provider>
+  );
+};
