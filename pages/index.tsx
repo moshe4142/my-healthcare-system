@@ -209,28 +209,7 @@ const HomePage = () => {
             </Typography>
           </Grid>
         </Grid>
-      </Box>
-
-      {/* Footer */}
-      <Box
-        sx={{
-          textAlign: "center",
-          padding: "20px",
-          backgroundColor: "#0d47a1",
-          color: "white",
-          mt: "auto",
-        }}
-      >
-        <Typography variant="body2" sx={{ mb: 1 }}>
-          Contact us: pharmacy@example.com | +1 (234) 567-890
-        </Typography>
-        <IconButton color="inherit" sx={{ mx: 1 }}>
-          <ShoppingCart />
-        </IconButton>
-        <Typography variant="body2" sx={{ mt: 2 }}>
-          © 2025 Pharmacy System | All rights reserved.
-        </Typography>
-      </Box>
+      </Box>   
     </div>
   );
 };

@@ -12,18 +12,23 @@ import {
   Divider,
   Box,
   Button,
+  Tooltip,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ContactMailIcon from "@mui/icons-material/ContactMail";
 import LogoutIcon from "@mui/icons-material/Logout";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart"; // ✅ עגלת קניות
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
 import { useRouter } from "next/router";
+import { useTheme } from "../context/ThemeContext"; // ודא שזה הנתיב הנכון
 
 const ButtonAppBar = () => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const { theme, toggleTheme } = useTheme();
 
   const toggleDrawer = (state: boolean) => () => {
     setOpen(state);
@@ -78,8 +83,8 @@ const ButtonAppBar = () => {
             </button>
           </Typography>
 
-          {/* צד ימין: כפתורי ניווט */}
-          <Box sx={{ display: "flex", gap: 2 }}>
+          {/* צד ימין: כפתורי ניווט + כפתור עיצוב */}
+          <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
             <Button
               color="inherit"
               onClick={() => router.push("/appointments")}
@@ -120,6 +125,20 @@ const ButtonAppBar = () => {
             >
               Medical Equipment
             </Button>
+
+            {/* כפתור מצב עיצוב */}
+            {/* <Tooltip title={theme === "dark" ? "Light Mode" : "Dark Mode"}>
+              <IconButton
+                onClick={toggleTheme}
+                sx={{
+                  transition: "transform 0.4s ease, color 0.3s",
+                  transform: theme === "dark" ? "rotate(180deg)" : "rotate(0deg)",
+                  color: theme === "dark" ? "#fdd835" : "#ffffff",
+                }}
+              >
+                {theme === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
+              </IconButton>
+            </Tooltip> */}
           </Box>
         </Toolbar>
       </AppBar>

@@ -46,7 +46,7 @@ const MedicalEquipmentProduct = () => {
   return (
     <Box
       sx={{
-        background: "linear-gradient(to bottom, #e0f7fa, #ffffff)", // רקע כמו HomePage
+        background: "linear-gradient(to bottom, #f5f5f5, #ffffff)", // רקע בהיר וקל
         minHeight: "100vh",
         py: 6,
         px: { xs: 2, md: 8 },
@@ -54,7 +54,7 @@ const MedicalEquipmentProduct = () => {
     >
       <Typography
         variant="h3"
-        sx={{ fontWeight: 800, color: "#1976d2", mb: 4, textAlign: "center" }}
+        sx={{ fontWeight: 800, color: "#333", mb: 4, textAlign: "center" }}
       >
         {equipment.name}
       </Typography>
