@@ -108,7 +108,7 @@ const HomePage = () => {
             textAlign: "center",
             mb: 5,
             fontWeight: 700,
-            color: "#0d47a1",
+            color: "#ff5722c",
           }}
         >
           Popular Products
@@ -134,7 +134,7 @@ const HomePage = () => {
                   image={product.imageUrl}
                   sx={{ objectFit: "cover" }}
                 />
-                <CardContent>
+                <CardContent className="bg-gray-100">
                   <Typography variant="h6" sx={{ fontWeight: 700, color: "#0d47a1" }}>
                     {product.name}
                   </Typography>

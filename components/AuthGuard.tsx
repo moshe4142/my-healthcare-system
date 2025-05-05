@@ -1,7 +1,6 @@
 'use client';
-
 import React, { useEffect, useState } from 'react';
-import Login from './Login';
+import LoginForm from './loginForm'; // make sure the path is correct
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -16,7 +15,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   };
 
   if (!isAuthenticated) {
-    return <Login onLogin={handleLogin} />;
+    return <LoginForm onLogin={handleLogin} />;
   }
 
   return <>{children}</>;

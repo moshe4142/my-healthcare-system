@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { Box, Toolbar } from '@mui/material';
 import ButtonAppBar from './ButtonAppBar';
