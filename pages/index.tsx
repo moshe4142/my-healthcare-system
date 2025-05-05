@@ -108,7 +108,7 @@ const HomePage = () => {
             textAlign: "center",
             mb: 5,
             fontWeight: 700,
-            color: "#0d47a1",
+            color: "#ff5722c",
           }}
         >
           Popular Products
@@ -134,7 +134,7 @@ const HomePage = () => {
                   image={product.imageUrl}
                   sx={{ objectFit: "cover" }}
                 />
-                <CardContent>
+                <CardContent className="bg-gray-100">
                   <Typography variant="h6" sx={{ fontWeight: 700, color: "#0d47a1" }}>
                     {product.name}
                   </Typography>
@@ -209,28 +209,7 @@ const HomePage = () => {
             </Typography>
           </Grid>
         </Grid>
-      </Box>
-
-      {/* Footer */}
-      <Box
-        sx={{
-          textAlign: "center",
-          padding: "20px",
-          backgroundColor: "#0d47a1",
-          color: "white",
-          mt: "auto",
-        }}
-      >
-        <Typography variant="body2" sx={{ mb: 1 }}>
-          Contact us: pharmacy@example.com | +1 (234) 567-890
-        </Typography>
-        <IconButton color="inherit" sx={{ mx: 1 }}>
-          <ShoppingCart />
-        </IconButton>
-        <Typography variant="body2" sx={{ mt: 2 }}>
-          © 2025 Pharmacy System | All rights reserved.
-        </Typography>
-      </Box>
+      </Box>   
     </div>
   );
 };

@@ -1,135 +1,154 @@
-'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-export default function ProfilePage() {
-  const [fullName, setFullName] = useState('John Doe');
-  const [dob, setDob] = useState('1990-01-01');
-  const [phone, setPhone] = useState('123-456-7890');
-  const [email, setEmail] = useState('john.doe@example.com');
-  const [address, setAddress] = useState('123 Main St, Springfield');
+const ProfilePage = () => {
+  const [fullName, setFullName] = useState('');
+  const [dob, setDob] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [address, setAddress] = useState('');
   const [isEditing, setIsEditing] = useState(false);
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    const savedData = localStorage.getItem('profileData');
+    if (savedData) {
+      const data = JSON.parse(savedData);
+      setFullName(data.fullName || '');
+      setDob(data.dob || '');
+      setPhone(data.phone || '');
+      setEmail(data.email || '');
+      setAddress(data.address || '');
+    }
+  }, []);
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    // alert('Profile updated successfully!');
-    setIsEditing(false); // Disable editing after save
+
+    const data = { fullName, dob, phone, email, address };
+    localStorage.setItem('profileData', JSON.stringify(data));
+    console.log('Form saved with values:', data);
+    setIsEditing(false);
   };
 
   return (
-    <div className="p-8 bg-[#F9F9F9] min-h-screen">
-      <h1 className="text-4xl font-bold text-gray-800 mb-4">My Profile</h1>
-      <p className="text-lg text-gray-600 mb-6">Welcome back! Update your information or view your details.</p>
-
-      <form onSubmit={handleSave} className="space-y-6 max-w-3xl mx-auto">
-        {/* Full Name */}
-        <div className="flex items-center justify-between">
-          <label htmlFor="fullName" className="text-lg font-medium text-gray-800">Full Name</label>
-          {isEditing ? (
-            <input
-              type="text"
-              id="fullName"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              className="mt-2 p-3 w-full sm:w-96 bg-white text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          ) : (
-            <span className="text-gray-600">{fullName}</span>
-          )}
+    <div className="p-6 bg-gradient-to-b from-[#e0f7fa] to-white min-h-screen text-gray-800">
+      <div className="max-w-4xl mx-auto bg-white shadow-md rounded-xl p-6 space-y-6">
+        {/* Avatar */}
+        <div className="flex justify-center">
+          <div className="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center text-2xl font-bold text-white">
+            {fullName
+              ? fullName
+                  .split(' ')
+                  .map((n) => n[0])
+                  .join('')
+              : '👤'}
+          </div>
         </div>
 
-        {/* Date of Birth */}
-        <div className="flex items-center justify-between">
-          <label htmlFor="dob" className="text-lg font-medium text-gray-800">Date of Birth</label>
-          {isEditing ? (
-            <input
-              type="date"
-              id="dob"
-              value={dob}
-              onChange={(e) => setDob(e.target.value)}
-              className="mt-2 p-3 w-full sm:w-96 bg-white text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          ) : (
-            <span className="text-gray-600">{dob}</span>
-          )}
-        </div>
+        {/* Form */}
+        <form onSubmit={handleSave} className="space-y-4">
+          <FormRow label="Full Name">
+            {isEditing ? (
+              <Input value={fullName} onChange={(e) => setFullName(e.target.value)} />
+            ) : (
+              <StaticText>{fullName}</StaticText>
+            )}
+          </FormRow>
 
-        {/* Phone */}
-        <div className="flex items-center justify-between">
-          <label htmlFor="phone" className="text-lg font-medium text-gray-800">Phone Number</label>
-          {isEditing ? (
-            <input
-              type="tel"
-              id="phone"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="mt-2 p-3 w-full sm:w-96 bg-white text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          ) : (
-            <span className="text-gray-600">{phone}</span>
-          )}
-        </div>
+          <FormRow label="Date of Birth">
+            {isEditing ? (
+              <Input type="date" value={dob} onChange={(e) => setDob(e.target.value)} />
+            ) : (
+              <StaticText>{dob}</StaticText>
+            )}
+          </FormRow>
 
-        {/* Email */}
-        <div className="flex items-center justify-between">
-          <label htmlFor="email" className="text-lg font-medium text-gray-800">Email Address</label>
-          {isEditing ? (
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-2 p-3 w-full sm:w-96 bg-white text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          ) : (
-            <span className="text-gray-600">{email}</span>
-          )}
-        </div>
+          <FormRow label="Phone Number">
+            {isEditing ? (
+              <Input value={phone} onChange={(e) => setPhone(e.target.value)} />
+            ) : (
+              <StaticText>{phone}</StaticText>
+            )}
+          </FormRow>
 
-        {/* Address */}
-        <div className="flex items-center justify-between">
-          <label htmlFor="address" className="text-lg font-medium text-gray-800">Home Address</label>
-          {isEditing ? (
-            <textarea
-              id="address"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              className="mt-2 p-3 w-full sm:w-96 bg-white text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows={4}
-            />
-          ) : (
-            <span className="text-gray-600">{address}</span>
-          )}
-        </div>
+          <FormRow label="Email">
+            {isEditing ? (
+              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+            ) : (
+              <StaticText>{email}</StaticText>
+            )}
+          </FormRow>
 
-        {/* Save and Edit buttons */}
-        <div className="flex justify-between items-center">
-          {isEditing ? (
-            <div className="flex gap-4">
+          <FormRow label="Address">
+            {isEditing ? (
+              <Input value={address} onChange={(e) => setAddress(e.target.value)} />
+            ) : (
+              <StaticText>{address}</StaticText>
+            )}
+          </FormRow>
+
+          {isEditing && (
+            <div className="flex justify-end gap-4 pt-6">
               <button
                 type="submit"
-                className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-md transition-colors"
+                className="bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded-md"
               >
-                Save Changes
+                Save
               </button>
               <button
                 type="button"
                 onClick={() => setIsEditing(false)}
-                className="bg-gray-500 hover:bg-gray-400 text-white px-6 py-2 rounded-md transition-colors"
+                className="bg-gray-400 hover:bg-gray-300 text-white px-4 py-2 rounded-md"
               >
                 Cancel
               </button>
             </div>
-          ) : (
+          )}
+        </form>
+
+        {!isEditing && (
+          <div className="flex justify-end pt-6">
             <button
               type="button"
               onClick={() => setIsEditing(true)}
-              className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-md transition-colors"
+              className="bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded-md w-full"
             >
               Edit Profile
             </button>
-          )}
-        </div>
-      </form>
+          </div>
+        )}
+      </div>
     </div>
   );
-}
+};
+
+// Small reusable components
+const FormRow = ({ label, children }: { label: string; children: React.ReactNode }) => (
+  <div>
+    <label className="block font-medium text-gray-700 mb-1">{label}</label>
+    {children}
+  </div>
+);
+
+const Input = ({
+  value,
+  onChange,
+  type = 'text',
+}: {
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  type?: string;
+}) => (
+  <input
+    type={type}
+    value={value}
+    onChange={onChange}
+    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-teal-300"
+  />
+);
+
+const StaticText = ({ children }: { children: React.ReactNode }) => (
+  <div className="w-full px-4 py-2 bg-gray-100 rounded-md">{children}</div>
+);
+
+export default ProfilePage;

@@ -1,6 +1,9 @@
+'use client';
+
 import React from 'react';
 import { Box, Toolbar } from '@mui/material';
 import ButtonAppBar from './ButtonAppBar';
+import Footer from './Footer';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -8,12 +11,24 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   return (
-    <>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh',
+      }}
+    >
+      {/* AppBar */}
       <ButtonAppBar />
-      <Box component="main" sx={{ flexGrow: 1,  }}>
+
+      {/* Main content */}
+      <Box component="main" >
         {children}
       </Box>
-    </>
+
+      {/* Footer */}
+      <Footer />
+    </Box>
   );
 };
 
