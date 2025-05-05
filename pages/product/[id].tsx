@@ -11,6 +11,7 @@ import {
   Divider,
 } from "@mui/material";
 import { ShoppingCart, Favorite, Star } from "@mui/icons-material";
+import Footer from "@/components/Footer";
 
 const ProductPage = () => {
   const router = useRouter();
@@ -36,6 +37,7 @@ const ProductPage = () => {
   };
 
   return (
+    <>
     <div
       style={{
         background: "linear-gradient(to bottom, #e0f7fa, #ffffff)",
@@ -185,33 +187,8 @@ const ProductPage = () => {
           ))}
         </Grid>
       </Box>
-
-      {/* Footer */}
-      <Box
-        sx={{
-          textAlign: "center",
-          padding: "20px",
-          backgroundColor: "#0d47a1",
-          color: "white",
-          mt: 4, // Added margin-top here for the footer
-          borderRadius: 3,
-          width: "100%",
-          maxWidth: 900,
-        }}
-      >
-        <Typography variant="body2" sx={{ mb: 1 }}>
-          Contact us: pharmacy@example.com | +1 (234) 567-890
-        </Typography>
-        <Box>
-          <IconButton color="inherit" sx={{ mx: 1 }}>
-            <ShoppingCart />
-          </IconButton>
-        </Box>
-        <Typography variant="body2" sx={{ mt: 2 }}>
-          © 2025 Pharmacy System | All rights reserved.
-        </Typography>
-      </Box>
     </div>
+    </>
   );
 };
 

@@ -5,8 +5,9 @@ import '../styles/globals.css';
 import AuthGuard from '../components/AuthGuard';
 import Layout from '../components/Layout';
 
+
 export default function MyApp({ Component, pageProps }: AppProps) {
-  return (
+  return (<>
     <ThemeProvider>
       <ShoppingCartProvider> {/* הוספה כאן */}
         <AuthGuard>
@@ -16,5 +17,6 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         </AuthGuard>
       </ShoppingCartProvider>
     </ThemeProvider>
+    </>
   );
 }

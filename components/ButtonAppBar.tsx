@@ -12,18 +12,23 @@ import {
   Divider,
   Box,
   Button,
+  Tooltip,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ContactMailIcon from "@mui/icons-material/ContactMail";
 import LogoutIcon from "@mui/icons-material/Logout";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart"; // ✅ עגלת קניות
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+// import LightModeIcon from "@mui/icons-material/LightMode";
+// import DarkModeIcon from "@mui/icons-material/DarkMode";
 import { useRouter } from "next/router";
+import { useTheme } from "../context/ThemeContext";
 
 const ButtonAppBar = () => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const { theme, toggleTheme } = useTheme();
 
   const toggleDrawer = (state: boolean) => () => {
     setOpen(state);
@@ -42,15 +47,14 @@ const ButtonAppBar = () => {
 
   return (
     <>
-      <AppBar position="static" sx={{ backgroundColor: "#1f2937" }}>
+      <AppBar
+        position="static"
+        sx={{ backgroundColor: "#4db6ac", boxShadow: "none" }}
+      >
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-          {/* צד שמאל: תפריט + עגלת קניות */}
+          {/* Left: Menu and Cart */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <IconButton
-              color="inherit"
-              edge="start"
-              onClick={toggleDrawer(true)}
-            >
+            <IconButton color="inherit" edge="start" onClick={toggleDrawer(true)}>
               <MenuIcon />
             </IconButton>
 
@@ -58,7 +62,7 @@ const ButtonAppBar = () => {
               color="inherit"
               onClick={() => router.push("/cart")}
               sx={{
-                ":hover": { backgroundColor: "#374151" },
+                ":hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
                 transition: "background-color 0.3s ease",
               }}
             >
@@ -66,25 +70,29 @@ const ButtonAppBar = () => {
             </IconButton>
           </Box>
 
-          {/* כותרת במרכז */}
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ flexGrow: 1, textAlign: "center" }}
-          >
-            <button color="inherit" onClick={() => router.push("/")}>
+          {/* Center: Title Button */}
+          <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}>
+            <Button
+              onClick={() => router.push("/")}
+              sx={{
+                color: "white",
+                fontSize: "1.25rem",
+                fontWeight: "bold",
+                textTransform: "none",
+                ":hover": { backgroundColor: "rgba(255,255,255,0.1)" },
+              }}
+            >
               Pharmacy System
-            </button>
-          </Typography>
+            </Button>
+          </Box>
 
-          {/* צד ימין: כפתורי ניווט */}
-          <Box sx={{ display: "flex", gap: 2 }}>
+          {/* Right: Page Links */}
+          <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
             <Button
               color="inherit"
               onClick={() => router.push("/appointments")}
               sx={{
-                ":hover": { backgroundColor: "#374151" },
+                ":hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
                 transition: "background-color 0.3s ease",
               }}
             >
@@ -94,7 +102,7 @@ const ButtonAppBar = () => {
               color="inherit"
               onClick={() => router.push("/payments")}
               sx={{
-                ":hover": { backgroundColor: "#374151" },
+                ":hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
                 transition: "background-color 0.3s ease",
               }}
             >
@@ -104,7 +112,7 @@ const ButtonAppBar = () => {
               color="inherit"
               onClick={() => router.push("/medicalRecords")}
               sx={{
-                ":hover": { backgroundColor: "#374151" },
+                ":hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
                 transition: "background-color 0.3s ease",
               }}
             >
@@ -114,12 +122,27 @@ const ButtonAppBar = () => {
               color="inherit"
               onClick={() => router.push("/medicalEquipment")}
               sx={{
-                ":hover": { backgroundColor: "#374151" },
+                ":hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
                 transition: "background-color 0.3s ease",
               }}
             >
               Medical Equipment
             </Button>
+
+            {/* Optional theme toggle 
+            <Tooltip title={theme === "dark" ? "Light Mode" : "Dark Mode"}>
+              <IconButton
+                onClick={toggleTheme}
+                sx={{
+                  transition: "transform 0.4s ease, color 0.3s",
+                  transform: theme === "dark" ? "rotate(180deg)" : "rotate(0deg)",
+                  color: theme === "dark" ? "#fdd835" : "#ffffff",
+                }}
+              >
+                {theme === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
+              </IconButton>
+            </Tooltip>
+            */}
           </Box>
         </Toolbar>
       </AppBar>
@@ -132,43 +155,60 @@ const ButtonAppBar = () => {
         variant="temporary"
         PaperProps={{
           sx: {
-            backgroundColor: "#1f2937",
-            color: "white",
+            backgroundColor: "#e8f5e9",
+            color: "#2e7d32",
             width: 260,
             transition: "all 0.3s ease",
-            borderRight: "1px solid #374151",
+            borderRight: "1px solid #c8e6c9",
           },
         }}
       >
         <Box sx={{ display: "flex", justifyContent: "flex-end", p: 2 }}>
-          <IconButton onClick={toggleDrawer(false)} sx={{ color: "white" }}>
+          <IconButton onClick={toggleDrawer(false)} sx={{ color: "#2e7d32" }}>
             <CloseIcon />
           </IconButton>
         </Box>
 
-        <Divider sx={{ backgroundColor: "gray", marginBottom: 2 }} />
+        <Divider sx={{ backgroundColor: "#a5d6a7", marginBottom: 2 }} />
 
         <List>
-          <ListItem button onClick={() => handleNavigate("/profile")}>
-            <ListItemIcon sx={{ color: "white" }}>
-              <AccountCircleIcon />
-            </ListItemIcon>
-            <ListItemText primary="Profile" />
-          </ListItem>
-
-          <ListItem button onClick={() => handleNavigate("/contact")}>
-            <ListItemIcon sx={{ color: "white" }}>
-              <ContactMailIcon />
-            </ListItemIcon>
-            <ListItemText primary="Contact" />
-          </ListItem>
-
-          <ListItem button onClick={handleLogout}>
-            <ListItemIcon sx={{ color: "white" }}>
-              <LogoutIcon />
-            </ListItemIcon>
-            <ListItemText primary="Logout" />
-          </ListItem>
+          {[
+            {
+              label: "Profile",
+              icon: <AccountCircleIcon />,
+              action: () => handleNavigate("/profile"),
+            },
+            {
+              label: "Contact",
+              icon: <ContactMailIcon />,
+              action: () => handleNavigate("/contact"),
+            },
+            {
+              label: "Logout",
+              icon: <LogoutIcon />,
+              action: handleLogout,
+            },
+          ].map((item, index) => (
+            <ListItem
+              button
+              key={index}
+              onClick={item.action}
+              sx={{
+                transition: "all 0.2s ease",
+                "&:hover": {
+                  cursor: "pointer",
+                  backgroundColor: "#dcedc8",
+                  transform: "scale(1.02)",
+                },
+                "&:active": {
+                  transform: "scale(0.98)",
+                },
+              }}
+            >
+              <ListItemIcon sx={{ color: "#2e7d32" }}>{item.icon}</ListItemIcon>
+              <ListItemText primary={item.label} />
+            </ListItem>
+          ))}
         </List>
       </Drawer>
     </>
