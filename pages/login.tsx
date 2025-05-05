@@ -1,6 +1,6 @@
 'use client';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -8,15 +8,17 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
 
   useEffect(() => {
-    const isAuthenticated = Boolean(localStorage.getItem('userToken'));
-    if (isAuthenticated) {
+    if (localStorage.getItem('userToken')) {
       router.push('/');
     }
   }, [router]);
 
   const handleLogin = () => {
     const storedUsername = localStorage.getItem('username');
-    if (username === storedUsername && password) {
+    const storedProfile = localStorage.getItem('profileData');
+    const storedPassword = storedProfile ? JSON.parse(storedProfile).password : '';
+
+    if (username === storedUsername && password === storedPassword) {
       localStorage.setItem('userToken', 'demoToken');
       router.push('/');
     } else {
@@ -25,29 +27,28 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#E3F2FD] to-white flex items-center justify-center px-4 text-[#0D47A1]">
-      <div className="w-full max-w-md bg-white/70 backdrop-blur-md p-8 sm:p-10 rounded-2xl shadow-xl">
-        <h1 className="text-3xl sm:text-4xl font-bold mb-6 text-center">🔐 Log In</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#E3F2FD] to-white text-[#0D47A1]">
+      <div className="max-w-md w-full p-8 bg-white/70 rounded-2xl shadow-xl">
+        <h1 className="text-3xl font-bold mb-6 text-center">🔐 Log In</h1>
 
         <input
           type="text"
           placeholder="Username"
-          className="mb-4 px-4 py-2 rounded-xl bg-[#F5F5F5] text-black border border-[#BDBDBD] w-full focus:outline-none focus:ring-2 focus:ring-[#64B5F6]"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          className="mb-4 px-4 py-2 rounded-xl bg-[#F5F5F5] text-black border border-[#BDBDBD] w-full"
         />
-
         <input
           type="password"
           placeholder="Password"
-          className="mb-6 px-4 py-2 rounded-xl bg-[#F5F5F5] text-black border border-[#BDBDBD] w-full focus:outline-none focus:ring-2 focus:ring-[#64B5F6]"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          className="mb-6 px-4 py-2 rounded-xl bg-[#F5F5F5] text-black border border-[#BDBDBD] w-full"
         />
 
         <button
           onClick={handleLogin}
-          className="bg-[#1E88E5] hover:bg-[#1565C0] transition duration-200 px-6 py-2 rounded-xl text-white font-semibold w-full"
+          className="bg-[#1E88E5] hover:bg-[#1565C0] transition px-6 py-2 rounded-xl text-white font-semibold w-full"
         >
           Log In
         </button>
