@@ -1,64 +1,114 @@
 'use client';
 import React from 'react';
+import {
+  Box,
+  Paper,
+  Typography,
+  Divider,
+  List,
+  ListItem,
+  ListItemText,
+} from '@mui/material';
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#E3F2FD] to-white p-6 sm:p-12 text-[#0D47A1]">
-      <div className="max-w-4xl mx-auto bg-white/70 backdrop-blur-md p-6 sm:p-10 rounded-2xl shadow-lg">
-        <h1 className="text-3xl sm:text-4xl font-bold mb-4">📞 Contact Us</h1>
+    <Box
+      sx={{
+        background: 'linear-gradient(to bottom, #e0f7fa, #ffffff)',
+        minHeight: '100vh',
+        py: 6,
+        px: { xs: 2, md: 6 },
+        color: '#0D47A1',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <Paper
+        elevation={3}
+        sx={{
+          p: { xs: 3, md: 5 },
+          borderRadius: 3,
+          backgroundColor: '#ffffffcc', // white with a bit of transparency
+          backdropFilter: 'blur(6px)',
+          color: '#0D47A1',
+          width: '100%',
+          maxWidth: 1000,
+          mx: 'auto',
+        }}
+      >
+        <Typography variant="h4" fontWeight={600} mb={3}>
+          📞 Contact Us
+        </Typography>
 
-        <p className="text-lg mb-4">
+        <Typography variant="body1" mb={3}>
           Have questions, feedback, or need assistance? Our support team is here to help you.
           Whether you're a new customer, a returning user, or just want to say hello — we'd love to hear from you!
-        </p>
+        </Typography>
 
-        <div className="text-md space-y-4 mb-6">
-          <div>
-            <h2 className="text-xl font-semibold mb-1">📧 Email Support</h2>
-            <p>support@firemaster.com — Send us a message and we’ll get back to you within 24 hours.</p>
-          </div>
+        <List sx={{ mb: 3 }}>
+          <ListItem>
+            <ListItemText
+              primary="📧 Email Support"
+              secondary="support@firemaster.com — Send us a message and we’ll get back to you within 24 hours."
+            />
+          </ListItem>
 
-          <div>
-            <h2 className="text-xl font-semibold mb-1">📞 Phone Support</h2>
-            <p>+1 234 567 8900 — Available Sunday to Thursday, 9:00 AM – 5:00 PM.</p>
-          </div>
+          <ListItem>
+            <ListItemText
+              primary="📞 Phone Support"
+              secondary="+1 234 567 8900 — Available Sunday to Thursday, 9:00 AM – 5:00 PM."
+            />
+          </ListItem>
 
-          <div>
-            <h2 className="text-xl font-semibold mb-1">📍 Office Location</h2>
-            <p>123 Firemaster Avenue, Tel Aviv, Israel</p>
-          </div>
+          <ListItem>
+            <ListItemText
+              primary="📍 Office Location"
+              secondary="123 Firemaster Avenue, Tel Aviv, Israel"
+            />
+          </ListItem>
 
-          <div>
-            <h2 className="text-xl font-semibold mb-1">🕒 Working Hours</h2>
-            <ul className="list-disc list-inside">
-              <li>Sunday – Thursday: 9:00 AM to 5:00 PM</li>
-              <li>Friday: 9:00 AM to 12:00 PM</li>
-              <li>Saturday: Closed</li>
-            </ul>
-          </div>
+          <ListItem>
+            <ListItemText
+              primary="🕒 Working Hours"
+              secondary={
+                <ul style={{ paddingLeft: 16 }}>
+                  <li>Sunday – Thursday: 9:00 AM to 5:00 PM</li>
+                  <li>Friday: 9:00 AM to 12:00 PM</li>
+                  <li>Saturday: Closed</li>
+                </ul>
+              }
+            />
+          </ListItem>
 
-          <div>
-            <h2 className="text-xl font-semibold mb-1">🌐 Social Media</h2>
-            <p>
-              Follow us on Instagram, Facebook and Twitter to stay updated with news and offers.
-            </p>
-          </div>
+          <ListItem>
+            <ListItemText
+              primary="🌐 Social Media"
+              secondary="Follow us on Instagram, Facebook, and Twitter to stay updated with news and offers."
+            />
+          </ListItem>
 
-          <div>
-            <h2 className="text-xl font-semibold mb-1">💬 Live Chat</h2>
-            <p>
-              Our live chat is available on the bottom right corner of the screen during working hours.
-            </p>
-          </div>
-        </div>
+          <ListItem>
+            <ListItemText
+              primary="💬 Live Chat"
+              secondary="Our live chat is available on the bottom right corner of the screen during working hours."
+            />
+          </ListItem>
+        </List>
 
-        <div className="mt-8 border-t pt-6">
-          <h2 className="text-2xl font-bold mb-3">Looking for technical support?</h2>
-          <p className="text-md">
-            If you're experiencing issues with our products or website, visit our <a href="/help-center" className="text-blue-700 underline">Help Center</a> or contact our technical team directly at <strong>tech@firemaster.com</strong>.
-          </p>
-        </div>
-      </div>
-    </div>
+        <Divider sx={{ my: 3 }} />
+
+        <Typography variant="h5" fontWeight={600} gutterBottom>
+          Looking for technical support?
+        </Typography>
+        <Typography>
+          If you're experiencing issues with our products or website, visit our{' '}
+          <a href="/help-center" style={{ color: '#1976d2', textDecoration: 'underline' }}>
+            Help Center
+          </a>{' '}
+          or contact our technical team directly at{' '}
+          <strong>tech@firemaster.com</strong>.
+        </Typography>
+      </Paper>
+    </Box>
   );
 }

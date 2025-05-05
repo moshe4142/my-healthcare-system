@@ -4,7 +4,7 @@ import { ShoppingCartProvider } from '../context/shoppingCartContext'; // הוס
 import '../styles/globals.css';
 import AuthGuard from '../components/AuthGuard';
 import Layout from '../components/Layout';
-import Footer from '@/components/Footer';
+
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (<>
