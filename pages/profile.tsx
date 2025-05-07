@@ -1,48 +1,286 @@
-'use client';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import {
+  IconButton,
+  Menu,
+  MenuItem,
+  Avatar,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
+} from '@mui/material';
+import { AccountCircle } from '@mui/icons-material';
 
-export default function ProfilePage() {
-  const router = useRouter();
-  const [profile, setProfile] = useState<any>(null);
+const ProfilePage = () => {
+  const [fullName, setFullName] = useState('');
+  const [dob, setDob] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [address, setAddress] = useState('');
+  const [profileImage, setProfileImage] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    const token = localStorage.getItem('userToken');
-    if (!token) {
-      router.push('/login');
-    } else {
-      const profileData = localStorage.getItem('profileData');
-      if (profileData) {
-        setProfile(JSON.parse(profileData));
-      }
+    const savedData = localStorage.getItem('profileData');
+    if (savedData) {
+      const data = JSON.parse(savedData);
+      setFullName(data.fullName || '');
+      setDob(data.dob || '');
+      setPhone(data.phone || '');
+      setEmail(data.email || '');
+      setAddress(data.address || '');
+      setProfileImage(data.profileImage || '');
     }
-  }, [router]);
+  }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('userToken');
-    router.push('/login');
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    const data = {
+      fullName,
+      dob,
+      phone,
+      email,
+      address,
+      profileImage,
+      password: localStorage.getItem('profileData')
+        ? JSON.parse(localStorage.getItem('profileData')!).password || ''
+        : '',
+    };
+    localStorage.setItem('profileData', JSON.stringify(data));
+    setIsEditing(false);
   };
 
-  if (!profile) return null;
+  const handleLogout = () => {
+    localStorage.removeItem('profileData');
+    window.location.reload();
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const imageUrl = reader.result as string;
+        setProfileImage(imageUrl);
+        const data = JSON.parse(localStorage.getItem('profileData') || '{}');
+        data.profileImage = imageUrl;
+        localStorage.setItem('profileData', JSON.stringify(data));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const initials = fullName
+    ? fullName
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+    : '👤';
+
+  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   return (
-    <div className="min-h-screen p-8 bg-gradient-to-b from-[#E3F2FD] to-white text-[#0D47A1]">
-      <div className="max-w-2xl mx-auto bg-white/80 p-6 rounded-2xl shadow-lg">
-        <h1 className="text-3xl font-bold mb-4">👤 Profile</h1>
-        <ul className="space-y-2">
-          {Object.entries(profile).map(([key, value]) => (
-            <li key={key}>
-              <strong className="capitalize">{key}:</strong> {value || 'Not set'}
-            </li>
-          ))}
-        </ul>
-        <button
-          onClick={handleLogout}
-          className="mt-6 bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-xl"
-        >
-          Logout
-        </button>
+    <div className="p-6 bg-gradient-to-b from-[#e0f7fa] to-white min-h-screen text-gray-800">
+      <div className="max-w-4xl mx-auto bg-white shadow-md rounded-xl p-6 space-y-6">
+        {/* Avatar + Menu */}
+        <div className="flex justify-center">
+          <IconButton onClick={handleMenu} size="large">
+            {profileImage ? (
+              <Avatar src={profileImage} sx={{ width: 64, height: 64 }} />
+            ) : (
+              <Avatar sx={{ width: 64, height: 64 }}>{initials}</Avatar>
+            )}
+          </IconButton>
+
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+          >
+            <MenuItem component="label">
+              Upload Photo
+              <input type="file" hidden onChange={handleImageUpload} />
+            </MenuItem>
+            <MenuItem onClick={() => { setPasswordDialogOpen(true); handleClose(); }}>
+              Change Password
+            </MenuItem>
+            <MenuItem onClick={handleLogout}>Logout</MenuItem>
+          </Menu>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSave} className="space-y-4">
+          <FormRow label="Full Name">
+            {isEditing ? (
+              <Input value={fullName} onChange={(e) => setFullName(e.target.value)} />
+            ) : (
+              <StaticText>{fullName}</StaticText>
+            )}
+          </FormRow>
+
+          <FormRow label="Date of Birth">
+            {isEditing ? (
+              <Input type="date" value={dob} onChange={(e) => setDob(e.target.value)} />
+            ) : (
+              <StaticText>{dob}</StaticText>
+            )}
+          </FormRow>
+
+          <FormRow label="Phone Number">
+            {isEditing ? (
+              <Input value={phone} onChange={(e) => setPhone(e.target.value)} />
+            ) : (
+              <StaticText>{phone}</StaticText>
+            )}
+          </FormRow>
+
+          <FormRow label="Email">
+            {isEditing ? (
+              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+            ) : (
+              <StaticText>{email}</StaticText>
+            )}
+          </FormRow>
+
+          <FormRow label="Address">
+            {isEditing ? (
+              <Input value={address} onChange={(e) => setAddress(e.target.value)} />
+            ) : (
+              <StaticText>{address}</StaticText>
+            )}
+          </FormRow>
+
+          {isEditing && (
+            <div className="flex justify-end gap-4 pt-6">
+              <button
+                type="submit"
+                className="bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded-md"
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsEditing(false)}
+                className="bg-gray-400 hover:bg-gray-300 text-white px-4 py-2 rounded-md"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+        </form>
+
+        {!isEditing && (
+          <div className="flex justify-end pt-6">
+            <button
+              type="button"
+              onClick={() => setIsEditing(true)}
+              className="bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded-md w-full"
+            >
+              Edit Profile
+            </button>
+          </div>
+        )}
       </div>
+
+      {/* Password Change Dialog */}
+      <Dialog open={passwordDialogOpen} onClose={() => setPasswordDialogOpen(false)}>
+        <DialogTitle>Change Password</DialogTitle>
+        <DialogContent className="flex flex-col gap-4 pt-2">
+          <TextField
+            label="Current Password"
+            type="password"
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+            fullWidth
+          />
+          <TextField
+            label="New Password"
+            type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            fullWidth
+          />
+          {error && <p className="text-red-600 text-sm">{error}</p>}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setPasswordDialogOpen(false)} color="secondary">
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              const savedData = localStorage.getItem('profileData');
+              if (!savedData) return;
+              const data = JSON.parse(savedData);
+              const storedPassword = data.password || '';
+              if (currentPassword !== storedPassword) {
+                setError('Incorrect current password');
+                return;
+              }
+              if (!newPassword || newPassword === currentPassword) {
+                setError('New password must be different and not empty');
+                return;
+              }
+              data.password = newPassword;
+              localStorage.setItem('profileData', JSON.stringify(data));
+              setPasswordDialogOpen(false);
+              setCurrentPassword('');
+              setNewPassword('');
+              setError('');
+            }}
+            variant="contained"
+            color="primary"
+          >
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
-}
+};
+
+// Reusable components
+const FormRow = ({ label, children }: { label: string; children: React.ReactNode }) => (
+  <div>
+    <label className="block font-medium text-gray-700 mb-1">{label}</label>
+    {children}
+  </div>
+);
+
+const Input = ({
+  value,
+  onChange,
+  type = 'text',
+}: {
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  type?: string;
+}) => (
+  <input
+    type={type}
+    value={value}
+    onChange={onChange}
+    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-teal-300"
+  />
+);
+
+const StaticText = ({ children }: { children: React.ReactNode }) => (
+  <div className="w-full px-4 py-2 bg-gray-100 rounded-md">{children}</div>
+);
+
+export default ProfilePage;
