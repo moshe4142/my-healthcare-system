@@ -58,7 +58,7 @@ export default function SignUpPage() {
       <div className="max-w-md w-full p-8 bg-white/70 rounded-2xl shadow-xl">
         <h1 className="text-3xl font-bold mb-6 text-center">📝 Sign Up</h1>
 
-        {['username', 'password', 'fullName', 'dob', 'phone', 'email', 'address'].map((field) => (
+        {fieldOrder.map((field) => (
           <input
             key={field}
             name={field}
