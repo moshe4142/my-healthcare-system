@@ -1,4 +1,6 @@
+'use client';
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import {
   IconButton,
   Menu,
@@ -14,7 +16,8 @@ import {
 import { AccountCircle } from '@mui/icons-material';
 
 const ProfilePage = () => {
-  const [fullName, setFullName] = useState('');
+  const router = useRouter();
+  const [UserNmae, setUserName] = useState('');
   const [dob, setDob] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -32,20 +35,22 @@ const ProfilePage = () => {
     const savedData = localStorage.getItem('profileData');
     if (savedData) {
       const data = JSON.parse(savedData);
-      setFullName(data.fullName || '');
-      setDob(data.dob || '');
+      setUserName(data.username || '');
+      setDob(data['date of birth'] || '');
       setPhone(data.phone || '');
       setEmail(data.email || '');
       setAddress(data.address || '');
       setProfileImage(data.profileImage || '');
+    } else {
+      router.push('/login');
     }
-  }, []);
+  }, [router]);
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     const data = {
-      fullName,
-      dob,
+      username: UserNmae,
+'date of birth': dob,
       phone,
       email,
       address,
@@ -60,7 +65,8 @@ const ProfilePage = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('profileData');
-    window.location.reload();
+    localStorage.removeItem('userToken');
+    window.location.href = '/login';
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,8 +84,8 @@ const ProfilePage = () => {
     }
   };
 
-  const initials = fullName
-    ? fullName
+  const initials = UserNmae
+    ? UserNmae
         .split(' ')
         .map((n) => n[0])
         .join('')
@@ -96,7 +102,6 @@ const ProfilePage = () => {
   return (
     <div className="p-6 bg-gradient-to-b from-[#e0f7fa] to-white min-h-screen text-gray-800">
       <div className="max-w-4xl mx-auto bg-white shadow-md rounded-xl p-6 space-y-6">
-        {/* Avatar + Menu */}
         <div className="flex justify-center">
           <IconButton onClick={handleMenu} size="large">
             {profileImage ? (
@@ -124,13 +129,12 @@ const ProfilePage = () => {
           </Menu>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSave} className="space-y-4">
-          <FormRow label="Full Name">
+          <FormRow label="User Name">
             {isEditing ? (
-              <Input value={fullName} onChange={(e) => setFullName(e.target.value)} />
+              <Input value={UserNmae} onChange={(e) => setUserName(e.target.value)} />
             ) : (
-              <StaticText>{fullName}</StaticText>
+              <StaticText>{UserNmae}</StaticText>
             )}
           </FormRow>
 
@@ -168,17 +172,10 @@ const ProfilePage = () => {
 
           {isEditing && (
             <div className="flex justify-end gap-4 pt-6">
-              <button
-                type="submit"
-                className="bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded-md"
-              >
+              <button type="submit" className="bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded-md">
                 Save
               </button>
-              <button
-                type="button"
-                onClick={() => setIsEditing(false)}
-                className="bg-gray-400 hover:bg-gray-300 text-white px-4 py-2 rounded-md"
-              >
+              <button type="button" onClick={() => setIsEditing(false)} className="bg-gray-400 hover:bg-gray-300 text-white px-4 py-2 rounded-md">
                 Cancel
               </button>
             </div>
@@ -198,7 +195,6 @@ const ProfilePage = () => {
         )}
       </div>
 
-      {/* Password Change Dialog */}
       <Dialog open={passwordDialogOpen} onClose={() => setPasswordDialogOpen(false)}>
         <DialogTitle>Change Password</DialogTitle>
         <DialogContent className="flex flex-col gap-4 pt-2">
@@ -254,7 +250,6 @@ const ProfilePage = () => {
   );
 };
 
-// Reusable components
 const FormRow = ({ label, children }: { label: string; children: React.ReactNode }) => (
   <div>
     <label className="block font-medium text-gray-700 mb-1">{label}</label>

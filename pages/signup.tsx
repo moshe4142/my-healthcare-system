@@ -7,7 +7,7 @@ export default function SignUpPage() {
   const [formData, setFormData] = useState({
     username: '',
     password: '',
-    fullName: '',
+    // fullName: '',
     dateofbirth: '',
     phone: '',
     email: '',
@@ -38,7 +38,7 @@ export default function SignUpPage() {
       <div className="max-w-md w-full p-8 bg-white/70 rounded-2xl shadow-xl">
         <h1 className="text-3xl font-bold mb-6 text-center">📝 Sign Up</h1>
 
-        {['username', 'password', 'fullName', 'date of birth', 'phone', 'email', 'address'].map((field) => (
+        {['username', 'password', 'date of birth', 'phone', 'email', 'address'].map((field) => (
           <input
             key={field}
             name={field}
