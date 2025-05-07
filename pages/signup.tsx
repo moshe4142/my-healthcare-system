@@ -33,15 +33,36 @@ export default function SignUpPage() {
     }
   };
 
+  const autoCompleteMap: { [key: string]: string } = {
+    username: 'username',
+    password: 'new-password',
+    fullName: 'name',
+    dob: 'bday',
+    phone: 'tel',
+    email: 'email',
+    address: 'street-address'
+  };
+
+  const fieldOrder = [
+    'email',
+    'password',
+    'username',
+    'fullName',
+    'dob',
+    'phone',
+    'address'
+  ];
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#E3F2FD] to-white text-[#0D47A1]">
       <div className="max-w-md w-full p-8 bg-white/70 rounded-2xl shadow-xl">
         <h1 className="text-3xl font-bold mb-6 text-center">📝 Sign Up</h1>
 
-        {['username', 'password', 'fullName', 'dob', 'phone', 'email', 'address'].map((field) => (
+        {fieldOrder.map((field) => (
           <input
             key={field}
             name={field}
+            autoComplete={autoCompleteMap[field] || 'off'}
             type={field === 'password' ? 'password' : 'text'}
             placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
             className="mb-4 px-4 py-2 rounded-xl bg-[#F5F5F5] text-black border border-[#BDBDBD] w-full focus:outline-none focus:ring-2 focus:ring-[#64B5F6]"
