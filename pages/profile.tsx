@@ -1,44 +1,39 @@
-'use client';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+"use client";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
+  const [profile, setProfile] = useState<{ email: string } | null>(null);
   const router = useRouter();
-  const [profile, setProfile] = useState<any>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('userToken');
-    if (!token) {
-      router.push('/login');
-    } else {
-      const profileData = localStorage.getItem('profileData');
-      if (profileData) {
-        setProfile(JSON.parse(profileData));
-      }
+    const token = localStorage.getItem("userToken");
+    const storedProfile = localStorage.getItem("profile");
+
+    if (!token || !storedProfile) {
+      router.push("/login");
+      return;
     }
+
+    setProfile(JSON.parse(storedProfile));
   }, [router]);
 
   const handleLogout = () => {
-    localStorage.removeItem('userToken');
-    router.push('/login');
+    localStorage.removeItem("userToken");
+    localStorage.removeItem("profile");
+    router.push("/login");
   };
 
   if (!profile) return null;
 
   return (
-    <div className="min-h-screen p-8 bg-gradient-to-b from-[#E3F2FD] to-white text-[#0D47A1]">
-      <div className="max-w-2xl mx-auto bg-white/80 p-6 rounded-2xl shadow-lg">
-        <h1 className="text-3xl font-bold mb-4">👤 Profile</h1>
-        <ul className="space-y-2">
-          {Object.entries(profile).map(([key, value]) => (
-            <li key={key}>
-              <strong className="capitalize">{key}:</strong> {value || 'Not set'}
-            </li>
-          ))}
-        </ul>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-[#e0f7fa] to-white p-4 text-gray-900">
+      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md text-center">
+        <h1 className="text-3xl font-bold mb-4">Welcome</h1>
+        <p className="mb-6">Logged in as: <strong>{profile.email}</strong></p>
         <button
           onClick={handleLogout}
-          className="mt-6 bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-xl"
+          className="w-full bg-red-600 text-white p-3 rounded-xl hover:bg-red-700"
         >
           Logout
         </button>

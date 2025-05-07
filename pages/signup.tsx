@@ -1,67 +1,65 @@
-'use client';
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
-export default function SignUpPage() {
+export default function SignupPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const router = useRouter();
-  const [formData, setFormData] = useState({
-    username: '',
-    password: '',
-    fullName: '',
-    dob: '',
-    phone: '',
-    email: '',
-    address: ''
-  });
-
-  useEffect(() => {
-    if (localStorage.getItem('userToken')) {
-      router.push('/profile');
-    }
-  }, [router]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
   const handleSignup = () => {
-    if (formData.username && formData.password) {
-      localStorage.setItem('userToken', 'demoToken');
-      localStorage.setItem('username', formData.username);
-      localStorage.setItem('profileData', JSON.stringify(formData));
-      router.push('/profile');
+    const users = JSON.parse(localStorage.getItem("users") || "[]");
+
+    const userExists = users.some((u: { email: string }) => u.email === email);
+
+    if (userExists) {
+      alert("User already exists");
+      return;
     }
+
+    const newUser = { email, password };
+    users.push(newUser);
+    localStorage.setItem("users", JSON.stringify(users));
+    localStorage.setItem("userToken", "fakeToken");
+    localStorage.setItem("profile", JSON.stringify(newUser));
+    router.push("/profile");
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#E3F2FD] to-white text-[#0D47A1]">
-      <div className="max-w-md w-full p-8 bg-white/70 rounded-2xl shadow-xl">
-        <h1 className="text-3xl font-bold mb-6 text-center">📝 Sign Up</h1>
-
-        {['username', 'password', 'fullName', 'dob', 'phone', 'email', 'address'].map((field) => (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#e0f7fa] to-white p-4 text-gray-900">
+      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
+        <h1 className="text-3xl font-bold mb-6 text-center">Sign Up</h1>
+        <div className="space-y-4">
           <input
-            key={field}
-            name={field}
-            type={field === 'password' ? 'password' : 'text'}
-            placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-            className="mb-4 px-4 py-2 rounded-xl bg-[#F5F5F5] text-black border border-[#BDBDBD] w-full focus:outline-none focus:ring-2 focus:ring-[#64B5F6]"
-            value={(formData as any)[field]}
-            onChange={handleChange}
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-3 border rounded-xl"
           />
-        ))}
-
-        <button
-          onClick={handleSignup}
-          className="bg-[#26A69A] hover:bg-[#2196F3] transition px-6 py-2 rounded-xl text-white font-semibold w-full"
-        >
-          Create Account
-        </button>
-
-        <p className="text-sm text-center mt-4">
-          Already have an account?{' '}
-          <a href="/login" className="text-blue-700 underline hover:text-blue-900">
-            Log in
-          </a>
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-3 border rounded-xl"
+          />
+          <button
+            onClick={handleSignup}
+            className="w-full bg-green-600 text-white p-3 rounded-xl hover:bg-green-700"
+          >
+            Sign Up
+          </button>
+        </div>
+        <p className="text-center mt-4">
+          Already have an account?{" "}
+          <Link
+            href="/login"
+            className="text-blue-700 underline hover:text-blue-900"
+          >
+            Login
+          </Link>
         </p>
       </div>
     </div>
