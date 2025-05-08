@@ -17,6 +17,7 @@ export default function SignUpPage() {
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [validFields, setValidFields] = useState<{ [key: string]: boolean }>({});
+  const [signupError, setSignupError] = useState(''); // ✅ הודעת שגיאה כללית
 
   useEffect(() => {
     if (localStorage.getItem('userToken')) {
@@ -55,15 +56,11 @@ export default function SignUpPage() {
   };
 
   const validateField = (name: string, value: string) => {
-    if (!value.trim()) {
-      return `${placeholders[name] || name} is required.`;
-    }
-
+    if (!value.trim()) return `${placeholders[name] || name} is required.`;
     if (name === 'id' && !/^\d{5,10}$/.test(value)) return 'Invalid ID number format.';
     if (name === 'phone' && !/^\d{9,10}$/.test(value)) return 'Invalid phone number format.';
     if (name === 'email' && !/^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/.test(value)) return 'Invalid email format.';
     if (name === 'password' && value.length < 6) return 'Password must be at least 6 characters.';
-
     return '';
   };
 
@@ -75,6 +72,7 @@ export default function SignUpPage() {
     const errorMsg = validateField(name, value);
     setErrors((prev) => ({ ...prev, [name]: errorMsg }));
     setValidFields((prev) => ({ ...prev, [name]: errorMsg === '' }));
+    setSignupError(''); // לנקות שגיאה כללית בעת שינוי
   };
 
   const handleSignup = () => {
@@ -95,6 +93,15 @@ export default function SignUpPage() {
     }
 
     const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const existingUser = users.find(
+      (u: any) => u.email === formData.email || u.id === formData.id
+    );
+
+    if (existingUser) {
+      setSignupError('❌ A user with this email or ID already exists.');
+      return;
+    }
+
     users.push(formData);
     localStorage.setItem('users', JSON.stringify(users));
     localStorage.setItem('userToken', 'demoToken');
@@ -106,6 +113,12 @@ export default function SignUpPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#b2ebf2] to-white text-gray-900 p-4">
       <div className="w-full max-w-md bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-8">
         <h1 className="text-3xl font-bold text-center mb-6 text-blue-900">📝 Sign Up</h1>
+
+        {signupError && (
+          <div className="bg-red-100 text-red-700 border border-red-300 rounded-md px-4 py-2 mb-4 text-center">
+            {signupError}
+          </div>
+        )}
 
         {fieldOrder.map((field) => (
           <div key={field} className="relative mb-5">
