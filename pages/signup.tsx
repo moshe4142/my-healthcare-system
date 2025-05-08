@@ -55,7 +55,7 @@ export default function SignUpPage() {
     address: '🏠 Address',
   };
 
-  const validateField = (name: string, value: string) => {
+  const validateField = (name: keyof typeof formData, value: string) => {
     if (!value.trim()) return `${placeholders[name] || name} is required.`;
     if (name === 'id' && !/^\d{5,10}$/.test(value)) return 'Invalid ID number format.';
     if (name === 'phone' && !/^\d{9,10}$/.test(value)) return 'Invalid phone number format.';
@@ -65,7 +65,9 @@ export default function SignUpPage() {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const name = e.target.name as keyof typeof formData;
+    const value = e.target.value;
+
     if (['id', 'phone'].includes(name) && value && !/^\d*$/.test(value)) return;
 
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -79,13 +81,14 @@ export default function SignUpPage() {
     const newErrors: { [key: string]: string } = {};
     let isValid = true;
 
-    for (const key of Object.keys(formData)) {
+    for (const key of Object.keys(formData) as (keyof typeof formData)[]) {
       const errorMsg = validateField(key, formData[key]);
       if (errorMsg) {
         newErrors[key] = errorMsg;
         isValid = false;
       }
     }
+    
 
     if (!isValid) {
       setErrors(newErrors);
@@ -134,7 +137,7 @@ export default function SignUpPage() {
                   ? 'border-green-500'
                   : 'border-gray-300'
               } bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300`}
-              value={formData[field]}
+              value={formData[field as keyof typeof formData]}
               onChange={handleChange}
             />
             {errors[field] && <FaTimesCircle className="absolute right-3 top-3 text-red-500" />}

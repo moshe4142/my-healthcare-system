@@ -49,7 +49,7 @@ const ButtonAppBar = () => {
     <>
       <AppBar
         position="static"
-        sx={{ backgroundColor: "#4db6ac", boxShadow: "none" }}
+        sx={{ backgroundColor: "#4db6ac", boxShadow: "none" , position: "fixed", top: 0, left: 0, right: 0, zIndex: 2 }}
       >
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
           {/* Left: Menu and Cart */}
@@ -189,25 +189,26 @@ const ButtonAppBar = () => {
               action: handleLogout,
             },
           ].map((item, index) => (
-            <ListItem
-              button
-              key={index}
-              onClick={item.action}
-              sx={{
-                transition: "all 0.2s ease",
-                "&:hover": {
-                  cursor: "pointer",
-                  backgroundColor: "#dcedc8",
-                  transform: "scale(1.02)",
-                },
-                "&:active": {
-                  transform: "scale(0.98)",
-                },
-              }}
-            >
-              <ListItemIcon sx={{ color: "#2e7d32" }}>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.label} />
-            </ListItem>
+           <ListItem
+  component="button"
+  key={index}
+  onClick={item.action}
+  sx={{
+    transition: "all 0.2s ease",
+    "&:hover": {
+      cursor: "pointer",
+      backgroundColor: "#dcedc8",
+      transform: "scale(1.02)",
+    },
+    "&:active": {
+      transform: "scale(0.98)",
+    },
+  }}
+>
+  <ListItemIcon sx={{ color: "#2e7d32" }}>{item.icon}</ListItemIcon>
+  <ListItemText primary={item.label} />
+</ListItem>
+
           ))}
         </List>
       </Drawer>
