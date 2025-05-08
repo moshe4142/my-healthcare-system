@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import {
   IconButton,
   Menu,
@@ -13,11 +13,10 @@ import {
   Button,
   TextField,
 } from '@mui/material';
-import { AccountCircle } from '@mui/icons-material';
 
 const ProfilePage = () => {
   const router = useRouter();
-  const [UserNmae, setUserName] = useState('');
+  const [username, setUsername] = useState('');
   const [dob, setDob] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -35,8 +34,8 @@ const ProfilePage = () => {
     const savedData = localStorage.getItem('profileData');
     if (savedData) {
       const data = JSON.parse(savedData);
-      setUserName(data.username || '');
-      setDob(data['date of birth'] || '');
+      setUsername(data.username || '');
+      setDob(data.dob || '');
       setPhone(data.phone || '');
       setEmail(data.email || '');
       setAddress(data.address || '');
@@ -49,15 +48,13 @@ const ProfilePage = () => {
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     const data = {
-      username: UserNmae,
-'date of birth': dob,
+      username,
+      dob,
       phone,
       email,
       address,
       profileImage,
-      password: localStorage.getItem('profileData')
-        ? JSON.parse(localStorage.getItem('profileData')!).password || ''
-        : '',
+      password: JSON.parse(localStorage.getItem('profileData') || '{}').password || ''
     };
     localStorage.setItem('profileData', JSON.stringify(data));
     setIsEditing(false);
@@ -84,10 +81,10 @@ const ProfilePage = () => {
     }
   };
 
-  const initials = UserNmae
-    ? UserNmae
+  const initials = username
+    ? username
         .split(' ')
-        .map((n) => n[0])
+        .map((n: string) => n[0])
         .join('')
     : '👤';
 
@@ -97,6 +94,20 @@ const ProfilePage = () => {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleChangePassword = () => {
+    const saved = JSON.parse(localStorage.getItem('profileData') || '{}');
+    if (saved.password !== currentPassword) {
+      setError('Current password is incorrect');
+      return;
+    }
+    saved.password = newPassword;
+    localStorage.setItem('profileData', JSON.stringify(saved));
+    setPasswordDialogOpen(false);
+    setCurrentPassword('');
+    setNewPassword('');
+    setError('');
   };
 
   return (
@@ -115,8 +126,6 @@ const ProfilePage = () => {
             anchorEl={anchorEl}
             open={Boolean(anchorEl)}
             onClose={handleClose}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-            transformOrigin={{ vertical: 'top', horizontal: 'center' }}
           >
             <MenuItem component="label">
               Upload Photo
@@ -130,45 +139,27 @@ const ProfilePage = () => {
         </div>
 
         <form onSubmit={handleSave} className="space-y-4">
-          <FormRow label="User Name">
-            {isEditing ? (
-              <Input value={UserNmae} onChange={(e) => setUserName(e.target.value)} />
-            ) : (
-              <StaticText>{UserNmae}</StaticText>
-            )}
-          </FormRow>
-
-          <FormRow label="Date of Birth">
-            {isEditing ? (
-              <Input type="date" value={dob} onChange={(e) => setDob(e.target.value)} />
-            ) : (
-              <StaticText>{dob}</StaticText>
-            )}
-          </FormRow>
-
-          <FormRow label="Phone Number">
-            {isEditing ? (
-              <Input value={phone} onChange={(e) => setPhone(e.target.value)} />
-            ) : (
-              <StaticText>{phone}</StaticText>
-            )}
-          </FormRow>
-
-          <FormRow label="Email">
-            {isEditing ? (
-              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-            ) : (
-              <StaticText>{email}</StaticText>
-            )}
-          </FormRow>
-
-          <FormRow label="Address">
-            {isEditing ? (
-              <Input value={address} onChange={(e) => setAddress(e.target.value)} />
-            ) : (
-              <StaticText>{address}</StaticText>
-            )}
-          </FormRow>
+          {[
+            { label: 'Username', value: username, setter: setUsername, type: 'text' },
+            { label: 'Date of Birth', value: dob, setter: setDob, type: 'date' },
+            { label: 'Phone Number', value: phone, setter: setPhone, type: 'text' },
+            { label: 'Email', value: email, setter: setEmail, type: 'email' },
+            { label: 'Address', value: address, setter: setAddress, type: 'text' }
+          ].map(({ label, value, setter, type }) => (
+            <div key={label}>
+              <label className="font-semibold">{label}</label>
+              {isEditing ? (
+                <input
+                  type={type}
+                  value={value}
+                  onChange={(e) => setter(e.target.value)}
+                  className="block w-full border px-4 py-2 mt-1 rounded"
+                />
+              ) : (
+                <p className="mt-1 text-gray-700">{value}</p>
+              )}
+            </div>
+          ))}
 
           {isEditing && (
             <div className="flex justify-end gap-4 pt-6">
@@ -197,51 +188,27 @@ const ProfilePage = () => {
 
       <Dialog open={passwordDialogOpen} onClose={() => setPasswordDialogOpen(false)}>
         <DialogTitle>Change Password</DialogTitle>
-        <DialogContent className="flex flex-col gap-4 pt-2">
+        <DialogContent className="space-y-4">
           <TextField
             label="Current Password"
             type="password"
+            fullWidth
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
-            fullWidth
+            error={!!error}
+            helperText={error}
           />
           <TextField
             label="New Password"
             type="password"
+            fullWidth
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            fullWidth
           />
-          {error && <p className="text-red-600 text-sm">{error}</p>}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setPasswordDialogOpen(false)} color="secondary">
-            Cancel
-          </Button>
-          <Button
-            onClick={() => {
-              const savedData = localStorage.getItem('profileData');
-              if (!savedData) return;
-              const data = JSON.parse(savedData);
-              const storedPassword = data.password || '';
-              if (currentPassword !== storedPassword) {
-                setError('Incorrect current password');
-                return;
-              }
-              if (!newPassword || newPassword === currentPassword) {
-                setError('New password must be different and not empty');
-                return;
-              }
-              data.password = newPassword;
-              localStorage.setItem('profileData', JSON.stringify(data));
-              setPasswordDialogOpen(false);
-              setCurrentPassword('');
-              setNewPassword('');
-              setError('');
-            }}
-            variant="contained"
-            color="primary"
-          >
+          <Button onClick={() => setPasswordDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleChangePassword} variant="contained" color="primary">
             Save
           </Button>
         </DialogActions>
@@ -249,33 +216,5 @@ const ProfilePage = () => {
     </div>
   );
 };
-
-const FormRow = ({ label, children }: { label: string; children: React.ReactNode }) => (
-  <div>
-    <label className="block font-medium text-gray-700 mb-1">{label}</label>
-    {children}
-  </div>
-);
-
-const Input = ({
-  value,
-  onChange,
-  type = 'text',
-}: {
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  type?: string;
-}) => (
-  <input
-    type={type}
-    value={value}
-    onChange={onChange}
-    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-teal-300"
-  />
-);
-
-const StaticText = ({ children }: { children: React.ReactNode }) => (
-  <div className="w-full px-4 py-2 bg-gray-100 rounded-md">{children}</div>
-);
 
 export default ProfilePage;
