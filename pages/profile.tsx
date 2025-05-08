@@ -11,12 +11,12 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  TextField,
 } from '@mui/material';
 
 const ProfilePage = () => {
   const router = useRouter();
-  const [username, setUsername] = useState('');
+  const [id, setId] = useState('');
+  const [fullName, setFullName] = useState('');
   const [dob, setDob] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -34,8 +34,9 @@ const ProfilePage = () => {
     const savedData = localStorage.getItem('profileData');
     if (savedData) {
       const data = JSON.parse(savedData);
-      setUsername(data.username || '');
-      setDob(data.dob || '');
+      setId(data.id || '');
+      setFullName(data.full_name || '');
+      setDob(data.date_of_birth || '');
       setPhone(data.phone || '');
       setEmail(data.email || '');
       setAddress(data.address || '');
@@ -48,8 +49,9 @@ const ProfilePage = () => {
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     const data = {
-      username,
-      dob,
+      id,
+      full_name: fullName,
+      date_of_birth: dob,
       phone,
       email,
       address,
@@ -81,8 +83,8 @@ const ProfilePage = () => {
     }
   };
 
-  const initials = username
-    ? username
+  const initials = fullName
+    ? fullName
         .split(' ')
         .map((n: string) => n[0])
         .join('')
@@ -122,11 +124,7 @@ const ProfilePage = () => {
             )}
           </IconButton>
 
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-          >
+          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
             <MenuItem component="label">
               Upload Photo
               <input type="file" hidden onChange={handleImageUpload} />
@@ -139,13 +137,37 @@ const ProfilePage = () => {
         </div>
 
         <form onSubmit={handleSave} className="space-y-4">
-          {[
-            { label: 'Username', value: username, setter: setUsername, type: 'text' },
-            { label: 'Date of Birth', value: dob, setter: setDob, type: 'date' },
-            { label: 'Phone Number', value: phone, setter: setPhone, type: 'text' },
-            { label: 'Email', value: email, setter: setEmail, type: 'email' },
-            { label: 'Address', value: address, setter: setAddress, type: 'text' }
-          ].map(({ label, value, setter, type }) => (
+          {[{
+            label: 'ID',
+            value: id,
+            setter: setId,
+            type: 'text'
+          }, {
+            label: 'Full Name',
+            value: fullName,
+            setter: setFullName,
+            type: 'text'
+          }, {
+            label: 'Date of Birth',
+            value: dob,
+            setter: setDob,
+            type: 'date'
+          }, {
+            label: 'Phone Number',
+            value: phone,
+            setter: setPhone,
+            type: 'text'
+          }, {
+            label: 'Email',
+            value: email,
+            setter: setEmail,
+            type: 'email'
+          }, {
+            label: 'Address',
+            value: address,
+            setter: setAddress,
+            type: 'text'
+          }].map(({ label, value, setter, type }) => (
             <div key={label}>
               <label className="font-semibold">{label}</label>
               {isEditing ? (
@@ -188,29 +210,26 @@ const ProfilePage = () => {
 
       <Dialog open={passwordDialogOpen} onClose={() => setPasswordDialogOpen(false)}>
         <DialogTitle>Change Password</DialogTitle>
-        <DialogContent className="space-y-4">
-          <TextField
-            label="Current Password"
+        <DialogContent>
+          <input
             type="password"
-            fullWidth
+            placeholder="Current Password"
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
-            error={!!error}
-            helperText={error}
+            className="block w-full border px-4 py-2 mt-2 rounded"
           />
-          <TextField
-            label="New Password"
+          <input
             type="password"
-            fullWidth
+            placeholder="New Password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
+            className="block w-full border px-4 py-2 mt-2 rounded"
           />
+          {error && <p className="text-red-500 mt-2">{error}</p>}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setPasswordDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleChangePassword} variant="contained" color="primary">
-            Save
-          </Button>
+          <Button onClick={handleChangePassword} color="primary">Save</Button>
+          <Button onClick={() => setPasswordDialogOpen(false)} color="secondary">Cancel</Button>
         </DialogActions>
       </Dialog>
     </div>

@@ -5,10 +5,10 @@ import { useRouter } from 'next/navigation';
 export default function SignUpPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    username: '',
+    id: '',
     password: '',
-    fullName: '',
-    dob: '',
+    full_name: '',
+    date_of_birth: '',
     phone: '',
     email: '',
     address: ''
@@ -25,19 +25,19 @@ export default function SignUpPage() {
   };
 
   const handleSignup = () => {
-    if (formData.username && formData.password) {
+    if (formData.id && formData.password) {
       localStorage.setItem('userToken', 'demoToken');
-      localStorage.setItem('username', formData.username);
+      localStorage.setItem('id', formData.id);
       localStorage.setItem('profileData', JSON.stringify(formData));
       router.push('/profile');
     }
   };
 
   const autoCompleteMap: { [key: string]: string } = {
-    username: 'off',
     password: 'new-password',
-    fullName: 'name',
-    dob: 'bday',
+    full_name: 'name',
+    date_of_birth: 'bday',
+    id: 'off',
     phone: 'tel',
     email: 'email',
     address: 'street-address'
@@ -46,19 +46,19 @@ export default function SignUpPage() {
   const fieldOrder = [
     'email',
     'password',
-    'username',
-    'fullName',
-    'dob',
+    'full_name',
+    'date_of_birth',
+    'id',
     'phone',
     'address'
   ];
 
   const placeholders: { [key: string]: string } = {
+    id: '🆔 ID',
     email: '📧 Email Address',
     password: '🔒 Password',
-    username: '👤 Username',
-    fullName: '🧑 Full Name',
-    dob: '🎂 Date of Birth',
+    full_name: '🧑 Full Name',
+    date_of_birth: '🎂 Date of Birth',
     phone: '📱 Phone Number',
     address: '🏠 Address'
   };
@@ -73,7 +73,13 @@ export default function SignUpPage() {
             key={field}
             name={field}
             autoComplete={autoCompleteMap[field] || 'off'}
-            type={field === 'password' ? 'password' : field === 'dob' ? 'date' : 'text'}
+            type={
+              field === 'password'
+                ? 'password'
+                : field === 'date_of_birth'
+                ? 'date'
+                : 'text'
+            }
             placeholder={placeholders[field] || field}
             className="mb-4 px-4 py-2 rounded-xl bg-[#F5F5F5] text-black border border-[#BDBDBD] w-full focus:outline-none focus:ring-2 focus:ring-[#64B5F6]"
             value={(formData as any)[field]}
