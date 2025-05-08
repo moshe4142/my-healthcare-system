@@ -1,18 +1,22 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 
 export default function SignUpPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    username: '',
+    id: '',
     password: '',
-    fullName: '',
-    dob: '',
+    full_name: '',
+    date_of_birth: '',
     phone: '',
     email: '',
-    address: ''
+    address: '',
   });
+
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [validFields, setValidFields] = useState<{ [key: string]: boolean }>({});
 
   useEffect(() => {
     if (localStorage.getItem('userToken')) {
@@ -20,43 +24,120 @@ export default function SignUpPage() {
     }
   }, [router]);
 
+  const autoCompleteMap: { [key: string]: string } = {
+    password: 'new-password',
+    full_name: 'name',
+    date_of_birth: 'bday',
+    id: 'off',
+    phone: 'tel',
+    email: 'email',
+    address: 'street-address',
+  };
+
+  const fieldOrder = [
+    'email',
+    'password',
+    'full_name',
+    'date_of_birth',
+    'id',
+    'phone',
+    'address',
+  ];
+
+  const placeholders: { [key: string]: string } = {
+    id: '🆔 ID Number',
+    email: '📧 Email',
+    password: '🔒 Password',
+    full_name: '🧑 Full Name',
+    date_of_birth: '🎂 Date of Birth',
+    phone: '📱 Phone',
+    address: '🏠 Address',
+  };
+
+  const validateField = (name: string, value: string) => {
+    if (!value.trim()) {
+      return `${placeholders[name] || name} is required.`;
+    }
+
+    if (name === 'id' && !/^\d{5,10}$/.test(value)) return 'Invalid ID number format.';
+    if (name === 'phone' && !/^\d{9,10}$/.test(value)) return 'Invalid phone number format.';
+    if (name === 'email' && !/^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/.test(value)) return 'Invalid email format.';
+    if (name === 'password' && value.length < 6) return 'Password must be at least 6 characters.';
+
+    return '';
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (['id', 'phone'].includes(name) && value && !/^\d*$/.test(value)) return;
+
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    const errorMsg = validateField(name, value);
+    setErrors((prev) => ({ ...prev, [name]: errorMsg }));
+    setValidFields((prev) => ({ ...prev, [name]: errorMsg === '' }));
   };
 
   const handleSignup = () => {
-    if (formData.username && formData.password) {
-      localStorage.setItem('userToken', 'demoToken');
-      localStorage.setItem('username', formData.username);
-      localStorage.setItem('profileData', JSON.stringify(formData));
-      router.push('/profile');
+    const newErrors: { [key: string]: string } = {};
+    let isValid = true;
+
+    for (const key of Object.keys(formData)) {
+      const errorMsg = validateField(key, formData[key]);
+      if (errorMsg) {
+        newErrors[key] = errorMsg;
+        isValid = false;
+      }
     }
+
+    if (!isValid) {
+      setErrors(newErrors);
+      return;
+    }
+
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    users.push(formData);
+    localStorage.setItem('users', JSON.stringify(users));
+    localStorage.setItem('userToken', 'demoToken');
+    localStorage.setItem('profileData', JSON.stringify(formData));
+    router.push('/profile');
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#E3F2FD] to-white text-[#0D47A1]">
-      <div className="max-w-md w-full p-8 bg-white/70 rounded-2xl shadow-xl">
-        <h1 className="text-3xl font-bold mb-6 text-center">📝 Sign Up</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#b2ebf2] to-white text-gray-900 p-4">
+      <div className="w-full max-w-md bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-8">
+        <h1 className="text-3xl font-bold text-center mb-6 text-blue-900">📝 Sign Up</h1>
 
-        {['username', 'password', 'fullName', 'dob', 'phone', 'email', 'address'].map((field) => (
-          <input
-            key={field}
-            name={field}
-            type={field === 'password' ? 'password' : 'text'}
-            placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-            className="mb-4 px-4 py-2 rounded-xl bg-[#F5F5F5] text-black border border-[#BDBDBD] w-full focus:outline-none focus:ring-2 focus:ring-[#64B5F6]"
-            value={(formData as any)[field]}
-            onChange={handleChange}
-          />
+        {fieldOrder.map((field) => (
+          <div key={field} className="relative mb-5">
+            <input
+              name={field}
+              autoComplete={autoCompleteMap[field] || 'off'}
+              type={field === 'password' ? 'password' : field === 'date_of_birth' ? 'date' : 'text'}
+              placeholder={placeholders[field]}
+              className={`px-4 py-2 pr-10 rounded-xl w-full border ${
+                errors[field]
+                  ? 'border-red-500'
+                  : validFields[field]
+                  ? 'border-green-500'
+                  : 'border-gray-300'
+              } bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300`}
+              value={formData[field]}
+              onChange={handleChange}
+            />
+            {errors[field] && <FaTimesCircle className="absolute right-3 top-3 text-red-500" />}
+            {!errors[field] && validFields[field] && (
+              <FaCheckCircle className="absolute right-3 top-3 text-green-500" />
+            )}
+            {errors[field] && <p className="text-sm text-red-500 mt-1">{errors[field]}</p>}
+          </div>
         ))}
 
         <button
+          className="w-full py-2 mt-4 bg-blue-700 text-white rounded-xl hover:bg-blue-800 transition"
           onClick={handleSignup}
-          className="bg-[#26A69A] hover:bg-[#2196F3] transition px-6 py-2 rounded-xl text-white font-semibold w-full"
         >
-          Create Account
+          Sign Up
         </button>
-
         <p className="text-sm text-center mt-4">
           Already have an account?{' '}
           <a href="/login" className="text-blue-700 underline hover:text-blue-900">
