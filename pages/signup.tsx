@@ -13,11 +13,12 @@ export default function SignUpPage() {
     phone: '',
     email: '',
     address: '',
+    image_url: '',
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [validFields, setValidFields] = useState<{ [key: string]: boolean }>({});
-  const [signupError, setSignupError] = useState(''); // ✅ הודעת שגיאה כללית
+  const [signupError, setSignupError] = useState('');
 
   useEffect(() => {
     if (localStorage.getItem('userToken')) {
@@ -33,16 +34,18 @@ export default function SignUpPage() {
     phone: 'tel',
     email: 'email',
     address: 'street-address',
+    image_url: 'off',
   };
 
   const fieldOrder = [
+    'id',
     'email',
     'password',
     'full_name',
     'date_of_birth',
-    'id',
     'phone',
     'address',
+    'image_url',
   ];
 
   const placeholders: { [key: string]: string } = {
@@ -53,6 +56,7 @@ export default function SignUpPage() {
     date_of_birth: '🎂 Date of Birth',
     phone: '📱 Phone',
     address: '🏠 Address',
+    image_url: '🖼️ Profile Image URL',
   };
 
   const validateField = (name: keyof typeof formData, value: string) => {
@@ -74,10 +78,10 @@ export default function SignUpPage() {
     const errorMsg = validateField(name, value);
     setErrors((prev) => ({ ...prev, [name]: errorMsg }));
     setValidFields((prev) => ({ ...prev, [name]: errorMsg === '' }));
-    setSignupError(''); // לנקות שגיאה כללית בעת שינוי
+    setSignupError('');
   };
 
-  const handleSignup = () => {
+  const handleSignup = async () => {
     const newErrors: { [key: string]: string } = {};
     let isValid = true;
 
@@ -89,27 +93,31 @@ export default function SignUpPage() {
       }
     }
 
-
     if (!isValid) {
       setErrors(newErrors);
       return;
     }
 
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const existingUser = users.find(
-      (u: any) => u.email === formData.email || u.id === formData.id
-    );
+    try {
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
 
-    if (existingUser) {
-      setSignupError('❌ A user with this email or ID already exists.');
-      return;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Signup failed');
+      }
+
+      const data = await response.json();
+      localStorage.setItem('userToken', 'demoToken');
+      localStorage.setItem('profileData', JSON.stringify(data.user));
+      router.push('/');
+    } catch (err: any) {
+      console.error('Signup error:', err);
+      setSignupError(`❌ ${err.message}`);
     }
-
-    users.push(formData);
-    localStorage.setItem('users', JSON.stringify(users));
-    localStorage.setItem('userToken', 'demoToken');
-    localStorage.setItem('profileData', JSON.stringify(formData));
-    router.push('/profile');
   };
 
   return (
@@ -128,14 +136,21 @@ export default function SignUpPage() {
             <input
               name={field}
               autoComplete={autoCompleteMap[field] || 'off'}
-              type={field === 'password' ? 'password' : field === 'date_of_birth' ? 'date' : 'text'}
+              type={
+                field === 'password'
+                  ? 'password'
+                  : field === 'date_of_birth'
+                  ? 'date'
+                  : 'text'
+              }
               placeholder={placeholders[field]}
-              className={`px-4 py-2 pr-10 rounded-xl w-full border ${errors[field]
+              className={`px-4 py-2 pr-10 rounded-xl w-full border ${
+                errors[field]
                   ? 'border-red-500'
                   : validFields[field]
-                    ? 'border-green-500'
-                    : 'border-gray-300'
-                } bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300`}
+                  ? 'border-green-500'
+                  : 'border-gray-300'
+              } bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300`}
               value={formData[field as keyof typeof formData]}
               onChange={handleChange}
             />
