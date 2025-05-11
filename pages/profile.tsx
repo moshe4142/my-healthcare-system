@@ -228,16 +228,18 @@ const ProfilePage = () => {
             open={Boolean(anchorEl)}
             onClose={handleClose}
           >
-            <MenuItem
-              component="label"
-              onClick={(e) => {
-                handleImageUpload(e); // Pass the event 'e' to handleImageUpload
-                handleClose();
-              }}
-            >
+            <MenuItem component="label">
               Upload Photo
-              <input type="file" hidden onChange={handleImageUpload} />
+              <input
+                type="file"
+                hidden
+                onChange={(e) => {
+                  handleImageUpload(e);
+                  handleClose(); // סגירת התפריט אחרי העלאה
+                }}
+              />
             </MenuItem>
+
             <MenuItem
               onClick={() => {
                 deletePhoto();
