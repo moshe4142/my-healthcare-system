@@ -1,4 +1,4 @@
-// pages/api/patients/index.ts
+// pages/api/users/index.ts
 import type { NextApiRequest, NextApiResponse } from 'next';
 import pool from '@/lib/db';
 
@@ -8,10 +8,10 @@ export default async function handler(
 ) {
   if (req.method === 'GET') {
     try {
-      const result = await pool.query('SELECT * FROM patients');
+      const result = await pool.query('SELECT * FROM users');
       res.status(200).json(result.rows);
     } catch (error) {
-      console.error('Error fetching patients:', error);
+      console.error('Error fetching users:', error);
       res.status(500).json({ error: 'Database error' });
     }
   } else {

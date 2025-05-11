@@ -88,7 +88,7 @@ export default function SignUpPage() {
         isValid = false;
       }
     }
-    
+
 
     if (!isValid) {
       setErrors(newErrors);
@@ -130,13 +130,12 @@ export default function SignUpPage() {
               autoComplete={autoCompleteMap[field] || 'off'}
               type={field === 'password' ? 'password' : field === 'date_of_birth' ? 'date' : 'text'}
               placeholder={placeholders[field]}
-              className={`px-4 py-2 pr-10 rounded-xl w-full border ${
-                errors[field]
+              className={`px-4 py-2 pr-10 rounded-xl w-full border ${errors[field]
                   ? 'border-red-500'
                   : validFields[field]
-                  ? 'border-green-500'
-                  : 'border-gray-300'
-              } bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300`}
+                    ? 'border-green-500'
+                    : 'border-gray-300'
+                } bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300`}
               value={formData[field as keyof typeof formData]}
               onChange={handleChange}
             />
