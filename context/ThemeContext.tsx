@@ -1,53 +1,54 @@
-// context/ThemeProvider.tsx
-import React, { createContext, useContext, useState, useMemo } from "react";
-import { ThemeProvider as MuiThemeProvider, createTheme } from "@mui/material/styles";
+import React, { createContext, useContext, ReactNode, useMemo } from "react";
+import {
+  ThemeProvider as MuiThemeProvider,
+  createTheme,
+} from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 
+// No toggle needed — fixed dark theme
 const ThemeContext = createContext({
   theme: "dark",
-  toggleTheme: () => {},
 });
 
 export const useTheme = () => useContext(ThemeContext);
 
-export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [mode, setMode] = useState<"light" | "dark">("dark");
-
-  const toggleTheme = () => {
-    setMode((prev) => (prev === "light" ? "dark" : "light"));
-  };
-
+export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const muiTheme = useMemo(
     () =>
       createTheme({
         palette: {
-          mode: mode,
-          ...(mode === "dark"
-            ? {
-                background: {
-                  default: "#121212",
-                  paper: "#1e1e1e",
+          mode: "dark",
+          background: {
+            default: "#121212",
+            paper: "#1e1e1e",
+          },
+          text: {
+            primary: "#ffffff",
+          },
+        },
+        components: {
+          MuiInputBase: {
+            styleOverrides: {
+              root: {
+                backgroundColor: "#2c2c2c",
+                color: "#fff",
+                borderRadius: 4,
+                padding: "6px 10px",
+              },
+              input: {
+                "::placeholder": {
+                  color: "#aaa",
                 },
-                text: {
-                  primary: "#ffffff",
-                },
-              }
-            : {
-                background: {
-                  default: "#f5f5f5",
-                  paper: "#ffffff",
-                },
-                text: {
-                  primary: "#000000",
-                },
-              }),
+              },
+            },
+          },
         },
       }),
-    [mode]
+    []
   );
 
   return (
-    <ThemeContext.Provider value={{ theme: mode, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme: "dark" }}>
       <MuiThemeProvider theme={muiTheme}>
         <CssBaseline />
         {children}

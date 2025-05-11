@@ -8,7 +8,7 @@ import Layout from "../components/Layout";
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
-      <ThemeProvider>
+      {/* <ThemeProvider> */}
         <ShoppingCartProvider>
           <AuthGuard>
             <Layout>
@@ -16,7 +16,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
             </Layout>
           </AuthGuard>
         </ShoppingCartProvider>
-      </ThemeProvider>
+      {/* </ThemeProvider> */}
     </>
   );
 }

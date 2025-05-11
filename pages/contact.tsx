@@ -1,5 +1,4 @@
-'use client';
-import React from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Paper,
@@ -8,106 +7,234 @@ import {
   List,
   ListItem,
   ListItemText,
-} from '@mui/material';
+  TextField,
+  Button,
+  Stack,
+} from "@mui/material";
+import {
+  Email as EmailIcon,
+  Phone as PhoneIcon,
+  LocationOn as LocationOnIcon,
+  AccessTime as AccessTimeIcon,
+  SupportAgent as SupportAgentIcon,
+  Public as PublicIcon,
+} from "@mui/icons-material";
+import Link from "next/link";  // Import Link for routing
 
 export default function ContactPage() {
+  const [form, setForm] = useState({
+    subject: "",
+    message: "",
+  });
+
+  const [message, setMessage] = useState("");
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setForm({ subject: "", message: "" });
+    setMessage("Thanks for contacting us!");
+  };
+
+  const isFormValid = Object.values(form).every((field) => field.trim() !== "");
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://embed.tawk.to/YOUR_TAWKTO_ID/1hxyzabc";
+    script.async = true;
+    script.charset = "UTF-8";
+    script.setAttribute("crossorigin", "*");
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
   return (
     <Box
       sx={{
-        background: 'linear-gradient(to bottom, #e0f7fa, #ffffff)',
-        minHeight: '100vh',
+        background: "linear-gradient(to bottom, #e0f7fa, #ffffff)",
+        minHeight: "100vh",
         py: 6,
         px: { xs: 2, md: 6 },
-        color: '#0D47A1',
-        display: 'flex',
-        flexDirection: 'column',
+        color: "#212121",
       }}
     >
       <Paper
-        elevation={3}
+        elevation={4}
         sx={{
           p: { xs: 3, md: 5 },
-          borderRadius: 3,
-          backgroundColor: '#ffffffcc', // white with a bit of transparency
-          backdropFilter: 'blur(6px)',
-          color: '#0D47A1',
-          width: '100%',
+          borderRadius: 5,
+          backgroundColor: "#ffffffee",
+          backdropFilter: "blur(6px)",
           maxWidth: 1000,
-          mx: 'auto',
+          mx: "auto",
+          boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
         }}
       >
-        <Typography variant="h4" fontWeight={600} mb={3}>
-          📞 Contact Us
+        <Typography variant="h4" fontWeight="bold" gutterBottom sx={{ color: "#1a1a1a" }}>
+          Contact Firemaster
         </Typography>
 
-        <Typography variant="body1" mb={3}>
-          Have questions, feedback, or need assistance? Our support team is here to help you.
-          Whether you're a new customer, a returning user, or just want to say hello — we'd love to hear from you!
+        <Typography variant="body1" mb={3} sx={{ fontSize: "1.1rem", color: "#1a1a1a" }}>
+          We would love to hear from you! You can contact us by phone, email, or leave a message via the form.
         </Typography>
 
-        <List sx={{ mb: 3 }}>
+        <Divider sx={{ my: 3 }} />
+
+        <List sx={{ color: "#1a1a1a" }}>
           <ListItem>
+            <EmailIcon sx={{ mr: 2, color: "#1976d2" }} />
             <ListItemText
-              primary="📧 Email Support"
-              secondary="support@firemaster.com — Send us a message and we’ll get back to you within 24 hours."
+              primary={<Link href="mailto:support@firemaster.com" style={{ color: "#1976d2" }}>support@firemaster.com</Link>}
+              secondary="Customer Service Email"
+              primaryTypographyProps={{ sx: { color: "#1a1a1a" } }}
+              secondaryTypographyProps={{ sx: { color: "#333" } }}
             />
           </ListItem>
-
           <ListItem>
+            <PhoneIcon sx={{ mr: 2, color: "#1976d2" }} />
             <ListItemText
-              primary="📞 Phone Support"
-              secondary="+1 234 567 8900 — Available Sunday to Thursday, 9:00 AM – 5:00 PM."
+              primary={<Link href="tel:+972-3-1234567" style={{ color: "#1976d2" }}>+972-3-1234567</Link>}
+              secondary="Main phone"
+              primaryTypographyProps={{ sx: { color: "#1a1a1a" } }}
+              secondaryTypographyProps={{ sx: { color: "#333" } }}
             />
           </ListItem>
-
           <ListItem>
+            <SupportAgentIcon sx={{ mr: 2, color: "#1976d2" }} />
             <ListItemText
-              primary="📍 Office Location"
-              secondary="123 Firemaster Avenue, Tel Aviv, Israel"
+              primary={<Link href="mailto:tech@firemaster.com" style={{ color: "#1976d2" }}>tech@firemaster.com</Link>}
+              secondary="Technical Support"
+              primaryTypographyProps={{ sx: { color: "#1a1a1a" } }}
+              secondaryTypographyProps={{ sx: { color: "#333" } }}
             />
           </ListItem>
-
           <ListItem>
+            <LocationOnIcon sx={{ mr: 2, color: "#1976d2" }} />
             <ListItemText
-              primary="🕒 Working Hours"
-              secondary={
-                <ul style={{ paddingLeft: 16 }}>
-                  <li>Sunday – Thursday: 9:00 AM to 5:00 PM</li>
-                  <li>Friday: 9:00 AM to 12:00 PM</li>
-                  <li>Saturday: Closed</li>
-                </ul>
-              }
+              primary={<Link href="https://www.google.com/maps?q=10+HaHamana+Street,+Tel+Aviv" style={{ color: "#1976d2" }}>10 HaHamana Street, Tel Aviv</Link>}
+              secondary="Main branch location"
+              primaryTypographyProps={{ sx: { color: "#1a1a1a" } }}
+              secondaryTypographyProps={{ sx: { color: "#333" } }}
             />
           </ListItem>
-
           <ListItem>
+            <AccessTimeIcon sx={{ mr: 2, color: "#1976d2" }} />
             <ListItemText
-              primary="🌐 Social Media"
-              secondary="Follow us on Instagram, Facebook, and Twitter to stay updated with news and offers."
+              primary="Hours of operation"
+              secondary="Sun–Thu: 09:00–17:00 | Fri: 09:00–12:00 | Sat: Closed"
+              primaryTypographyProps={{ sx: { color: "#1a1a1a" } }}
+              secondaryTypographyProps={{ sx: { color: "#333" } }}
             />
           </ListItem>
-
           <ListItem>
+            <PublicIcon sx={{ mr: 2, color: "#1976d2" }} />
             <ListItemText
-              primary="💬 Live Chat"
-              secondary="Our live chat is available on the bottom right corner of the screen during working hours."
+              primary={<Link href="https://www.instagram.com/Firemaster" style={{ color: "#1976d2" }}>@Firemaster</Link>}
+              secondary="Follow us on social media"
+              primaryTypographyProps={{ sx: { color: "#1a1a1a" } }}
+              secondaryTypographyProps={{ sx: { color: "#333" } }}
             />
           </ListItem>
         </List>
 
-        <Divider sx={{ my: 3 }} />
+        <Divider sx={{ my: 5 }} />
 
-        <Typography variant="h5" fontWeight={600} gutterBottom>
-          Looking for technical support?
+        <Typography variant="h5" fontWeight={600} gutterBottom sx={{ color: "#1a1a1a" }}>
+          Send a message directly
         </Typography>
-        <Typography>
-          If you're experiencing issues with our products or website, visit our{' '}
-          <a href="/help-center" style={{ color: '#1976d2', textDecoration: 'underline' }}>
-            Help Center
-          </a>{' '}
-          or contact our technical team directly at{' '}
-          <strong>tech@firemaster.com</strong>.
+
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
+          <Stack spacing={2}>
+            <TextField
+              label="Subject"
+              name="subject"
+              fullWidth
+              value={form.subject}
+              onChange={handleChange}
+              InputLabelProps={{ sx: { color: "#1a1a1a" } }}
+              InputProps={{ sx: { color: "#212121" } }}
+              sx={{ backgroundColor: "#f5f5f5" }}
+            />
+            <TextField
+              required
+              label="Message"
+              name="message"
+              multiline
+              rows={4}
+              fullWidth
+              value={form.message}
+              onChange={handleChange}
+              InputLabelProps={{ sx: { color: "#1a1a1a" } }}
+              InputProps={{ sx: { color: "#212121" } }}
+              sx={{ backgroundColor: "#f5f5f5" }}
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              disabled={!isFormValid}
+              sx={{
+                width: "fit-content",
+                alignSelf: "flex-start",
+                px: 4,
+                py: 1.5,
+                fontWeight: "bold",
+                textTransform: "none",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                opacity: !isFormValid ? 0.5 : 1,
+                cursor: !isFormValid ? "not-allowed" : "pointer",
+                backgroundColor: "#1976d2",
+                "&:hover": {
+                  backgroundColor: "#1565c0",
+                },
+              }}
+            >
+              Send a message
+            </Button>
+
+            {message && (
+              <Typography
+                variant="body2"
+                sx={{ color: "#4caf50", mt: 2, fontWeight: "bold" }}
+              >
+                {message}
+              </Typography>
+            )}
+          </Stack>
+        </Box>
+
+        <Divider sx={{ my: 5 }} />
+
+        <Typography variant="h5" fontWeight={600} gutterBottom sx={{ color: "#1a1a1a" }}>
+          Our location on the map
         </Typography>
+
+        <Box
+          sx={{
+            mt: 2,
+            width: "100%",
+            height: { xs: 300, md: 400 },
+            borderRadius: 2,
+            overflow: "hidden",
+            boxShadow: 2,
+          }}
+        >
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3380.014342877334!2d34.78052731516257!3d32.085299426345746!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x151d4cb84f97fb2d%3A0x88e26f7b6f221527!2sTel%20Aviv!5e0!3m2!1sen!2sil!4v1641907832647!5m2!1sen!2sil"
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            allowFullScreen
+            loading="lazy"
+          />
+        </Box>
       </Paper>
     </Box>
   );
