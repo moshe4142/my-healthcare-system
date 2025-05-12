@@ -1,3 +1,4 @@
+// /pages/api/login.ts
 import type { NextApiRequest, NextApiResponse } from 'next';
 import pool from '@/lib/db';
 
@@ -23,8 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const user = result.rows[0];
-    // Remove sensitive info before sending
-    delete user.password;
+    delete user.password; // optional for now
 
     return res.status(200).json({ message: 'Login successful', user });
   } catch (err) {

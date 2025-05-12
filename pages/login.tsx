@@ -15,20 +15,31 @@ export default function LoginPage() {
     }
   }, [router]);
 
-  const handleLogin = () => {
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const user = users.find(
-      (u: { email: string; password: string }) => u.email === email && u.password === password
-    );
+  const handleLogin = async () => {
+  setError('');
+  try {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
 
-    if (user) {
-      localStorage.setItem('userToken', 'fakeToken');
-      localStorage.setItem('profileData', JSON.stringify(user));
-      router.push('/profile');
-    } else {
-      setError('Invalid credentials. Please try again.');
+    const data = await res.json();
+
+    if (!res.ok) {
+      setError(data.error || 'Login failed');
+      return;
     }
-  };
+
+    // Temporarily store user (or whatever you want)
+    localStorage.setItem('userToken', 'fakeToken');
+    localStorage.setItem('profileData', JSON.stringify(data.user));
+    router.push('/profile');
+  } catch (err) {
+    setError('Login failed. Please try again.');
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#b2ebf2] to-white p-4 text-gray-900">
