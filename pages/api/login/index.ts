@@ -29,11 +29,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const user = result.rows[0];
-<<<<<<< HEAD
     delete user.password; // optional for now 
-=======
     console.log('User from DB:', user);
->>>>>>> 9190d3f7ee403fb977208a4ea85a3c8db9253f14
+
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     console.log('Password valid:', isPasswordValid);
