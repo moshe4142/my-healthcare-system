@@ -16,8 +16,7 @@ export default function SignUpPage() {
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [validFields, setValidFields] = useState<{ [key: string]: boolean }>({});
-  const [signupError, setSignupError] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [signupError, setSignupError] = useState(''); // ✅ הודעת שגיאה כללית
 
   useEffect(() => {
     if (localStorage.getItem('userToken')) {
@@ -36,11 +35,11 @@ export default function SignUpPage() {
   };
 
   const fieldOrder = [
+    'id',
     'email',
     'password',
     'full_name',
     'date_of_birth',
-    'id',
     'phone',
     'address',
   ];
@@ -55,7 +54,7 @@ export default function SignUpPage() {
     address: '🏠 Address',
   };
 
-  const validateField = (name: string, value: string) => {
+  const validateField = (name: keyof typeof formData, value: string) => {
     if (!value.trim()) return `${placeholders[name] || name} is required.`;
     if (name === 'id' && !/^\d{8,10}$/.test(value)) return 'Invalid ID number format.';
     if (name === 'phone' && !/^\+?\d{7,15}$/.test(value)) return 'Invalid phone number format.';
@@ -66,7 +65,7 @@ export default function SignUpPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    if (['id'].includes(name) && value && !/^\d*$/.test(value)) return;
+    if (['id', 'phone'].includes(name) && value && !/^\d*$/.test(value)) return;
 
     setFormData((prev) => ({ ...prev, [name]: value }));
     const errorMsg = validateField(name, value);
@@ -75,11 +74,11 @@ export default function SignUpPage() {
     setSignupError('');
   };
 
-  const handleSignup = () => {
+  const handleSignup = async () => {
     const newErrors: { [key: string]: string } = {};
     let isValid = true;
 
-    for (const key of Object.keys(formData)) {
+    for (const key of Object.keys(formData) as (keyof typeof formData)[]) {
       const errorMsg = validateField(key, formData[key]);
       if (errorMsg) {
         newErrors[key] = errorMsg;
@@ -102,12 +101,10 @@ export default function SignUpPage() {
       return;
     }
 
-    const newUser = { ...formData };
-
-    users.push(newUser);
+    users.push(formData);
     localStorage.setItem('users', JSON.stringify(users));
     localStorage.setItem('userToken', 'demoToken');
-    localStorage.setItem('profileData', JSON.stringify(newUser));
+    localStorage.setItem('profileData', JSON.stringify(formData));
     router.push('/profile');
   };
 
@@ -127,39 +124,22 @@ export default function SignUpPage() {
             <input
               name={field}
               autoComplete={autoCompleteMap[field] || 'off'}
-              type={
-                field === 'password'
-                  ? showPassword
-                    ? 'text'
-                    : 'password'
-                  : field === 'date_of_birth'
-                  ? 'date'
-                  : field === 'phone'
-                  ? 'tel'
-                  : 'text'
-              }
+              type={field === 'password' ? 'password' : field === 'date_of_birth' ? 'date' : 'text'}
               placeholder={placeholders[field]}
-              className={`px-4 py-2 pr-10 rounded-xl w-full border ${
-                errors[field]
+              className={`px-4 py-2 pr-10 rounded-xl w-full border ${errors[field]
                   ? 'border-red-500'
                   : validFields[field]
-                  ? 'border-green-500'
-                  : 'border-gray-300'
-              } bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300`}
-              value={formData[field]}
+                    ? 'border-green-500'
+                    : 'border-gray-300'
+                } bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300`}
+              value={
+                field === 'date_of_birth'
+                  ? (formData[field]?.slice(0, 10) || '')
+                  : formData[field as keyof typeof formData]
+              }
               onChange={handleChange}
             />
-            {field === 'password' && (
-              <div
-                onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute right-10 top-3 text-gray-500 hover:text-gray-700 cursor-pointer"
-              >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </div>
-            )}
-            {errors[field] && (
-              <FaTimesCircle className="absolute right-3 top-3 text-red-500" />
-            )}
+            {errors[field] && <FaTimesCircle className="absolute right-3 top-3 text-red-500" />}
             {!errors[field] && validFields[field] && (
               <FaCheckCircle className="absolute right-3 top-3 text-green-500" />
             )}
