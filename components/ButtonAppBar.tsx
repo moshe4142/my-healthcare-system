@@ -28,7 +28,7 @@ import { useTheme } from "../context/ThemeContext";
 const ButtonAppBar = () => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
-  const { theme, toggleTheme } = useTheme();
+  // const { theme, toggleTheme } = useTheme();
 
   const toggleDrawer = (state: boolean) => () => {
     setOpen(state);
@@ -47,15 +47,14 @@ const ButtonAppBar = () => {
 
   return (
     <>
-      {/* Fixed AppBar */}
+
       <AppBar
-<<<<<<< HEAD
+
         position="fixed"
         sx={{ backgroundColor: "#4db6ac", boxShadow: "none" }}
-=======
-        position="static"
-        sx={{ backgroundColor: "#4db6ac", boxShadow: "none", position: "fixed", top: 0, left: 0, right: 0, zIndex: 2 }}
->>>>>>> cfb637825481d97effa7b594db703bd1dcfc3005
+
+        // position="static"
+        // sx={{ backgroundColor: "#4db6ac", boxShadow: "none", position: "fixed", top: 0, left: 0, right: 0, zIndex: 2 }}
       >
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
           {/* Left: Menu and Cart */}
