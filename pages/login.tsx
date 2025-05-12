@@ -1,49 +1,49 @@
-'use client';
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
+  'use client';
+  import React, { useState, useEffect } from 'react';
+  import { useRouter } from 'next/navigation';
+  import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
-export default function LoginPage() {
-  const router = useRouter();
-  const [formData, setFormData] = useState({ email: '', password: '' });
-  const [error, setError] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  export default function LoginPage() {
+    const router = useRouter();
+    const [formData, setFormData] = useState({ email: '', password: '' });
+    const [error, setError] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
 
-  useEffect(() => {
-    const token = localStorage.getItem('userToken');
-    if (token) {
-      router.push('/profile');
-    }
-  }, [router]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-    setError('');
-  };
-
-  const handleLogin = async () => {
-    setError('');
-    try {
-      const res = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error || 'Login failed');
-        return;
+    useEffect(() => {
+      const token = localStorage.getItem('userToken');
+      if (token) {
+        router.push('/');
       }
+    }, [router]);
 
-      if (data.token) {
-        localStorage.setItem('userToken', data.token);
-      }
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+      setError('');
+    };
 
-      if (data.user) {
-        localStorage.setItem('profileData', JSON.stringify(data.user));
-      }
+    const handleLogin = async () => {
+      setError('');
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          setError(data.error || 'Login failed');
+          return;
+        }
+
+        if (data.token) {
+          localStorage.setItem('userToken', data.token);
+        }
+
+        if (data.user) {
+          localStorage.setItem('profileData', JSON.stringify(data.user));
+        }
 
       router.push('/profile');
     } catch (err) {
