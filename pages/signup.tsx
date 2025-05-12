@@ -92,15 +92,28 @@ export default function SignUpPage() {
       return;
     }
 
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const existingUser = users.find(
-      (u: any) => u.email === formData.email || u.id === formData.id
-    );
+    try {
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
 
-    if (existingUser) {
-      setSignupError('❌ A user with this email or ID already exists.');
-      return;
+      const data = await res.json();
+
+      if (!res.ok) {
+        setSignupError(`❌ ${data.error || 'Registration failed'}`);
+        return;
+      }
+
+      localStorage.setItem('userToken', 'demoToken');
+      localStorage.setItem('profileData', JSON.stringify(data.user));
+      router.push('/profile');
+    } catch (err) {
+      console.error(err);
+      setSignupError('❌ Failed to register. Please try again later.');
     }
+<<<<<<< HEAD
 
     const newUser = { ...formData };
 
@@ -109,6 +122,8 @@ export default function SignUpPage() {
     localStorage.setItem('userToken', 'demoToken');
     localStorage.setItem('profileData', JSON.stringify(newUser));
     router.push('/profile');
+=======
+>>>>>>> b92d2cd1217b64c9b55108ea173156ed483ba0f2
   };
 
   return (
