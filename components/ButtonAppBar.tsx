@@ -23,12 +23,12 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 // import LightModeIcon from "@mui/icons-material/LightMode";
 // import DarkModeIcon from "@mui/icons-material/DarkMode";
 import { useRouter } from "next/router";
-import { useTheme } from "../context/ThemeContext";
+// import { useTheme } from "../context/ThemeContext";
 
 const ButtonAppBar = () => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
-  const { theme, toggleTheme } = useTheme();
+  // const { theme, toggleTheme } = useTheme();
 
   const toggleDrawer = (state: boolean) => () => {
     setOpen(state);
@@ -47,18 +47,11 @@ const ButtonAppBar = () => {
 
   return (
     <>
-      {/* Fixed AppBar */}
       <AppBar
-<<<<<<< HEAD
         position="fixed"
         sx={{ backgroundColor: "#4db6ac", boxShadow: "none" }}
-=======
-        position="static"
-        sx={{ backgroundColor: "#4db6ac", boxShadow: "none", position: "fixed", top: 0, left: 0, right: 0, zIndex: 2 }}
->>>>>>> cfb637825481d97effa7b594db703bd1dcfc3005
       >
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-          {/* Left: Menu and Cart */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <IconButton color="inherit" edge="start" onClick={toggleDrawer(true)}>
               <MenuIcon />
@@ -76,7 +69,6 @@ const ButtonAppBar = () => {
             </IconButton>
           </Box>
 
-          {/* Center: Title Button */}
           <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}>
             <Button
               onClick={() => router.push("/")}
@@ -92,7 +84,6 @@ const ButtonAppBar = () => {
             </Button>
           </Box>
 
-          {/* Right: Page Links */}
           <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
             <Button
               color="inherit"
@@ -135,7 +126,7 @@ const ButtonAppBar = () => {
               Medical Equipment
             </Button>
 
-            {/* Optional theme toggle 
+            {/* 
             <Tooltip title={theme === "dark" ? "Light Mode" : "Dark Mode"}>
               <IconButton
                 onClick={toggleTheme}
@@ -153,15 +144,12 @@ const ButtonAppBar = () => {
         </Toolbar>
       </AppBar>
 
-      {/* Spacer to push content below the fixed AppBar */}
-      <Toolbar />
+      <Toolbar /> {/* Spacer to push content below AppBar */}
 
-      {/* Drawer */}
       <Drawer
         anchor="left"
         open={open}
-        onClose={toggleDrawer(false)}
-        variant="temporary"
+        onClose={toggleDrawer(false)} // ✅ תיקון כאן
         PaperProps={{
           sx: {
             backgroundColor: "#e8f5e9",
@@ -217,7 +205,6 @@ const ButtonAppBar = () => {
               <ListItemIcon sx={{ color: "#2e7d32" }}>{item.icon}</ListItemIcon>
               <ListItemText primary={item.label} />
             </ListItem>
-
           ))}
         </List>
       </Drawer>

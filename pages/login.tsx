@@ -15,54 +15,34 @@ export default function LoginPage() {
     }
   }, [router]);
 
-<<<<<<< HEAD
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     setError('');
   };
 
-  const handleLogin = () => {
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const existingUser = users.find(
-      (u: any) => u.email === formData.email && u.password === formData.password
-    );
-
-    if (!existingUser) {
-      setError('❌ Invalid email or password.');
-      return;
-    }
-
-    localStorage.setItem('userToken', 'demoToken');
-    localStorage.setItem('profileData', JSON.stringify(existingUser));
-    router.push('/profile');
-  };
-=======
   const handleLogin = async () => {
-  setError('');
-  try {
-    const res = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
-    });
+    setError('');
+    try {
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (!res.ok) {
-      setError(data.error || 'Login failed');
-      return;
+      if (!res.ok) {
+        setError(data.error || 'Login failed');
+        return;
+      }
+
+      localStorage.setItem('userToken', data.token || 'fakeToken');
+      localStorage.setItem('profileData', JSON.stringify(data.user));
+      router.push('/profile');
+    } catch (err) {
+      setError('Login failed. Please try again.');
     }
-
-    // Temporarily store user (or whatever you want)
-    localStorage.setItem('userToken', 'fakeToken');
-    localStorage.setItem('profileData', JSON.stringify(data.user));
-    router.push('/');
-  } catch (err) {
-    setError('Login failed. Please try again.');
-  }
-};
-
->>>>>>> cfb637825481d97effa7b594db703bd1dcfc3005
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#b2ebf2] to-white text-gray-900 p-4">
