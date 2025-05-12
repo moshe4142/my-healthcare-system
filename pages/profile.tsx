@@ -206,10 +206,33 @@ const ProfilePage = () => {
     setError("");
   };
 
-  const handleDeleteAccount = () => {
-    localStorage.clear();
-    window.location.href = "/signup";
+  const handleDeleteAccount = async () => {
+    if (!id) {
+      alert("User ID is missing");
+      return;
+    }
+  
+    try {
+      const response = await fetch(`/api/users/${id}`, {
+        method: "DELETE",
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Failed to delete user:", errorData.error);
+        alert("Failed to delete account: " + errorData.error);
+        return;
+      }
+  
+      // אם הצליח - ניקוי ה-localStorage והפנייה לדף הרשמה
+      localStorage.clear();
+      window.location.href = "/signup";
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      alert("Something went wrong while deleting your account.");
+    }
   };
+  
 
   return (
     <div className="p-6 bg-gradient-to-b from-[#e0f7fa] to-white min-h-screen text-gray-800">
