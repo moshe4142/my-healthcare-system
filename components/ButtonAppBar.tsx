@@ -49,7 +49,7 @@ const ButtonAppBar = () => {
     <>
       <AppBar
         position="static"
-        sx={{ backgroundColor: "#4db6ac", boxShadow: "none" }}
+        sx={{ backgroundColor: "#4db6ac", boxShadow: "none", position: "fixed", top: 0, left: 0, right: 0, zIndex: 2 }}
       >
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
           {/* Left: Menu and Cart */}
@@ -190,7 +190,7 @@ const ButtonAppBar = () => {
             },
           ].map((item, index) => (
             <ListItem
-              button
+              component="button"
               key={index}
               onClick={item.action}
               sx={{
@@ -208,6 +208,7 @@ const ButtonAppBar = () => {
               <ListItemIcon sx={{ color: "#2e7d32" }}>{item.icon}</ListItemIcon>
               <ListItemText primary={item.label} />
             </ListItem>
+
           ))}
         </List>
       </Drawer>

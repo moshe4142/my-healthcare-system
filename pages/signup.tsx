@@ -17,7 +17,7 @@ export default function SignUpPage() {
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [validFields, setValidFields] = useState<{ [key: string]: boolean }>({});
-  const [signupError, setSignupError] = useState(''); // ✅ הודעת שגיאה כללית
+  const [signupError, setSignupError] = useState('');
 
   useEffect(() => {
     if (localStorage.getItem('userToken')) {
@@ -36,11 +36,11 @@ export default function SignUpPage() {
   };
 
   const fieldOrder = [
+    'id',
     'email',
     'password',
     'full_name',
     'date_of_birth',
-    'id',
     'phone',
     'address',
   ];
@@ -55,7 +55,7 @@ export default function SignUpPage() {
     address: '🏠 Address',
   };
 
-  const validateField = (name: string, value: string) => {
+  const validateField = (name: keyof typeof formData, value: string) => {
     if (!value.trim()) return `${placeholders[name] || name} is required.`;
     if (name === 'id' && !/^\d{5,10}$/.test(value)) return 'Invalid ID number format.';
     if (name === 'phone' && !/^\d{9,10}$/.test(value)) return 'Invalid phone number format.';
@@ -65,21 +65,23 @@ export default function SignUpPage() {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const name = e.target.name as keyof typeof formData;
+    const value = e.target.value;
+
     if (['id', 'phone'].includes(name) && value && !/^\d*$/.test(value)) return;
 
     setFormData((prev) => ({ ...prev, [name]: value }));
     const errorMsg = validateField(name, value);
     setErrors((prev) => ({ ...prev, [name]: errorMsg }));
     setValidFields((prev) => ({ ...prev, [name]: errorMsg === '' }));
-    setSignupError(''); // לנקות שגיאה כללית בעת שינוי
+    setSignupError('');
   };
 
-  const handleSignup = () => {
+  const handleSignup = async () => {
     const newErrors: { [key: string]: string } = {};
     let isValid = true;
 
-    for (const key of Object.keys(formData)) {
+    for (const key of Object.keys(formData) as (keyof typeof formData)[]) {
       const errorMsg = validateField(key, formData[key]);
       if (errorMsg) {
         newErrors[key] = errorMsg;
@@ -92,21 +94,26 @@ export default function SignUpPage() {
       return;
     }
 
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const existingUser = users.find(
-      (u: any) => u.email === formData.email || u.id === formData.id
-    );
+    try {
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
 
-    if (existingUser) {
-      setSignupError('❌ A user with this email or ID already exists.');
-      return;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Signup failed');
+      }
+
+      const data = await response.json();
+      localStorage.setItem('userToken', 'demoToken');
+      localStorage.setItem('profileData', JSON.stringify(data.user));
+      router.push('/');
+    } catch (err: any) {
+      console.error('Signup error:', err);
+      setSignupError(`❌ ${err.message}`);
     }
-
-    users.push(formData);
-    localStorage.setItem('users', JSON.stringify(users));
-    localStorage.setItem('userToken', 'demoToken');
-    localStorage.setItem('profileData', JSON.stringify(formData));
-    router.push('/profile');
   };
 
   return (
@@ -125,18 +132,28 @@ export default function SignUpPage() {
             <input
               name={field}
               autoComplete={autoCompleteMap[field] || 'off'}
-              type={field === 'password' ? 'password' : field === 'date_of_birth' ? 'date' : 'text'}
+              type={
+                field === 'password'
+                  ? 'password'
+                  : field === 'date_of_birth'
+                    ? 'date'
+                    : 'text'
+              }
               placeholder={placeholders[field]}
-              className={`px-4 py-2 pr-10 rounded-xl w-full border ${
-                errors[field]
+              className={`px-4 py-2 pr-10 rounded-xl w-full border ${errors[field]
                   ? 'border-red-500'
                   : validFields[field]
-                  ? 'border-green-500'
-                  : 'border-gray-300'
-              } bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300`}
-              value={formData[field]}
+                    ? 'border-green-500'
+                    : 'border-gray-300'
+                } bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300`}
+              value={
+                field === 'date_of_birth'
+                  ? (formData[field]?.slice(0, 10) || '')
+                  : formData[field as keyof typeof formData]
+              }
               onChange={handleChange}
             />
+
             {errors[field] && <FaTimesCircle className="absolute right-3 top-3 text-red-500" />}
             {!errors[field] && validFields[field] && (
               <FaCheckCircle className="absolute right-3 top-3 text-green-500" />
