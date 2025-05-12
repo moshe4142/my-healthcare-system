@@ -213,14 +213,15 @@ const ProfilePage = () => {
     }
   
     try {
-      const response = await fetch(`/api/users/${id}`, {
+      const response = await fetch(`/api/delete/${id}`, {
         method: "DELETE",
       });
   
+      const data = await response.json();
+  
       if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Failed to delete user:", errorData.error);
-        alert("Failed to delete account: " + errorData.error);
+        console.error("Failed to delete user:", data.error);
+        alert("Failed to delete account: " + data.error);
         return;
       }
   
@@ -232,6 +233,7 @@ const ProfilePage = () => {
       alert("Something went wrong while deleting your account.");
     }
   };
+  
   
 
   return (
