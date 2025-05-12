@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import pool from '@/lib/db';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -20,18 +20,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    const user = result.rows[0];
 
-    console.log('Query result:', result.rows);
-
-    if (result.rows.length === 0) {
+    if (!user) {
       console.warn('User not found for email:', email);
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    const user = result.rows[0];
-    delete user.password; // optional for now 
     console.log('User from DB:', user);
-
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     console.log('Password valid:', isPasswordValid);
@@ -41,7 +37,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    // הסר את הסיסמה לפני שליחה ללקוח
     delete user.password;
 
     console.log('Login successful for:', email);

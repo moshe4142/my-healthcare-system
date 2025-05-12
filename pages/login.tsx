@@ -22,34 +22,37 @@
     };
 
     const handleLogin = async () => {
-      setError('');
-      try {
-        const res = await fetch('/api/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
-        });
+  setError('');
+  try {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData),
+    });
 
-        const data = await res.json();
+    const data = await res.json();
 
-        if (!res.ok) {
-          setError(data.error || 'Login failed');
-          return;
-        }
-
-        if (data.token) {
-          localStorage.setItem('userToken', data.token);
-        }
-
-        if (data.user) {
-          localStorage.setItem('profileData', JSON.stringify(data.user));
-        }
-
-      router.push('/profile');
-    } catch (err) {
-      setError('Login failed. Please try again.');
+    console.log(data); // הדפס את התשובה מה-API
+    if (!res.ok) {
+      setError(data.error || 'Login failed');
+      return;
     }
-  };
+
+    if (data.token) {
+      localStorage.setItem('userToken', data.token);
+    }
+
+    if (data.user) {
+      localStorage.setItem('profileData', JSON.stringify(data.user));
+    }
+
+    router.push('/profile');
+  } catch (err) {
+    console.error('Error in login:', err);  // הדפס את השגיאה כדי לראות מה לא עובד
+    setError('Login failed. Please try again.');
+  }
+};
+
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter') {
