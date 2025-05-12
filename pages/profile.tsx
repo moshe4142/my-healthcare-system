@@ -21,7 +21,7 @@ const ProfilePage = () => {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
-  const [profileImage, setProfileImage] = useState("");
+  const [image_url, setImage_url] = useState("");
   const [isEditing, setIsEditing] = useState(false);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -41,7 +41,7 @@ const ProfilePage = () => {
       setPhone(data.phone || "");
       setEmail(data.email || "");
       setAddress(data.address || "");
-      setProfileImage(data.profileImage || "");
+      setImage_url(data.image_url || "");
     } else {
       router.push("/login");
     }
@@ -59,18 +59,18 @@ const ProfilePage = () => {
 
       // איפוס התמונה במשתמש המחובר
       const updatedUsers = users.map((user: any) =>
-        user.id === profile.id ? { ...user, profileImage: "" } : user
+        user.id === profile.id ? { ...user, image_url: "" } : user
       );
 
       // איפוס התמונה בפרופיל הפעיל
-      const updatedProfile = { ...profile, profileImage: "" };
+      const updatedProfile = { ...profile, image_url: "" };
 
       // עדכון ה-localStorage
       localStorage.setItem("users", JSON.stringify(updatedUsers));
       localStorage.setItem("profileData", JSON.stringify(updatedProfile));
 
       // עדכון סטייט
-      setProfileImage("");
+      setImage_url("");
     } catch (error) {
       console.error("שגיאה באיפוס התמונה:", error);
     }
@@ -78,43 +78,41 @@ const ProfilePage = () => {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    const saved = JSON.parse(localStorage.getItem("profileData") || "{}");
-    let imageData = profileImage;
-
-    const updateStorage = (imageUrl: string) => {
-      const updatedProfile = {
-        id,
-        full_name: fullName,
-        date_of_birth: dob,
-        phone,
-        email,
-        address,
-        profileImage: imageUrl,
-        password: saved.password || "",
-      };
-      // עדכון profileData
-      localStorage.setItem("profileData", JSON.stringify(updatedProfile));
-      setProfileImage(imageUrl);
-
-      // עדכון users
-      const users = JSON.parse(localStorage.getItem("users") || "[]");
-      const updatedUsers = users.map((user: any) =>
-        user.id === id ? { ...user, ...updatedProfile } : user
-      );
-      localStorage.setItem("users", JSON.stringify(updatedUsers));
-      setIsEditing(false);
+  
+    const updatedData = {
+      full_name: fullName,
+      date_of_birth: dob,
+      phone,
+      email,
+      address,
+      image_url: image_url,
     };
-
-    if (imageFile) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        updateStorage(reader.result as string);
-      };
-      reader.readAsDataURL(imageFile);
-    } else {
-      updateStorage(imageData);
+  
+    try {
+      const response = await fetch(`/api/updateUser/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedData),
+      });
+  
+      if (response.ok) {
+        const result = await response.json();
+        console.log(result.message);
+        // עדכון המידע בצד הלקוח
+        // הפנייה לעמוד פרופיל אחרי עדכון המידע
+        router.push("/");
+      } else {
+        const errorData = await response.json();
+        console.error(errorData.error);
+      }
+    } catch (error) {
+      console.error("Error updating user:", error);
     }
   };
+  
+  
 
   const handleLogout = () => {
     localStorage.removeItem("profileData");
@@ -129,17 +127,17 @@ const ProfilePage = () => {
       const reader = new FileReader();
       reader.onload = () => {
         const imageUrl = reader.result as string;
-        setProfileImage(imageUrl);
+        setImage_url(imageUrl);
 
         // עדכון profileData
         const saved = JSON.parse(localStorage.getItem("profileData") || "{}");
-        const updatedProfile = { ...saved, profileImage: imageUrl };
+        const updatedProfile = { ...saved, image_url: imageUrl };
         localStorage.setItem("profileData", JSON.stringify(updatedProfile));
 
         // עדכון users
         const users = JSON.parse(localStorage.getItem("users") || "[]");
         const updatedUsers = users.map((user: any) =>
-          user.id === saved.id ? { ...user, profileImage: imageUrl } : user
+          user.id === saved.id ? { ...user, image_url: imageUrl } : user
         );
         localStorage.setItem("users", JSON.stringify(updatedUsers));
       };
@@ -206,18 +204,42 @@ const ProfilePage = () => {
     setError("");
   };
 
-  const handleDeleteAccount = () => {
-    localStorage.clear();
-    window.location.href = "/signup";
+  const handleDeleteAccount = async () => {
+    if (!id) {
+      alert("User ID is missing");
+      return;
+    }
+  
+    try {
+      const response = await fetch(`/api/delete/${id}`, {
+        method: "DELETE",
+      });
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        console.error("Failed to delete user:", data.error);
+        alert("Failed to delete account: " + data.error);
+        return;
+      }
+  
+      // אם הצליח - ניקוי ה-localStorage והפנייה לדף הרשמה
+      localStorage.clear();
+      window.location.href = "/signup";
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      alert("Something went wrong while deleting your account.");
+    }
   };
+  
 
   return (
     <div className="p-6 bg-gradient-to-b from-[#e0f7fa] to-white min-h-screen text-gray-800">
       <div className="max-w-4xl mx-auto bg-white shadow-md rounded-xl p-6 space-y-6">
         <div className="flex justify-center">
           <IconButton onClick={handleMenu} size="large">
-            {profileImage ? (
-              <Avatar src={profileImage} sx={{ width: 64, height: 64 }} />
+            {image_url ? (
+              <Avatar src={image_url} sx={{ width: 64, height: 64 }} />
             ) : (
               <Avatar sx={{ width: 64, height: 64 }}>{initials}</Avatar>
             )}
@@ -277,7 +299,7 @@ const ProfilePage = () => {
         </div>
 
         <form onSubmit={handleSave} className="space-y-4">
-          {[
+          {[ 
             {
               label: "ID",
               value: id,

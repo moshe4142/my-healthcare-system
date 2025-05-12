@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import pool from '@/lib/db';
+import bcrypt from 'bcrypt';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -21,12 +22,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
+    // הצפנת הסיסמה
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const query = `
       INSERT INTO users (id, full_name, date_of_birth, phone, email, address, password)
       VALUES ($1, $2, $3, $4, $5, $6, $7)
       RETURNING id, full_name, email
     `;
-    const values = [id, full_name, date_of_birth, phone, email, address, password];
+    const values = [id, full_name, date_of_birth, phone, email, address, hashedPassword];
 
     const result = await pool.query(query, values);
 
