@@ -22,8 +22,8 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 // import LightModeIcon from "@mui/icons-material/LightMode";
 // import DarkModeIcon from "@mui/icons-material/DarkMode";
-import { useRouter } from "next/router";
 // import { useTheme } from "../context/ThemeContext";
+import { useRouter } from "next/router";
 
 const ButtonAppBar = () => {
   const [open, setOpen] = useState(false);
@@ -45,23 +45,27 @@ const ButtonAppBar = () => {
     setOpen(false);
   };
 
+  const drawerItems = [
+    {
+      label: "Profile",
+      icon: <AccountCircleIcon />,
+      action: () => handleNavigate("/profile"),
+    },
+    {
+      label: "Contact",
+      icon: <ContactMailIcon />,
+      action: () => handleNavigate("/contact"),
+    },
+    {
+      label: "Logout",
+      icon: <LogoutIcon />,
+      action: handleLogout,
+    },
+  ];
+
   return (
     <>
-<<<<<<< HEAD
-
-      <AppBar
-
-        position="fixed"
-        sx={{ backgroundColor: "#4db6ac", boxShadow: "none" }}
-
-        // position="static"
-        // sx={{ backgroundColor: "#4db6ac", boxShadow: "none", position: "fixed", top: 0, left: 0, right: 0, zIndex: 2 }}
-=======
-      <AppBar
-        position="fixed"
-        sx={{ backgroundColor: "#4db6ac", boxShadow: "none" }}
->>>>>>> b92d2cd1217b64c9b55108ea173156ed483ba0f2
-      >
+      <AppBar position="fixed" sx={{ backgroundColor: "#4db6ac", boxShadow: "none" }}>
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <IconButton color="inherit" edge="start" onClick={toggleDrawer(true)}>
@@ -160,7 +164,7 @@ const ButtonAppBar = () => {
       <Drawer
         anchor="left"
         open={open}
-        onClose={toggleDrawer(false)} // ✅ תיקון כאן
+        onClose={toggleDrawer(false)}
         PaperProps={{
           sx: {
             backgroundColor: "#e8f5e9",
@@ -180,23 +184,7 @@ const ButtonAppBar = () => {
         <Divider sx={{ backgroundColor: "#a5d6a7", marginBottom: 2 }} />
 
         <List>
-          {[
-            {
-              label: "Profile",
-              icon: <AccountCircleIcon />,
-              action: () => handleNavigate("/profile"),
-            },
-            {
-              label: "Contact",
-              icon: <ContactMailIcon />,
-              action: () => handleNavigate("/contact"),
-            },
-            {
-              label: "Logout",
-              icon: <LogoutIcon />,
-              action: handleLogout,
-            },
-          ].map((item, index) => (
+          {drawerItems.map((item, index) => (
             <ListItem
               component="button"
               key={index}

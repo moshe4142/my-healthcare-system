@@ -66,7 +66,7 @@ export default function SignUpPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    if (['id'].includes(name) && value && !/^\d*$/.test(value)) return;
+    if (name === 'id' && value && !/^\d*$/.test(value)) return;
 
     setFormData((prev) => ({ ...prev, [name]: value }));
     const errorMsg = validateField(name, value);
@@ -75,7 +75,7 @@ export default function SignUpPage() {
     setSignupError('');
   };
 
-  const handleSignup = () => {
+  const handleSignup = async () => {
     const newErrors: { [key: string]: string } = {};
     let isValid = true;
 
@@ -106,24 +106,15 @@ export default function SignUpPage() {
         return;
       }
 
+      // Simulate saving token and user data (replace with real token logic if needed)
       localStorage.setItem('userToken', 'demoToken');
-      localStorage.setItem('profileData', JSON.stringify(data.user));
+      localStorage.setItem('profileData', JSON.stringify(data.user || formData));
+
       router.push('/profile');
     } catch (err) {
       console.error(err);
       setSignupError('❌ Failed to register. Please try again later.');
     }
-<<<<<<< HEAD
-
-    const newUser = { ...formData };
-
-    users.push(newUser);
-    localStorage.setItem('users', JSON.stringify(users));
-    localStorage.setItem('userToken', 'demoToken');
-    localStorage.setItem('profileData', JSON.stringify(newUser));
-    router.push('/profile');
-=======
->>>>>>> b92d2cd1217b64c9b55108ea173156ed483ba0f2
   };
 
   return (
