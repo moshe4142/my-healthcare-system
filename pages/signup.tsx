@@ -13,7 +13,6 @@ export default function SignUpPage() {
     phone: '',
     email: '',
     address: '',
-    image_url: '',
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -34,7 +33,6 @@ export default function SignUpPage() {
     phone: 'tel',
     email: 'email',
     address: 'street-address',
-    image_url: 'off',
   };
 
   const fieldOrder = [
@@ -45,7 +43,6 @@ export default function SignUpPage() {
     'date_of_birth',
     'phone',
     'address',
-    'image_url',
   ];
 
   const placeholders: { [key: string]: string } = {
@@ -56,7 +53,6 @@ export default function SignUpPage() {
     date_of_birth: '🎂 Date of Birth',
     phone: '📱 Phone',
     address: '🏠 Address',
-    image_url: '🖼️ Profile Image URL',
   };
 
   const validateField = (name: keyof typeof formData, value: string) => {
@@ -140,20 +136,24 @@ export default function SignUpPage() {
                 field === 'password'
                   ? 'password'
                   : field === 'date_of_birth'
-                  ? 'date'
-                  : 'text'
+                    ? 'date'
+                    : 'text'
               }
               placeholder={placeholders[field]}
-              className={`px-4 py-2 pr-10 rounded-xl w-full border ${
-                errors[field]
+              className={`px-4 py-2 pr-10 rounded-xl w-full border ${errors[field]
                   ? 'border-red-500'
                   : validFields[field]
-                  ? 'border-green-500'
-                  : 'border-gray-300'
-              } bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300`}
-              value={formData[field as keyof typeof formData]}
+                    ? 'border-green-500'
+                    : 'border-gray-300'
+                } bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300`}
+              value={
+                field === 'date_of_birth'
+                  ? (formData[field]?.slice(0, 10) || '')
+                  : formData[field as keyof typeof formData]
+              }
               onChange={handleChange}
             />
+
             {errors[field] && <FaTimesCircle className="absolute right-3 top-3 text-red-500" />}
             {!errors[field] && validFields[field] && (
               <FaCheckCircle className="absolute right-3 top-3 text-green-500" />

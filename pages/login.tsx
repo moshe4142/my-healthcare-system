@@ -11,7 +11,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (localStorage.getItem('userToken')) {
-      router.push('/profile');
+      router.push('/');
     }
   }, [router]);
 
@@ -34,7 +34,7 @@ export default function LoginPage() {
     // Temporarily store user (or whatever you want)
     localStorage.setItem('userToken', 'fakeToken');
     localStorage.setItem('profileData', JSON.stringify(data.user));
-    router.push('/profile');
+    router.push('/');
   } catch (err) {
     setError('Login failed. Please try again.');
   }

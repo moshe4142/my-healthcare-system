@@ -14,7 +14,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     email,
     address,
     password,
-    image_url,
   } = req.body;
 
   if (!id || !full_name || !date_of_birth || !phone || !email || !address || !password) {
@@ -23,11 +22,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const query = `
-      INSERT INTO users (id, full_name, date_of_birth, phone, email, address, password, image_url)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      INSERT INTO users (id, full_name, date_of_birth, phone, email, address, password)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
       RETURNING id, full_name, email
     `;
-    const values = [id, full_name, date_of_birth, phone, email, address, password, image_url];
+    const values = [id, full_name, date_of_birth, phone, email, address, password];
 
     const result = await pool.query(query, values);
 
