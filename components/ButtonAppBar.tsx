@@ -47,8 +47,9 @@ const ButtonAppBar = () => {
 
   return (
     <>
+      {/* Fixed AppBar */}
       <AppBar
-        position="static"
+        position="fixed"
         sx={{ backgroundColor: "#4db6ac", boxShadow: "none" }}
       >
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -146,6 +147,9 @@ const ButtonAppBar = () => {
           </Box>
         </Toolbar>
       </AppBar>
+
+      {/* Spacer to push content below the fixed AppBar */}
+      <Toolbar />
 
       {/* Drawer */}
       <Drawer

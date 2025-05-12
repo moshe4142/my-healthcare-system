@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+import { FaCheckCircle, FaTimesCircle, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -14,10 +14,10 @@ export default function SignUpPage() {
     email: '',
     address: '',
   });
-
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [validFields, setValidFields] = useState<{ [key: string]: boolean }>({});
-  const [signupError, setSignupError] = useState(''); // ✅ הודעת שגיאה כללית
+  const [signupError, setSignupError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (localStorage.getItem('userToken')) {
@@ -57,8 +57,8 @@ export default function SignUpPage() {
 
   const validateField = (name: string, value: string) => {
     if (!value.trim()) return `${placeholders[name] || name} is required.`;
-    if (name === 'id' && !/^\d{5,10}$/.test(value)) return 'Invalid ID number format.';
-    if (name === 'phone' && !/^\d{9,10}$/.test(value)) return 'Invalid phone number format.';
+    if (name === 'id' && !/^\d{8,10}$/.test(value)) return 'Invalid ID number format.';
+    if (name === 'phone' && !/^\+?\d{7,15}$/.test(value)) return 'Invalid phone number format.';
     if (name === 'email' && !/^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/.test(value)) return 'Invalid email format.';
     if (name === 'password' && value.length < 6) return 'Password must be at least 6 characters.';
     return '';
@@ -66,13 +66,13 @@ export default function SignUpPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    if (['id', 'phone'].includes(name) && value && !/^\d*$/.test(value)) return;
+    if (['id'].includes(name) && value && !/^\d*$/.test(value)) return;
 
     setFormData((prev) => ({ ...prev, [name]: value }));
     const errorMsg = validateField(name, value);
     setErrors((prev) => ({ ...prev, [name]: errorMsg }));
     setValidFields((prev) => ({ ...prev, [name]: errorMsg === '' }));
-    setSignupError(''); // לנקות שגיאה כללית בעת שינוי
+    setSignupError('');
   };
 
   const handleSignup = () => {
@@ -102,10 +102,12 @@ export default function SignUpPage() {
       return;
     }
 
-    users.push(formData);
+    const newUser = { ...formData };
+
+    users.push(newUser);
     localStorage.setItem('users', JSON.stringify(users));
     localStorage.setItem('userToken', 'demoToken');
-    localStorage.setItem('profileData', JSON.stringify(formData));
+    localStorage.setItem('profileData', JSON.stringify(newUser));
     router.push('/profile');
   };
 
@@ -125,7 +127,17 @@ export default function SignUpPage() {
             <input
               name={field}
               autoComplete={autoCompleteMap[field] || 'off'}
-              type={field === 'password' ? 'password' : field === 'date_of_birth' ? 'date' : 'text'}
+              type={
+                field === 'password'
+                  ? showPassword
+                    ? 'text'
+                    : 'password'
+                  : field === 'date_of_birth'
+                  ? 'date'
+                  : field === 'phone'
+                  ? 'tel'
+                  : 'text'
+              }
               placeholder={placeholders[field]}
               className={`px-4 py-2 pr-10 rounded-xl w-full border ${
                 errors[field]
@@ -137,7 +149,17 @@ export default function SignUpPage() {
               value={formData[field]}
               onChange={handleChange}
             />
-            {errors[field] && <FaTimesCircle className="absolute right-3 top-3 text-red-500" />}
+            {field === 'password' && (
+              <div
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-10 top-3 text-gray-500 hover:text-gray-700 cursor-pointer"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </div>
+            )}
+            {errors[field] && (
+              <FaTimesCircle className="absolute right-3 top-3 text-red-500" />
+            )}
             {!errors[field] && validFields[field] && (
               <FaCheckCircle className="absolute right-3 top-3 text-green-500" />
             )}

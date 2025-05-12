@@ -1,13 +1,13 @@
 'use client';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const router = useRouter();
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (localStorage.getItem('userToken')) {
@@ -15,57 +15,79 @@ export default function LoginPage() {
     }
   }, [router]);
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setError('');
+  };
+
   const handleLogin = () => {
     const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const user = users.find(
-      (u: { email: string; password: string }) => u.email === email && u.password === password
+    const existingUser = users.find(
+      (u: any) => u.email === formData.email && u.password === formData.password
     );
 
-    if (user) {
-      localStorage.setItem('userToken', 'fakeToken');
-      localStorage.setItem('profileData', JSON.stringify(user));
-      router.push('/profile');
-    } else {
-      setError('Invalid credentials. Please try again.');
+    if (!existingUser) {
+      setError('❌ Invalid email or password.');
+      return;
     }
+
+    localStorage.setItem('userToken', 'demoToken');
+    localStorage.setItem('profileData', JSON.stringify(existingUser));
+    router.push('/profile');
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#b2ebf2] to-white p-4 text-gray-900">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#b2ebf2] to-white text-gray-900 p-4">
       <div className="w-full max-w-md bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-8">
         <h1 className="text-3xl font-bold text-center mb-6 text-blue-900">🔐 Login</h1>
-        <div className="space-y-4">
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl">
-              {error}
-            </div>
-          )}
+
+        {error && (
+          <div className="bg-red-100 text-red-700 border border-red-300 rounded-md px-4 py-2 mb-4 text-center">
+            {error}
+          </div>
+        )}
+
+        <div className="relative mb-5">
           <input
+            name="email"
+            autoComplete="email"
             type="email"
             placeholder="📧 Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300"
+            value={formData.email}
+            onChange={handleChange}
+            className="px-4 py-2 rounded-xl w-full border border-gray-300 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300"
           />
-          <input
-            type="password"
-            placeholder="🔒 Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300"
-          />
-          <button
-            onClick={handleLogin}
-            className="w-full bg-blue-700 text-white py-3 rounded-xl hover:bg-blue-800 transition"
-          >
-            Login
-          </button>
         </div>
-        <p className="text-center mt-4 text-sm">
-          Don’t have an account?{' '}
-          <Link href="/signup" className="text-blue-700 underline hover:text-blue-900">
-            Sign up
-          </Link>
+
+        <div className="relative mb-5">
+          <input
+            name="password"
+            autoComplete="current-password"
+            type={showPassword ? 'text' : 'password'}
+            placeholder="🔒 Password"
+            value={formData.password}
+            onChange={handleChange}
+            className="px-4 py-2 pr-10 rounded-xl w-full border border-gray-300 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300"
+          />
+          <div
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute right-3 top-3 text-gray-500 hover:text-gray-700 cursor-pointer"
+          >
+            {showPassword ? <FaEyeSlash /> : <FaEye />}
+          </div>
+        </div>
+
+        <button
+          className="w-full py-2 mt-4 bg-blue-700 text-white rounded-xl hover:bg-blue-800 transition"
+          onClick={handleLogin}
+        >
+          Login
+        </button>
+        <p className="text-sm text-center mt-4">
+          Don&apos;t have an account?{' '}
+          <a href="/signup" className="text-blue-700 underline hover:text-blue-900">
+            Sign Up
+          </a>
         </p>
       </div>
     </div>
