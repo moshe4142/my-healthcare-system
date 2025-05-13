@@ -12,7 +12,7 @@ export default function LoginPage() {
   useEffect(() => {
     const token = localStorage.getItem('userToken');
     if (token) {
-      router.push('/profile'); // כבר מחובר
+      router.push('/');  // אם יש טוקן, מחזיר את המשתמש לדף הבית
     }
   }, [router]);
 
@@ -31,21 +31,27 @@ export default function LoginPage() {
       });
 
       const data = await res.json();
+      console.log(data);  // הדפסת התשובה מה-API
 
       if (!res.ok) {
         setError(data.error || 'Login failed');
         return;
       }
 
+      // אם יש טוקן, נשמור אותו ב-localStorage
       if (data.token) {
         localStorage.setItem('userToken', data.token);
-        localStorage.setItem('profileData', JSON.stringify(data.user));
-        router.push('/profile');
-      } else {
-        setError('No token received from server');
       }
+
+      // שמירה של פרטי המשתמש
+      if (data.user) {
+        localStorage.setItem('profileData', JSON.stringify(data.user));
+      }
+
+      // הפנייה לעמוד פרופיל
+      router.push('/profile');
     } catch (err) {
-      console.error('Error in login:', err);
+      console.error('Error in login:', err);  // הדפס את השגיאה
       setError('Login failed. Please try again.');
     }
   };

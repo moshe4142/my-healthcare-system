@@ -3,8 +3,6 @@ import pool from '@/lib/db';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-const SECRET_KEY = process.env.JWT_SECRET || 'your-secret-key'; // הגדר ENV חזק יותר במידת האפשר
-
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -31,7 +29,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     delete user.password;
 
-    const token = jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, { expiresIn: '1d' });
+    // יצירת JWT Token
+    const token = jwt.sign(
+      { id: user.id, email: user.email },
+      process.env.JWT_SECRET!,  // קריאת JWT_SECRET מה-ENV
+      { expiresIn: '1d' }  // טוקן שפג תוקפו אחרי 24 שעות
+    );
 
     return res.status(200).json({ message: 'Login successful', user, token });
   } catch (err) {
