@@ -1,40 +1,41 @@
-'use client';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+// pages/reset-password.tsx
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/router";
 
 export default function RequestResetPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async () => {
-    setMessage('');
-    setError('');
+    setMessage("");
+    setError("");
 
     try {
-      const res = await fetch('/api/request-password-reset', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/request-password-reset", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || 'Something went wrong');
+        setError(data.error || "Something went wrong");
         return;
       }
 
-      setMessage(data.message || 'Reset link sent successfully');
+      setMessage(data.message || "Reset link sent successfully");
     } catch (err) {
-      console.error('Error:', err);
-      setError('Request failed. Please try again.');
+      console.error("Error:", err);
+      setError("Request failed. Please try again.");
     }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleSubmit();
     }
   };
@@ -45,7 +46,9 @@ export default function RequestResetPage() {
       onKeyDown={handleKeyDown}
     >
       <div className="w-full max-w-md bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-8">
-        <h1 className="text-3xl font-bold text-center mb-6 text-blue-900">🔁 Reset Password</h1>
+        <h1 className="text-3xl font-bold text-center mb-6 text-blue-900">
+          🔁 Reset Password
+        </h1>
 
         {error && (
           <div className="bg-red-100 text-red-700 border border-red-300 rounded-md px-4 py-2 mb-4 text-center">
@@ -72,12 +75,21 @@ export default function RequestResetPage() {
           className="w-full py-2 bg-blue-700 text-white rounded-xl hover:bg-blue-800 transition"
           onClick={handleSubmit}
         >
-          Send Reset Link
+          <a
+            href="
+          /login"
+          >
+            {" "}
+            Send Reset Link
+          </a>
         </button>
 
         <div className="text-sm text-center mt-4">
-          <a href="/login" className="text-blue-700 underline hover:text-blue-900">
-             Back to Login
+          <a
+            href="/login"
+            className="text-blue-700 underline hover:text-blue-900"
+          >
+            Back to Login
           </a>
         </div>
       </div>
