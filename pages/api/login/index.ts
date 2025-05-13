@@ -1,6 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import pool from '@/lib/db';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+
+const SECRET_KEY = process.env.JWT_SECRET || 'your-secret-key'; // הגדר ENV חזק יותר במידת האפשר
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -9,12 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const { email, password } = req.body;
 
-  console.log('Received login request');
-  console.log('Email:', email);
-  console.log('Password:', password);
-
   if (!email || !password) {
-    console.warn('Missing email or password');
     return res.status(400).json({ error: 'Email and password are required' });
   }
 
@@ -23,25 +21,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const user = result.rows[0];
 
     if (!user) {
-      console.warn('User not found for email:', email);
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    console.log('User from DB:', user);
-
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    console.log('Password valid:', isPasswordValid);
-
     if (!isPasswordValid) {
-      console.warn('Incorrect password for email:', email);
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
     delete user.password;
 
-    console.log('Login successful for:', email);
-    return res.status(200).json({ message: 'Login successful', user });
+    const token = jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, { expiresIn: '1d' });
 
+    return res.status(200).json({ message: 'Login successful', user, token });
   } catch (err) {
     console.error('Login DB error:', err);
     return res.status(500).json({ error: 'Internal server error' });

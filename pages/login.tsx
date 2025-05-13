@@ -1,58 +1,54 @@
-  'use client';
-  import React, { useState, useEffect } from 'react';
-  import { useRouter } from 'next/navigation';
-  import { FaEye, FaEyeSlash } from 'react-icons/fa';
+'use client';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
-  export default function LoginPage() {
-    const router = useRouter();
-    const [formData, setFormData] = useState({ email: '', password: '' });
-    const [error, setError] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
+export default function LoginPage() {
+  const router = useRouter();
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
-    useEffect(() => {
-      const token = localStorage.getItem('userToken');
-      if (token) {
-        router.push('/');
+  useEffect(() => {
+    const token = localStorage.getItem('userToken');
+    if (token) {
+      router.push('/profile'); // כבר מחובר
+    }
+  }, [router]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setError('');
+  };
+
+  const handleLogin = async () => {
+    setError('');
+    try {
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || 'Login failed');
+        return;
       }
-    }, [router]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-      setError('');
-    };
-
-    const handleLogin = async () => {
-  setError('');
-  try {
-    const res = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData),
-    });
-
-    const data = await res.json();
-
-    console.log(data); // הדפס את התשובה מה-API
-    if (!res.ok) {
-      setError(data.error || 'Login failed');
-      return;
+      if (data.token) {
+        localStorage.setItem('userToken', data.token);
+        localStorage.setItem('profileData', JSON.stringify(data.user));
+        router.push('/profile');
+      } else {
+        setError('No token received from server');
+      }
+    } catch (err) {
+      console.error('Error in login:', err);
+      setError('Login failed. Please try again.');
     }
-
-    if (data.token) {
-      localStorage.setItem('userToken', data.token);
-    }
-
-    if (data.user) {
-      localStorage.setItem('profileData', JSON.stringify(data.user));
-    }
-
-    router.push('/profile');
-  } catch (err) {
-    console.error('Error in login:', err);  // הדפס את השגיאה כדי לראות מה לא עובד
-    setError('Login failed. Please try again.');
-  }
-};
-
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter') {
