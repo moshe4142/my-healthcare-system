@@ -78,7 +78,7 @@ const ProfilePage = () => {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     const updatedData = {
       full_name: fullName,
       date_of_birth: dob,
@@ -87,7 +87,7 @@ const ProfilePage = () => {
       address,
       image_url: image_url,
     };
-  
+
     try {
       const response = await fetch(`/api/updateUser/${id}`, {
         method: "PUT",
@@ -96,7 +96,7 @@ const ProfilePage = () => {
         },
         body: JSON.stringify(updatedData),
       });
-  
+
       if (response.ok) {
         const result = await response.json();
         console.log(result.message);
@@ -111,8 +111,8 @@ const ProfilePage = () => {
       console.error("Error updating user:", error);
     }
   };
-  
-  
+
+
 
   const handleLogout = () => {
     localStorage.removeItem("profileData");
@@ -122,34 +122,67 @@ const ProfilePage = () => {
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onload = () => {
-        const imageUrl = reader.result as string;
-        setImage_url(imageUrl);
+    if (!file) return;
 
-        // עדכון profileData
-        const saved = JSON.parse(localStorage.getItem("profileData") || "{}");
-        const updatedProfile = { ...saved, image_url: imageUrl };
-        localStorage.setItem("profileData", JSON.stringify(updatedProfile));
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const imageUrl = reader.result as string;
+      setImage_url(imageUrl);
 
-        // עדכון users
-        const users = JSON.parse(localStorage.getItem("users") || "[]");
+      try {
+        // Send to backend to save in DB
+        const response = await fetch(`/api/updateUser/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            full_name: fullName,
+            date_of_birth: dob,
+            phone,
+            email,
+            address,
+            image_url: imageUrl,
+          }),
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          console.error('Error updating image:', data.error);
+          return;
+        }
+
+        // Update localStorage after successful DB update
+        const updatedProfile = {
+          id,
+          full_name: fullName,
+          date_of_birth: dob,
+          phone,
+          email,
+          address,
+          image_url: imageUrl,
+        };
+        localStorage.setItem('profileData', JSON.stringify(updatedProfile));
+
+        const users = JSON.parse(localStorage.getItem('users') || '[]');
         const updatedUsers = users.map((user: any) =>
-          user.id === saved.id ? { ...user, image_url: imageUrl } : user
+          user.id === id ? { ...user, image_url: imageUrl } : user
         );
-        localStorage.setItem("users", JSON.stringify(updatedUsers));
-      };
-      reader.readAsDataURL(file);
-    }
+        localStorage.setItem('users', JSON.stringify(updatedUsers));
+      } catch (error) {
+        console.error('Failed to upload image:', error);
+      }
+    };
+
+    reader.readAsDataURL(file);
   };
+
 
   const initials = fullName
     ? fullName
-        .split(" ")
-        .map((n: string) => n[0])
-        .join("")
+      .split(" ")
+      .map((n: string) => n[0])
+      .join("")
     : "👤";
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -209,20 +242,20 @@ const ProfilePage = () => {
       alert("User ID is missing");
       return;
     }
-  
+
     try {
       const response = await fetch(`/api/delete/${id}`, {
         method: "DELETE",
       });
-  
+
       const data = await response.json();
-  
+
       if (!response.ok) {
         console.error("Failed to delete user:", data.error);
         alert("Failed to delete account: " + data.error);
         return;
       }
-  
+
       // אם הצליח - ניקוי ה-localStorage והפנייה לדף הרשמה
       localStorage.clear();
       window.location.href = "/signup";
@@ -231,7 +264,7 @@ const ProfilePage = () => {
       alert("Something went wrong while deleting your account.");
     }
   };
-  
+
 
   return (
     <div className="p-6 bg-gradient-to-b from-[#e0f7fa] to-white min-h-screen text-gray-800">
@@ -299,7 +332,7 @@ const ProfilePage = () => {
         </div>
 
         <form onSubmit={handleSave} className="space-y-4">
-          {[ 
+          {[
             {
               label: "ID",
               value: id,
