@@ -12,7 +12,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  const publicPaths = ["/login", "/signup", "/reset-password"];
+const publicPaths = ["/login", "/signup", "/reset-password", "/test-send"];
 
   // Simulate initial page load delay (optional)
   useEffect(() => {
