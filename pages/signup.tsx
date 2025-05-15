@@ -35,7 +35,7 @@ export default function SignUpPage() {
     address: 'street-address',
   };
 
-  const fieldOrder = [
+  const fieldOrder: Array<keyof typeof formData> = [
     'email',
     'password',
     'full_name',
@@ -80,7 +80,7 @@ export default function SignUpPage() {
     let isValid = true;
 
     for (const key of Object.keys(formData)) {
-      const errorMsg = validateField(key, formData[key]);
+      const errorMsg = validateField(key, formData[key as keyof typeof formData]);
       if (errorMsg) {
         newErrors[key] = errorMsg;
         isValid = false;

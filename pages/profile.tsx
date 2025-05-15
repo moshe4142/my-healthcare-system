@@ -120,62 +120,65 @@ const ProfilePage = () => {
     window.location.href = "/login";
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = async () => {
-      const imageUrl = reader.result as string;
-      setImage_url(imageUrl);
+  const reader = new FileReader();
+  reader.onloadend = async () => {
+    const base64 = reader.result;
 
-      try {
-        // Send to backend to save in DB
-        const response = await fetch(`/api/updateUser/${id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            full_name: fullName,
-            date_of_birth: dob,
-            phone,
-            email,
-            address,
-            image_url: imageUrl,
-          }),
-        });
+    try {
+      // Upload to Cloudinary
+      const uploadRes = await fetch('/api/upload-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: base64 }),
+      });
 
-        const data = await response.json();
-        if (!response.ok) {
-          console.error('Error updating image:', data.error);
-          return;
-        }
+      const uploadData = await uploadRes.json();
 
-        // Update localStorage after successful DB update
-        const updatedProfile = {
-          id,
+      if (!uploadRes.ok) {
+        console.error(uploadData.error);
+        return;
+      }
+
+      const imageUrl = uploadData.imageUrl;
+      setImage_url(imageUrl); // Update UI
+
+      // Save in DB
+      await fetch(`/api/updateUser/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           full_name: fullName,
           date_of_birth: dob,
           phone,
           email,
           address,
           image_url: imageUrl,
-        };
-        localStorage.setItem('profileData', JSON.stringify(updatedProfile));
+        }),
+      });
 
-        const users = JSON.parse(localStorage.getItem('users') || '[]');
-        const updatedUsers = users.map((user: any) =>
-          user.id === id ? { ...user, image_url: imageUrl } : user
-        );
-        localStorage.setItem('users', JSON.stringify(updatedUsers));
-      } catch (error) {
-        console.error('Failed to upload image:', error);
-      }
-    };
-
-    reader.readAsDataURL(file);
+      // Update localStorage
+      const updatedProfile = {
+        id,
+        full_name: fullName,
+        date_of_birth: dob,
+        phone,
+        email,
+        address,
+        image_url: imageUrl,
+      };
+      localStorage.setItem('profileData', JSON.stringify(updatedProfile));
+    } catch (err) {
+      console.error('Upload error:', err);
+    }
   };
+
+  reader.readAsDataURL(file);
+};
+
 
 
   const initials = fullName
