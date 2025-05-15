@@ -1,4 +1,3 @@
-// pages/reset-password.tsx
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/router";
@@ -8,12 +7,20 @@ export default function RequestResetPage() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setMessage("");
     setError("");
 
+    if (!email) {
+      setError("Email is required");
+      return;
+    }
+
     try {
+      setLoading(true);
       const res = await fetch("/api/request-password-reset", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -24,13 +31,15 @@ export default function RequestResetPage() {
 
       if (!res.ok) {
         setError(data.error || "Something went wrong");
-        return;
+      } else {
+        setMessage(data.message || "Reset link sent successfully");
+        setEmail("");
       }
-
-      setMessage(data.message || "Reset link sent successfully");
     } catch (err) {
       console.error("Error:", err);
       setError("Request failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -45,7 +54,10 @@ export default function RequestResetPage() {
       className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#b2ebf2] to-white text-gray-900 p-4"
       onKeyDown={handleKeyDown}
     >
-      <div className="w-full max-w-md bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-8">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-md bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-8"
+      >
         <h1 className="text-3xl font-bold text-center mb-6 text-blue-900">
           🔁 Reset Password
         </h1>
@@ -72,16 +84,11 @@ export default function RequestResetPage() {
         />
 
         <button
-          className="w-full py-2 bg-blue-700 text-white rounded-xl hover:bg-blue-800 transition"
-          onClick={handleSubmit}
+          type="submit"
+          className="w-full py-2 bg-blue-700 text-white rounded-xl hover:bg-blue-800 transition disabled:opacity-50"
+          disabled={!email || loading}
         >
-          <a
-            href="
-          /login"
-          >
-            {" "}
-            Send Reset Link
-          </a>
+          {loading ? "Sending..." : "Send Reset Link"}
         </button>
 
         <div className="text-sm text-center mt-4">
@@ -92,7 +99,7 @@ export default function RequestResetPage() {
             Back to Login
           </a>
         </div>
-      </div>
+      </form>
     </div>
   );
 }
