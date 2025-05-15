@@ -47,34 +47,41 @@ const ProfilePage = () => {
     }
   }, [router]);
 
-  const deletePhoto = () => {
-    const usersData = localStorage.getItem("users");
-    const profileData = localStorage.getItem("profileData");
+  const deletePhoto = async () => {
+  const profileData = localStorage.getItem("profileData");
+  if (!profileData) return;
 
-    if (!usersData || !profileData) return;
+  try {
+    const profile = JSON.parse(profileData);
+    const { id, public_id } = profile;
 
-    try {
-      const users = JSON.parse(usersData);
-      const profile = JSON.parse(profileData);
-
-      // איפוס התמונה במשתמש המחובר
-      const updatedUsers = users.map((user: any) =>
-        user.id === profile.id ? { ...user, image_url: "" } : user
-      );
-
-      // איפוס התמונה בפרופיל הפעיל
-      const updatedProfile = { ...profile, image_url: "" };
-
-      // עדכון ה-localStorage
-      localStorage.setItem("users", JSON.stringify(updatedUsers));
-      localStorage.setItem("profileData", JSON.stringify(updatedProfile));
-
-      // עדכון סטייט
-      setImage_url("");
-    } catch (error) {
-      console.error("שגיאה באיפוס התמונה:", error);
+    // 1. Delete from Cloudinary
+    if (public_id) {
+      await fetch('/api/delete-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ public_id }),
+      });
     }
-  };
+
+    // 2. Update DB to clear image fields
+    await fetch(`/api/updateUser/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...profile, image_url: '', public_id: '' }),
+    });
+
+    // 3. Update localStorage
+    const updatedProfile = { ...profile, image_url: '', public_id: '' };
+    localStorage.setItem('profileData', JSON.stringify(updatedProfile));
+
+    // 4. Update UI
+    setImage_url('');
+  } catch (err) {
+    console.error("Error deleting image:", err);
+  }
+};
+
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,7 +127,7 @@ const ProfilePage = () => {
     window.location.href = "/login";
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
   const file = e.target.files?.[0];
   if (!file) return;
 
@@ -129,7 +136,6 @@ const ProfilePage = () => {
     const base64 = reader.result;
 
     try {
-      // Upload to Cloudinary
       const uploadRes = await fetch('/api/upload-image', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -143,7 +149,7 @@ const ProfilePage = () => {
         return;
       }
 
-      const imageUrl = uploadData.imageUrl;
+      const { imageUrl, public_id } = uploadData;
       setImage_url(imageUrl); // Update UI
 
       // Save in DB
@@ -157,10 +163,11 @@ const ProfilePage = () => {
           email,
           address,
           image_url: imageUrl,
+          public_id: public_id,
         }),
       });
 
-      // Update localStorage
+      // Save in localStorage
       const updatedProfile = {
         id,
         full_name: fullName,
@@ -169,6 +176,7 @@ const ProfilePage = () => {
         email,
         address,
         image_url: imageUrl,
+        public_id: public_id,
       };
       localStorage.setItem('profileData', JSON.stringify(updatedProfile));
     } catch (err) {
@@ -178,6 +186,7 @@ const ProfilePage = () => {
 
   reader.readAsDataURL(file);
 };
+
 
 
 

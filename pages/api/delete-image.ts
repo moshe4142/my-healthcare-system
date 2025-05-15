@@ -12,23 +12,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { image } = req.body;
+  const { public_id } = req.body;
 
-  if (!image) {
-    return res.status(400).json({ error: 'Missing image data' });
+  if (!public_id) {
+    return res.status(400).json({ error: 'Missing public_id' });
   }
 
   try {
-    const result = await cloudinary.uploader.upload(image, {
-      folder: 'profile_photos', // Optional: for organization in your Cloudinary dashboard
-    });
-
-    res.status(200).json({
-      imageUrl: result.secure_url,
-      public_id: result.public_id,
-    });
+    await cloudinary.uploader.destroy(public_id);
+    res.status(200).json({ message: 'Image deleted successfully' });
   } catch (error) {
-    console.error('Cloudinary upload error:', error);
-    res.status(500).json({ error: 'Image upload failed' });
+    console.error('Cloudinary delete error:', error);
+    res.status(500).json({ error: 'Image deletion failed' });
   }
 }
