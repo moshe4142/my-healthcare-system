@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import {
   Box,
   Typography,
@@ -9,7 +9,7 @@ import {
   Grid,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { ShoppingCartContext } from "../context/shoppingCartContext";
+import { useCart } from "../context/shoppingCartContext";
 import { useRouter } from "next/router";
 import Footer from "@/components/Footer";
 
@@ -20,7 +20,7 @@ const CartPage = () => {
     getTotalPrice,
     increaseQuantity,
     decreaseQuantity,
-  } = useContext(ShoppingCartContext);
+  } = useCart();
   const router = useRouter();
 
   return (
@@ -56,7 +56,14 @@ const CartPage = () => {
             </Typography>
             <Button
               variant="contained"
-              sx={{ mt: 3, px: 4, py: 1, borderRadius: 2, bgcolor: "#0288d1", "&:hover": { bgcolor: "#0277bd" } }}
+              sx={{
+                mt: 3,
+                px: 4,
+                py: 1,
+                borderRadius: 2,
+                bgcolor: "#0288d1",
+                "&:hover": { bgcolor: "#0277bd" },
+              }}
               onClick={() => router.push("/")}
             >
               Browse Products
@@ -85,10 +92,17 @@ const CartPage = () => {
                   }}
                 >
                   <Box sx={{ textAlign: { xs: "center", sm: "left" } }}>
-                    <Typography variant="h6" fontWeight="bold" sx={{ color: "black" }}>
+                    <Typography
+                      variant="h6"
+                      fontWeight="bold"
+                      sx={{ color: "black" }}
+                    >
                       {item.name}
                     </Typography>
-                    <Typography variant="body2" sx={{ color: "#1976d2", mt: 0.5 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: "#1976d2", mt: 0.5 }}
+                    >
                       ${item.price.toFixed(2)} per unit
                     </Typography>
                   </Box>
@@ -148,7 +162,11 @@ const CartPage = () => {
                       </Button>
                     </Box>
 
-                    <Typography variant="body1" fontWeight="bold" sx={{ color: "#1565c0" }}>
+                    <Typography
+                      variant="body1"
+                      fontWeight="bold"
+                      sx={{ color: "#1565c0" }}
+                    >
                       ${(item.quantity * item.price).toFixed(2)}
                     </Typography>
 
@@ -183,7 +201,11 @@ const CartPage = () => {
                 <Typography variant="h6" sx={{ color: "black" }}>
                   Total:
                 </Typography>
-                <Typography variant="h6" fontWeight="bold" sx={{ color: "black" }}>
+                <Typography
+                  variant="h6"
+                  fontWeight="bold"
+                  sx={{ color: "black" }}
+                >
                   ${getTotalPrice().toFixed(2)}
                 </Typography>
               </Box>
@@ -197,9 +219,9 @@ const CartPage = () => {
                     borderRadius: 2,
                     px: 4,
                   }}
-                  onClick={() => router.push("/checkout")}
+                  onClick={() => router.push("/payments")}
                 >
-                  Proceed to Checkout
+                  gime my moneyyyy
                 </Button>
               </Box>
             </Grid>

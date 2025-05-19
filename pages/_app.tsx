@@ -1,22 +1,22 @@
 import type { AppProps } from "next/app";
 import { ThemeProvider } from "../context/ThemeContext";
-import { ShoppingCartProvider } from "../context/shoppingCartContext";
+import { CartProvider } from "../context/shoppingCartContext";
 import "../styles/globals.css";
 import AuthGuard from "../components/AuthGuard";
 import Layout from "../components/Layout";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <>
+    // עטיפת האפליקציה בקונטקסט של עגלת קניות (ובעתיד גם ערכת נושא)
+    <CartProvider>
+      {/* אפשר לפתוח את ThemeProvider כשצריך */}
       {/* <ThemeProvider> */}
-        <ShoppingCartProvider>
-          <AuthGuard>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </AuthGuard>
-        </ShoppingCartProvider>
+        <AuthGuard>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </AuthGuard>
       {/* </ThemeProvider> */}
-    </>
+    </CartProvider>
   );
 }

@@ -1,5 +1,4 @@
-// pages/payments.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -13,149 +12,170 @@ import {
   MenuItem,
   Divider,
 } from '@mui/material';
+import { useCart } from '../context/shoppingCartContext';
+import { useRouter } from 'next/router';
 
 const PaymentsPage = () => {
   const [paymentMethod, setPaymentMethod] = useState('');
   const [cardNumber, setCardNumber] = useState('');
   const [expiryDate, setExpiryDate] = useState('');
   const [cvv, setCvv] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+  const { getTotalPrice } = useCart();
+  const router = useRouter();
+
+  useEffect(() => {
+    const saved = localStorage.getItem('paymentData');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      setPaymentMethod(parsed.paymentMethod || '');
+      setCardNumber(parsed.cardNumber || '');
+      setExpiryDate(parsed.expiryDate || '');
+      setCvv(parsed.cvv || '');
+    }
+  }, []);
+
+  const validateForm = () => {
+    if (!paymentMethod || !cardNumber || !expiryDate || !cvv) {
+      setError('Please fill in all payment fields.');
+      return false;
+    }
+    if (cardNumber.replace(/\s/g, '').length < 12 || cvv.length < 3) {
+      setError('Please enter valid card details.');
+      return false;
+    }
+    return true;
+  };
+
+  const formatCardNumber = (value: string) =>
+    value
+      .replace(/\D/g, '')
+      .replace(/(.{4})/g, '$1 ')
+      .trim()
+      .slice(0, 19); // 16 digits + 3 spaces
+
+  const formatExpiryDate = (value: string) => {
+    const cleaned = value.replace(/\D/g, '').slice(0, 4);
+    if (cleaned.length >= 3) {
+      return `${cleaned.slice(0, 2)}/${cleaned.slice(2)}`;
+    }
+    return cleaned;
+  };
 
   const handleSavePayment = (e: React.FormEvent) => {
     e.preventDefault();
-    // handle logic here
+
+    if (!validateForm()) return;
+
+    const paymentData = {
+      paymentMethod,
+      cardNumber,
+      expiryDate,
+      cvv,
+    };
+
+    localStorage.setItem('paymentData', JSON.stringify(paymentData));
+    localStorage.removeItem('cartItems'); // 🧹 Clear cart
+    setSuccess(true);
+    setError('');
+
+    setTimeout(() => {
+      router.push('/');
+    }, 2000);
   };
 
   return (
     <Box
       sx={{
-        background: 'linear-gradient(to bottom, #e0f7fa, #ffffff)',
         minHeight: '100vh',
-        py: 6,
-        px: { xs: 2, md: 6 },
-        color: '#212121',
-        display: 'flex',
-        flexDirection: 'column',
+        background: 'linear-gradient(to bottom, #e0f7fa, #ffffff)',
+        p: 4,
       }}
     >
-      <Paper
-        elevation={3}
-        sx={{
-          p: { xs: 3, md: 5 },
-          borderRadius: 3,
-          backgroundColor: '#ffffff',
-          color: '#212121',
-          width: '100%',
-          maxWidth: 800,
-          mx: 'auto',
-        }}
-      >
-        <Typography variant="h4" fontWeight={600} textAlign="center" mb={2}>
-          💳 Manage Payments
+      <Paper elevation={3} sx={{ p: 4, maxWidth: 600, mx: 'auto' }}>
+        <Typography variant="h5" fontWeight="bold" gutterBottom>
+          💳 Payment Information
         </Typography>
-        <Typography variant="body1" textAlign="center" mb={3}>
-          Securely add or update your preferred payment method.
-        </Typography>
+        <Divider sx={{ mb: 3 }} />
 
-        <form onSubmit={handleSavePayment}>
-          <FormControl fullWidth sx={{ mb: 3 }}>
-            <InputLabel id="payment-method-label" sx={{ color: '#212121' }}>
-              Payment Method
-            </InputLabel>
-            <Select
-              labelId="payment-method-label"
-              value={paymentMethod}
-              label="Payment Method"
-              onChange={(e) => setPaymentMethod(e.target.value)}
-              sx={{
-                '& .MuiSelect-select': {
-                  color: '#212121',
-                },
-              }}
-            >
-              <MenuItem value="Credit Card">Credit Card</MenuItem>
-              <MenuItem value="PayPal">PayPal</MenuItem>
-              <MenuItem value="Bank Transfer">Bank Transfer</MenuItem>
-            </Select>
-          </FormControl>
+        {success ? (
+          <Typography color="success.main" fontWeight="bold">
+            ✅ Payment successful! Redirecting...
+          </Typography>
+        ) : (
+          <form onSubmit={handleSavePayment}>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <FormControl fullWidth>
+                  <InputLabel>Payment Method</InputLabel>
+                  <Select
+                    value={paymentMethod}
+                    label="Payment Method"
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    required
+                  >
+                    <MenuItem value="credit">Credit Card</MenuItem>
+                    <MenuItem value="paypal">PayPal</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
 
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Card Number"
-                fullWidth
-                variant="outlined"
-                value={cardNumber}
-                onChange={(e) => setCardNumber(e.target.value)}
-                inputProps={{ maxLength: 16 }}
-                sx={{
-                  mb: 2,
-                  '& .MuiInputBase-input': {
-                    color: '#212121',
-                  },
-                  '& .MuiOutlinedInput-notchedOutline': {
-                    borderColor: '#999',
-                  },
-                }}
-              />
+              <Grid item xs={12}>
+                <TextField
+                  label="Card Number"
+                  fullWidth
+                  value={cardNumber}
+                  onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
+                  placeholder="1234 5678 9012 3456"
+                />
+              </Grid>
+
+              <Grid item xs={6}>
+                <TextField
+                  label="Expiry Date"
+                  fullWidth
+                  placeholder="MM/YY"
+                  value={expiryDate}
+                  onChange={(e) => setExpiryDate(formatExpiryDate(e.target.value))}
+                />
+              </Grid>
+
+              <Grid item xs={6}>
+                <TextField
+                  label="CVV"
+                  fullWidth
+                  value={cvv}
+                  onChange={(e) => setCvv(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                  placeholder="123"
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <Typography variant="body1" fontWeight="bold">
+                  Total to Pay: ${getTotalPrice().toFixed(2)}
+                </Typography>
+              </Grid>
+
+              {error && (
+                <Grid item xs={12}>
+                  <Typography color="error">{error}</Typography>
+                </Grid>
+              )}
+
+              <Grid item xs={12}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                >
+                  Confirm and Pay
+                </Button>
+              </Grid>
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Expiry Date (MM/YY)"
-                fullWidth
-                variant="outlined"
-                value={expiryDate}
-                onChange={(e) => setExpiryDate(e.target.value)}
-                inputProps={{ maxLength: 5 }}
-                sx={{
-                  mb: 2,
-                  '& .MuiInputBase-input': {
-                    color: '#212121',
-                  },
-                  '& .MuiOutlinedInput-notchedOutline': {
-                    borderColor: '#999',
-                  },
-                }}
-              />
-            </Grid>
-          </Grid>
-
-          <TextField
-            label="CVV"
-            fullWidth
-            variant="outlined"
-            value={cvv}
-            onChange={(e) => setCvv(e.target.value)}
-            inputProps={{ maxLength: 3 }}
-            sx={{
-              mb: 3,
-              '& .MuiInputBase-input': {
-                color: '#212121',
-              },
-              '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: '#999',
-              },
-            }}
-          />
-
-          <Divider sx={{ my: 3 }} />
-
-          <Button
-            type="submit"
-            variant="contained"
-            fullWidth
-            sx={{
-              backgroundColor: '#007bff',
-              color: 'white',
-              py: 1.5,
-              fontSize: '1rem',
-              '&:hover': {
-                backgroundColor: '#0056b3',
-              },
-            }}
-          >
-            Save Payment Method
-          </Button>
-        </form>
+          </form>
+        )}
       </Paper>
     </Box>
   );
