@@ -205,49 +205,52 @@ const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setAnchorEl(null);
   };
 
-  const handleChangePassword = () => {
-    const profile = JSON.parse(localStorage.getItem("profileData") || "{}");
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
+ const handleChangePassword = async () => {
+  setError("");
 
-    if (!profile.password) {
-      setError("No password was set for this account.");
-      return;
-    }
-    if (profile.password !== currentPassword) {
-      setError("Current password is incorrect");
-      return;
-    }
-    if (!newPassword || newPassword.length < 6) {
-      setError("New password must be at least 6 characters");
-      return;
-    }
-    if (currentPassword === newPassword) {
-      setError("New password must be different from the current password");
-      return;
-    }
+  if (!currentPassword || !newPassword) {
+    setError("Both fields are required");
+    return;
+  }
 
-    // עדכון profileData
-    const updatedProfile = {
-      ...profile,
-      password: newPassword,
-    };
-    localStorage.setItem("profileData", JSON.stringify(updatedProfile));
+  if (newPassword.length < 6) {
+    setError("New password must be at least 6 characters");
+    return;
+  }
 
-    // עדכון ברשימת המשתמשים
-    const updatedUsers = users.map((user: any) => {
-      if (user.email === profile.email) {
-        return { ...user, password: newPassword };
-      }
-      return user;
+  if (currentPassword === newPassword) {
+    setError("New password must be different from current password");
+    return;
+  }
+
+  const profile = JSON.parse(localStorage.getItem("profileData") || "{}");
+  const id = profile.id;
+
+  try {
+    const res = await fetch('/api/changePassword/password', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, currentPassword, newPassword }),
     });
-    localStorage.setItem("users", JSON.stringify(updatedUsers));
 
-    // ניקוי וסגירה
+    const data = await res.json();
+
+    if (!res.ok) {
+      setError(data.error || 'Failed to change password');
+      return;
+    }
+
+    alert("Password changed successfully");
+
     setPasswordDialogOpen(false);
     setCurrentPassword("");
     setNewPassword("");
-    setError("");
-  };
+  } catch (err) {
+    console.error("Password change error:", err);
+    setError("Something went wrong");
+  }
+};
+
 
   const handleDeleteAccount = async () => {
     if (!id) {
@@ -468,3 +471,5 @@ const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
 };
 
 export default ProfilePage;
+
+
