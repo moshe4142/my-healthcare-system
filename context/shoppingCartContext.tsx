@@ -4,8 +4,11 @@ type CartItem = {
   id: string;
   name: string;
   price: number;
+  imageUrl: string;
   quantity: number;
+  description?: string; // 👈 אופציונלי (או תוריד את ? אם חובה)
 };
+
 
 type CartContextType = {
   cartItems: CartItem[];

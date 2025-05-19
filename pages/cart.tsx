@@ -46,7 +46,11 @@ const CartPage = () => {
 
         {cartItems.length === 0 ? (
           <Box textAlign="center" mt={5}>
-            <Typography variant="h6" fontWeight="medium" sx={{ color: "black" }}>
+            <Typography
+              variant="h6"
+              fontWeight="medium"
+              sx={{ color: "black" }}
+            >
               Your shopping cart is currently empty.
             </Typography>
             <Typography variant="body1" mt={1} sx={{ color: "black" }}>
@@ -221,7 +225,7 @@ const CartPage = () => {
                   }}
                   onClick={() => router.push("/payments")}
                 >
-                  gime my moneyyyy
+                  Continue to Payment{" "}
                 </Button>
               </Box>
             </Grid>
