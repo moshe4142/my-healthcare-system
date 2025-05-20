@@ -20,9 +20,6 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ContactMailIcon from "@mui/icons-material/ContactMail";
 import LogoutIcon from "@mui/icons-material/Logout";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-// import LightModeIcon from "@mui/icons-material/LightMode";
-// import DarkModeIcon from "@mui/icons-material/LightMode";
-// import { useTheme } from "../context/ThemeContext";
 import { useRouter } from "next/router";
 
 interface ButtonAppBarProps {
