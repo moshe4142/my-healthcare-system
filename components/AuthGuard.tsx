@@ -18,7 +18,7 @@ const publicPaths = ["/login", "/signup", "/reset-password", "/test-send"];
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 500);
+    }, 700);
 
     return () => clearTimeout(timer);
   }, []);
