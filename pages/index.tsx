@@ -12,7 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useRouter } from "next/router";
-import { Search, Favorite, LocalHospital, EmojiPeople } from "@mui/icons-material";
+import { Search } from "@mui/icons-material";
 
 const HomePage = () => {
   const router = useRouter();
@@ -92,7 +92,7 @@ const HomePage = () => {
       imageUrl: "https://variety.com/wp-content/uploads/2022/11/snoop.jpg?w=1000&h=562&crop=1",
       price: 999,
     },
-   {
+    {
       id: 11,
       name: "50 cent",
       description: "Used to treat erectile dysfunction in men.",
@@ -237,14 +237,12 @@ const HomePage = () => {
                           name: product.name,
                           price: product.price,
                           quantity: 1,
-                          imageUrl: product.imageUrl, // חובה להוסיף שדה זה
-
+                          imageUrl: product.imageUrl,
                         })
                       }
                     >
                       Add to Cart
                     </Button>
-{/* ..... */}
                   </CardContent>
                 </Card>
               </Grid>
@@ -261,9 +259,7 @@ const HomePage = () => {
             {Array.from({ length: totalPages }, (_, index) => (
               <Button
                 key={index}
-                onClick={() => {
-                  if (currentPage !== index + 1) setCurrentPage(index + 1);
-                }}
+                onClick={() => setCurrentPage(index + 1)}
                 variant={currentPage === index + 1 ? "contained" : "outlined"}
                 color="primary"
                 sx={{ mx: 1 }}
@@ -273,41 +269,6 @@ const HomePage = () => {
             ))}
           </Box>
         )}
-      </Box>
-
-      <Box sx={{ backgroundColor: "#e3f2fd", py: 6, mt: 8, px: 3, textAlign: "center" }}>
-        <Typography variant="h4" sx={{ fontWeight: 700, color: "#0d47a1", mb: 4 }}>
-          Why Choose Us?
-        </Typography>
-        <Grid container spacing={4} justifyContent="center">
-          <Grid item xs={12} sm={4}>
-            <Favorite sx={{ fontSize: 50, color: "#ef5350" }} />
-            <Typography variant="h6" sx={{ fontWeight: 600, mt: 2, color: "#555"  }}>
-              Quality Care
-            </Typography>
-            <Typography variant="body2" sx={{ color: "#555" }}>
-              We ensure the highest quality healthcare products and services.
-            </Typography>
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <LocalHospital sx={{ fontSize: 50, color: "#66bb6a" }} />
-            <Typography variant="h6" sx={{ fontWeight: 600, mt: 2 ,color: "#555"}}>
-              Certified Pharmacists
-            </Typography>
-            <Typography variant="body2" sx={{ color: "#555" }}>
-              Our pharmacists are certified professionals ready to assist you.
-            </Typography>
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <EmojiPeople sx={{ fontSize: 50, color: "#42a5f5" }} />
-            <Typography variant="h6" sx={{color: "#555", fontWeight: 600, mt: 2 }}>
-              Customer Focused
-            </Typography>
-            <Typography variant="body2" sx={{ color: "#555" }}>
-              We value our customers and prioritize their health and satisfaction.
-            </Typography>
-          </Grid>
-        </Grid>
       </Box>
     </div>
   );

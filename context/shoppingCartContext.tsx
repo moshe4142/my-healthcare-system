@@ -1,57 +1,84 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 
-type CartItem = {
+interface CartItem {
   id: string;
   name: string;
   price: number;
-  imageUrl: string;
   quantity: number;
-  description?: string; // 👈 אופציונלי (או תוריד את ? אם חובה)
-};
+  imageUrl: string;
+}
 
-
-type CartContextType = {
+interface ShoppingCartContextType {
   cartItems: CartItem[];
+  selectedItems: string[];
   addToCart: (item: CartItem) => void;
   removeFromCart: (id: string) => void;
   increaseQuantity: (id: string) => void;
   decreaseQuantity: (id: string) => void;
+  toggleItemSelection: (id: string) => void;
+  clearSelectedItems: () => void;
   getTotalPrice: () => number;
-};
+  clearCart: () => void;
+}
 
-const CartContext = createContext<CartContextType | undefined>(undefined);
+const ShoppingCartContext = createContext<ShoppingCartContextType | undefined>(undefined);
 
-export const CartProvider = ({ children }: { children: React.ReactNode }) => {
+interface ShoppingCartProviderProps {
+  children: ReactNode;
+}
+
+export const CartProvider: React.FC<ShoppingCartProviderProps> = ({ children }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
-  // 🔁 Load from localStorage when component mounts
+  // Load cartItems and selectedItems from localStorage on mount
   useEffect(() => {
-    const storedCart = localStorage.getItem("cartItems");
-    if (storedCart) {
-      setCartItems(JSON.parse(storedCart));
+    try {
+      const storedCartItems = localStorage.getItem("cartItems");
+      const storedSelectedItems = localStorage.getItem("selectedItems");
+      if (storedCartItems) {
+        setCartItems(JSON.parse(storedCartItems));
+      }
+      if (storedSelectedItems) {
+        setSelectedItems(JSON.parse(storedSelectedItems));
+      }
+    } catch (error) {
+      console.error("Error loading cart data from localStorage:", error);
     }
   }, []);
 
-  // 💾 Save to localStorage whenever cartItems changes
+  // Save cartItems to localStorage
   useEffect(() => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
 
+  // Save selectedItems to localStorage
+  useEffect(() => {
+    localStorage.setItem("selectedItems", JSON.stringify(selectedItems));
+  }, [selectedItems]);
+
   const addToCart = (item: CartItem) => {
+    if (item.quantity < 1) return;
     setCartItems((prev) => {
       const existingItem = prev.find((i) => i.id === item.id);
       if (existingItem) {
         return prev.map((i) =>
-          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+          i.id === item.id ? { ...i, quantity: i.quantity + item.quantity } : i
         );
-      } else {
-        return [...prev, { ...item, quantity: 1 }];
       }
+      return [...prev, item];
     });
   };
 
   const removeFromCart = (id: string) => {
     setCartItems((prev) => prev.filter((item) => item.id !== id));
+    setSelectedItems((prev) => prev.filter((itemId) => itemId !== id));
   };
 
   const increaseQuantity = (id: string) => {
@@ -72,30 +99,51 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     );
   };
 
+  const toggleItemSelection = (id: string) => {
+    setSelectedItems((prev) =>
+      prev.includes(id) ? prev.filter((itemId) => itemId !== id) : [...prev, id]
+    );
+  };
+
+  const clearSelectedItems = () => {
+    setSelectedItems([]);
+  };
+
+  const clearCart = () => {
+    setCartItems([]);
+    setSelectedItems([]);
+  };
+
   const getTotalPrice = () => {
-    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+    return cartItems
+      .filter((item) => selectedItems.includes(item.id))
+      .reduce((sum, item) => sum + item.quantity * item.price, 0);
   };
 
   return (
-    <CartContext.Provider
+    <ShoppingCartContext.Provider
       value={{
         cartItems,
+        selectedItems,
         addToCart,
         removeFromCart,
         increaseQuantity,
         decreaseQuantity,
+        toggleItemSelection,
+        clearSelectedItems,
         getTotalPrice,
+        clearCart,
       }}
     >
       {children}
-    </CartContext.Provider>
+    </ShoppingCartContext.Provider>
   );
 };
 
 export const useCart = () => {
-  const context = useContext(CartContext);
+  const context = useContext(ShoppingCartContext);
   if (!context) {
-    throw new Error("useCart must be used within a CartProvider");
+    throw new Error("useCart must be used within a ShoppingCartProvider");
   }
   return context;
 };

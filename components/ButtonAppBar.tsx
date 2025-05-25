@@ -115,7 +115,7 @@ const ButtonAppBar: React.FC<ButtonAppBarProps> = ({ className = "" }) => {
             >
               Appointments
             </Button>
-            <Button
+            {/* <Button
               color="inherit"
               onClick={() => router.push("/payments")}
               sx={{
@@ -124,7 +124,7 @@ const ButtonAppBar: React.FC<ButtonAppBarProps> = ({ className = "" }) => {
               }}
             >
               Payments
-            </Button>
+            </Button> */}
             <Button
               color="inherit"
               onClick={() => router.push("/medicalRecords")}
