@@ -73,8 +73,12 @@ const CartPage = () => {
     return selectedItems.some((i) => i.id === id);
   };
 
-  const getSelectedTotal = () =>
-    selectedItems.reduce((sum, item) => sum + item.quantity * item.price, 0);
+ const getSelectedTotal = () =>
+  selectedItems.reduce((sum, selectedItem) => {
+    const currentItem = cartItems.find((i) => i.id === selectedItem.id);
+    return currentItem ? sum + currentItem.price * currentItem.quantity : sum;
+  }, 0);
+
 
   return (
     <Box
@@ -176,6 +180,7 @@ const CartPage = () => {
                       onChange={() => toggleItemSelection(item)}
                       sx={{ color: "#0288d1" }}
                     />
+                    
                     <Box
                       component="img"
                       src={item.imageUrl}
@@ -318,7 +323,7 @@ const CartPage = () => {
                     fontWeight="bold"
                     sx={{ color: "#2e7d32" }}
                   >
-                    ${getSelectedTotal().toFixed(2)}
+                    ${getTotalPrice().toFixed(2)}
                   </Typography>
                 </Box>
 

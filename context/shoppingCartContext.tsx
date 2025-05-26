@@ -37,7 +37,6 @@ export const CartProvider: React.FC<ShoppingCartProviderProps> = ({ children }) 
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
-  // Load cartItems and selectedItems from localStorage on mount
   useEffect(() => {
     try {
       const storedCartItems = localStorage.getItem("cartItems");
@@ -53,12 +52,10 @@ export const CartProvider: React.FC<ShoppingCartProviderProps> = ({ children }) 
     }
   }, []);
 
-  // Save cartItems to localStorage
   useEffect(() => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
 
-  // Save selectedItems to localStorage
   useEffect(() => {
     localStorage.setItem("selectedItems", JSON.stringify(selectedItems));
   }, [selectedItems]);
@@ -91,11 +88,13 @@ export const CartProvider: React.FC<ShoppingCartProviderProps> = ({ children }) 
 
   const decreaseQuantity = (id: string) => {
     setCartItems((prev) =>
-      prev.map((item) =>
-        item.id === id && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      )
+      prev
+        .map((item) =>
+          item.id === id
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
+        )
+        .filter((item) => item.quantity > 0)
     );
   };
 
@@ -115,9 +114,7 @@ export const CartProvider: React.FC<ShoppingCartProviderProps> = ({ children }) 
   };
 
   const getTotalPrice = () => {
-    return cartItems
-      .filter((item) => selectedItems.includes(item.id))
-      .reduce((sum, item) => sum + item.quantity * item.price, 0);
+    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
   };
 
   return (
