@@ -22,6 +22,7 @@ const ProfilePage = () => {
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
   const [image_url, setImage_url] = useState("");
+  const [publicId, setPublicId] = useState("");
   const [isEditing, setIsEditing] = useState(false);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -29,59 +30,33 @@ const ProfilePage = () => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState("");
-  const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
-    const savedData = localStorage.getItem("profileData");
-    if (savedData) {
-      const data = JSON.parse(savedData);
-      setId(data.id || "");
-      setFullName(data.full_name || "");
-      setDob(data.date_of_birth || "");
-      setPhone(data.phone || "");
-      setEmail(data.email || "");
-      setAddress(data.address || "");
-      setImage_url(data.image_url || "");
-    } else {
-      router.push("/login");
-    }
-  }, [router]);
+    const fetchUser = async () => {
+      try {
+        const res = await fetch("/api/me");
+        if (!res.ok) {
+          router.push("/login");
+          return;
+        }
 
-  const deletePhoto = async () => {
-  const profileData = localStorage.getItem("profileData");
-  if (!profileData) return;
+        const data = await res.json();
+        setId(data.id || "");
+        setFullName(data.full_name || "");
+        setDob(data.date_of_birth || "");
+        setPhone(data.phone || "");
+        setEmail(data.email || "");
+        setAddress(data.address || "");
+        setImage_url(data.image_url || "");
+        setPublicId(data.public_id || "");
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
+        router.push("/login");
+      }
+    };
 
-  try {
-    const profile = JSON.parse(profileData);
-    const { id, public_id } = profile;
-
-    // 1. Delete from Cloudinary
-    if (public_id) {
-      await fetch('/api/delete-image', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ public_id }),
-      });
-    }
-
-    // 2. Update DB to clear image fields
-    await fetch(`/api/updateUser/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...profile, image_url: '', public_id: '' }),
-    });
-
-    // 3. Update localStorage
-    const updatedProfile = { ...profile, image_url: '', public_id: '' };
-    localStorage.setItem('profileData', JSON.stringify(updatedProfile));
-
-    // 4. Update UI
-    setImage_url('');
-  } catch (err) {
-    console.error("Error deleting image:", err);
-  }
-};
-
+    fetchUser();
+  }, []);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,23 +67,18 @@ const ProfilePage = () => {
       phone,
       email,
       address,
-      image_url: image_url,
+      image_url,
+      public_id: publicId,
     };
 
     try {
       const response = await fetch(`/api/updateUser/${id}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedData),
       });
 
       if (response.ok) {
-        const result = await response.json();
-        console.log(result.message);
-        // עדכון המידע בצד הלקוח
-        // הפנייה לעמוד פרופיל אחרי עדכון המידע
         router.push("/");
       } else {
         const errorData = await response.json();
@@ -119,170 +89,150 @@ const ProfilePage = () => {
     }
   };
 
-
-
-  const handleLogout = () => {
-    localStorage.removeItem("profileData");
-    localStorage.removeItem("userToken");
-    window.location.href = "/login";
+  const handleLogout = async () => {
+    await fetch("/api/logout");
+    router.push("/login");
   };
 
-const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  const reader = new FileReader();
-  reader.onloadend = async () => {
-    const base64 = reader.result;
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const base64 = reader.result;
 
-    try {
-      const uploadRes = await fetch('/api/upload-image', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: base64 }),
-      });
+      try {
+        const uploadRes = await fetch("/api/upload-image", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ image: base64 }),
+        });
 
-      const uploadData = await uploadRes.json();
+        const uploadData = await uploadRes.json();
+        if (!uploadRes.ok) {
+          console.error(uploadData.error);
+          return;
+        }
 
-      if (!uploadRes.ok) {
-        console.error(uploadData.error);
-        return;
+        const { imageUrl, public_id } = uploadData;
+        setImage_url(imageUrl);
+        setPublicId(public_id);
+
+        await fetch(`/api/updateUser/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            full_name: fullName,
+            date_of_birth: dob,
+            phone,
+            email,
+            address,
+            image_url: imageUrl,
+            public_id: public_id,
+          }),
+        });
+      } catch (err) {
+        console.error("Upload error:", err);
       }
-
-      const { imageUrl, public_id } = uploadData;
-      setImage_url(imageUrl); // Update UI
-
-      // Save in DB
-      await fetch(`/api/updateUser/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          full_name: fullName,
-          date_of_birth: dob,
-          phone,
-          email,
-          address,
-          image_url: imageUrl,
-          public_id: public_id,
-        }),
-      });
-
-      // Save in localStorage
-      const updatedProfile = {
-        id,
-        full_name: fullName,
-        date_of_birth: dob,
-        phone,
-        email,
-        address,
-        image_url: imageUrl,
-        public_id: public_id,
-      };
-      localStorage.setItem('profileData', JSON.stringify(updatedProfile));
-    } catch (err) {
-      console.error('Upload error:', err);
-    }
-  };
-
-  reader.readAsDataURL(file);
-};
-
-
-
-
-  const initials = fullName
-    ? fullName
-      .split(" ")
-      .map((n: string) => n[0])
-      .join("")
-    : "👤";
-
-  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleChangePassword = () => {
-    const profile = JSON.parse(localStorage.getItem("profileData") || "{}");
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
-
-    if (!profile.password) {
-      setError("No password was set for this account.");
-      return;
-    }
-    if (profile.password !== currentPassword) {
-      setError("Current password is incorrect");
-      return;
-    }
-    if (!newPassword || newPassword.length < 6) {
-      setError("New password must be at least 6 characters");
-      return;
-    }
-    if (currentPassword === newPassword) {
-      setError("New password must be different from the current password");
-      return;
-    }
-
-    // עדכון profileData
-    const updatedProfile = {
-      ...profile,
-      password: newPassword,
     };
-    localStorage.setItem("profileData", JSON.stringify(updatedProfile));
 
-    // עדכון ברשימת המשתמשים
-    const updatedUsers = users.map((user: any) => {
-      if (user.email === profile.email) {
-        return { ...user, password: newPassword };
-      }
-      return user;
-    });
-    localStorage.setItem("users", JSON.stringify(updatedUsers));
-
-    // ניקוי וסגירה
-    setPasswordDialogOpen(false);
-    setCurrentPassword("");
-    setNewPassword("");
-    setError("");
+    reader.readAsDataURL(file);
   };
 
-  const handleDeleteAccount = async () => {
-    if (!id) {
-      alert("User ID is missing");
+  const deletePhoto = async () => {
+    try {
+      if (publicId) {
+        await fetch("/api/delete-image", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ public_id: publicId }),
+        });
+      }
+
+      await fetch(`/api/updateUser/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image_url: "", public_id: "" }),
+      });
+
+      setImage_url("");
+      setPublicId("");
+    } catch (err) {
+      console.error("Error deleting image:", err);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    setError("");
+    if (!currentPassword || !newPassword) {
+      setError("Please fill in both fields.");
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setError("New password must be at least 6 characters.");
+      return;
+    }
+
+    if (currentPassword === newPassword) {
+      setError("New password must be different.");
       return;
     }
 
     try {
-      const response = await fetch(`/api/delete/${id}`, {
-        method: "DELETE",
+      const response = await fetch("/api/change-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currentPassword, newPassword }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        console.error("Failed to delete user:", data.error);
-        alert("Failed to delete account: " + data.error);
+        setError(data.error || "Password change failed");
         return;
       }
 
-      // אם הצליח - ניקוי ה-localStorage והפנייה לדף הרשמה
-      localStorage.clear();
-      window.location.href = "/signup";
-    } catch (error) {
-      console.error("Error deleting account:", error);
-      alert("Something went wrong while deleting your account.");
+      setPasswordDialogOpen(false);
+      setCurrentPassword("");
+      setNewPassword("");
+    } catch (err) {
+      console.error("Error changing password:", err);
+      setError("Server error");
     }
   };
 
+  const handleDeleteAccount = async () => {
+    if (!id) return alert("Missing ID");
+
+    try {
+      const res = await fetch(`/api/delete/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        alert("Failed to delete: " + data.error);
+        return;
+      }
+
+      router.push("/signup");
+    } catch (err) {
+      console.error("Error deleting account:", err);
+      alert("Error deleting account");
+    }
+  };
+
+  const initials = fullName
+    ? fullName.split(" ").map((n) => n[0]).join("")
+    : "👤";
 
   return (
     <div className="p-6 bg-gradient-to-b from-[#e0f7fa] to-white min-h-screen text-gray-800">
       <div className="max-w-4xl mx-auto bg-white shadow-md rounded-xl p-6 space-y-6">
         <div className="flex justify-center">
-          <IconButton onClick={handleMenu} size="large">
+          <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size="large">
             {image_url ? (
               <Avatar src={image_url} sx={{ width: 64, height: 64 }} />
             ) : (
@@ -290,101 +240,32 @@ const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
             )}
           </IconButton>
 
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-          >
+          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
             <MenuItem component="label">
               Upload Photo
-              <input
-                type="file"
-                hidden
-                onChange={(e) => {
-                  handleImageUpload(e);
-                  handleClose(); // סגירת התפריט אחרי העלאה
-                }}
-              />
+              <input type="file" hidden onChange={(e) => { handleImageUpload(e); setAnchorEl(null); }} />
             </MenuItem>
-
-            <MenuItem
-              onClick={() => {
-                deletePhoto();
-                handleClose();
-              }}
-            >
-              Delete Photo
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                setPasswordDialogOpen(true);
-                handleClose();
-              }}
-            >
-              Change Password
-            </MenuItem>
-
-            <MenuItem
-              onClick={() => {
-                handleLogout();
-                handleClose();
-              }}
-            >
-              Logout
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                handleDeleteAccount();
-                handleClose();
-              }}
-            >
-              <p className="text-red-400">Delete Account</p>
+            <MenuItem onClick={() => { deletePhoto(); setAnchorEl(null); }}>Delete Photo</MenuItem>
+            <MenuItem onClick={() => { setPasswordDialogOpen(true); setAnchorEl(null); }}>Change Password</MenuItem>
+            <MenuItem onClick={() => { handleLogout(); setAnchorEl(null); }}>Logout</MenuItem>
+            <MenuItem onClick={() => { handleDeleteAccount(); setAnchorEl(null); }}>
+              <p className="text-red-500">Delete Account</p>
             </MenuItem>
           </Menu>
         </div>
 
         <form onSubmit={handleSave} className="space-y-4">
           {[
-            {
-              label: "ID",
-              value: id,
-              setter: setId,
-              type: "text",
-            },
-            {
-              label: "Full Name",
-              value: fullName,
-              setter: setFullName,
-              type: "text",
-            },
-            {
-              label: "Date of Birth",
-              value: dob,
-              setter: setDob,
-              type: "date",
-            },
-            {
-              label: "Phone Number",
-              value: phone,
-              setter: setPhone,
-              type: "text",
-            },
-            {
-              label: "Email",
-              value: email,
-              setter: setEmail,
-              type: "email",
-            },
-            {
-              label: "Address",
-              value: address,
-              setter: setAddress,
-              type: "text",
-            },
-          ].map(({ label, value, setter, type }) => (
+            { label: "ID", value: id, setter: setId, type: "text", disabled: true },
+            { label: "Full Name", value: fullName, setter: setFullName, type: "text" },
+            { label: "Date of Birth", value: dob, setter: setDob, type: "date" },
+            { label: "Phone Number", value: phone, setter: setPhone, type: "text" },
+            { label: "Email", value: email, setter: setEmail, type: "email" },
+            { label: "Address", value: address, setter: setAddress, type: "text" },
+          ].map(({ label, value, setter, type, disabled }) => (
             <div key={label}>
               <label className="font-semibold">{label}</label>
-              {isEditing ? (
+              {isEditing && !disabled ? (
                 <input
                   type={type}
                   value={value}
@@ -399,10 +280,7 @@ const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
 
           {isEditing && (
             <div className="flex justify-end gap-4 pt-6">
-              <button
-                type="submit"
-                className="bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded-md"
-              >
+              <button type="submit" className="bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded-md">
                 Save
               </button>
               <button
@@ -429,10 +307,7 @@ const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         )}
       </div>
 
-      <Dialog
-        open={passwordDialogOpen}
-        onClose={() => setPasswordDialogOpen(false)}
-      >
+      <Dialog open={passwordDialogOpen} onClose={() => setPasswordDialogOpen(false)}>
         <DialogTitle>Change Password</DialogTitle>
         <DialogContent>
           <input
@@ -452,15 +327,8 @@ const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
           {error && <p className="text-red-500 mt-2">{error}</p>}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleChangePassword} color="primary">
-            Save
-          </Button>
-          <Button
-            onClick={() => setPasswordDialogOpen(false)}
-            color="secondary"
-          >
-            Cancel
-          </Button>
+          <Button onClick={handleChangePassword} color="primary">Save</Button>
+          <Button onClick={() => setPasswordDialogOpen(false)} color="secondary">Cancel</Button>
         </DialogActions>
       </Dialog>
     </div>

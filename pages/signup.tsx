@@ -20,9 +20,10 @@ export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
-    if (localStorage.getItem('userToken')) {
-      router.push('/profile');
-    }
+    // אפשר להסיר את זה אם אתה כבר לא שומר טוקן ב-localStorage
+    // if (localStorage.getItem('userToken')) {
+    //   router.push('/profile');
+    // }
   }, [router]);
 
   const autoCompleteMap: { [key: string]: string } = {
@@ -106,10 +107,7 @@ export default function SignUpPage() {
         return;
       }
 
-      // Simulate saving token and user data (replace with real token logic if needed)
-      localStorage.setItem('userToken', 'demoToken');
-      localStorage.setItem('profileData', JSON.stringify(data.user || formData));
-
+      // לא צריך לשמור את הטוקן - הוא כבר ב־cookie HttpOnly
       router.push('/profile');
     } catch (err) {
       console.error(err);
