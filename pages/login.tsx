@@ -12,11 +12,8 @@ export default function LoginPage() {
   useEffect(() => {
     const token = localStorage.getItem('userToken');
     if (token) {
-<<<<<<< HEAD
       router.push('/');  // אם יש טוקן, מחזיר את המשתמש לדף הבית
-=======
       router.push('/profile'); // already logged in
->>>>>>> f67ec3376ce37ff51fd42925b0620e0b2eaf9090
     }
   }, [router]);
 
