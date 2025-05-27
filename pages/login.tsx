@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
@@ -9,6 +9,7 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
+<<<<<<< HEAD
   useEffect(() => {
     const token = localStorage.getItem('userToken');
     if (token) {
@@ -17,12 +18,15 @@ export default function LoginPage() {
     }
   }, [router]);
 
+=======
+>>>>>>> 7d74c89019e36353e0b150f885d803b27d6e5663
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     setError('');
   };
 
-  const handleLogin = async () => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // חשוב: לא לטעון את הדף מחדש
     setError('');
     try {
       const res = await fetch('/api/login', {
@@ -32,31 +36,19 @@ export default function LoginPage() {
       });
 
       const data = await res.json();
-      console.log(data);  // הדפסת התשובה מה-API
-
       if (!res.ok) {
         setError(data.error || 'Login failed');
         return;
       }
 
-      // אם יש טוקן, נשמור אותו ב-localStorage
-      if (data.token) {
-        localStorage.setItem('userToken', data.token);
-      }
-
-      // שמירה של פרטי המשתמש
-      if (data.user) {
-        localStorage.setItem('profileData', JSON.stringify(data.user));
-      }
-
-      // הפנייה לעמוד פרופיל
       router.push('/profile');
     } catch (err) {
-      console.error('Error in login:', err);  // הדפס את השגיאה
+      console.error('Error in login:', err);
       setError('Login failed. Please try again.');
     }
   };
 
+<<<<<<< HEAD
   const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -64,6 +56,8 @@ export default function LoginPage() {
     }
   };
 
+=======
+>>>>>>> 7d74c89019e36353e0b150f885d803b27d6e5663
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#b2ebf2] to-white text-gray-900 p-4">
       <div className="w-full max-w-md bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-8">
@@ -75,7 +69,11 @@ export default function LoginPage() {
           </div>
         )}
 
+<<<<<<< HEAD
         <form onKeyDown={handleKeyDown}>
+=======
+        <form onSubmit={handleLogin}>
+>>>>>>> 7d74c89019e36353e0b150f885d803b27d6e5663
           <div className="relative mb-5">
             <input
               name="email"
@@ -84,6 +82,10 @@ export default function LoginPage() {
               placeholder="📧 Email"
               value={formData.email}
               onChange={handleChange}
+<<<<<<< HEAD
+=======
+              required
+>>>>>>> 7d74c89019e36353e0b150f885d803b27d6e5663
               className="px-4 py-2 rounded-xl w-full border border-gray-300 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300"
             />
           </div>
@@ -96,6 +98,10 @@ export default function LoginPage() {
               placeholder="🔒 Password"
               value={formData.password}
               onChange={handleChange}
+<<<<<<< HEAD
+=======
+              required
+>>>>>>> 7d74c89019e36353e0b150f885d803b27d6e5663
               className="px-4 py-2 pr-10 rounded-xl w-full border border-gray-300 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300"
             />
             <div
@@ -106,10 +112,22 @@ export default function LoginPage() {
             </div>
           </div>
 
+<<<<<<< HEAD
           <button
             type="button"
             className="w-full py-2 bg-blue-700 text-white rounded-xl hover:bg-blue-800 transition"
             onClick={handleLogin}
+=======
+          <div className="flex justify-end mb-4">
+            <a href="/reset-password" className="text-sm text-blue-700 hover:underline hover:text-blue-900">
+              שכחת סיסמה?
+            </a>
+          </div>
+
+          <button
+            type="submit"
+            className="w-full py-2 bg-blue-700 text-white rounded-xl hover:bg-blue-800 transition"
+>>>>>>> 7d74c89019e36353e0b150f885d803b27d6e5663
           >
             Login
           </button>
