@@ -1,52 +1,58 @@
-"use client";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { usePathname } from "next/navigation";
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
-  const [checked, setChecked] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
-const publicPaths = ["/login", "/signup", "/reset-password"];
+  const publicPaths = ['/login', '/signup', '/reset-password'];
 
-  // Simulate initial page load delay (optional)
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 700);
+    const checkAuth = async () => {
+      console.log('AuthGuard: useEffect triggered');
 
-    return () => clearTimeout(timer);
-  }, []);
+      try {
+        const res = await fetch('/api/auth/check', {
+          method: 'GET',
+          credentials: 'include', // חשוב כדי לשלוח את העוגיה עם הבקשה
+        });
 
-  // Check auth state
-  useEffect(() => {
-    console.log("AuthGuard useEffect triggered");
-    const token = localStorage.getItem("userToken");
-    console.log("Token from localStorage:", token);
+        if (res.ok) {
+          const data = await res.json();
+          // console.log('AuthGuard: User authenticated', data.user);
+          setIsAuthenticated(true);
+        } else {
+          console.log('AuthGuard: User not authenticated');
+          if (!publicPaths.includes(pathname)) {
+            router.push('/login');
+          }
+          setIsAuthenticated(false);
+        }
+      } catch (err) {
+        console.error('AuthGuard: Error checking authentication', err);
+        if (!publicPaths.includes(pathname)) {
+          router.push('/login');
+        }
+        setIsAuthenticated(false);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    if (!token && !publicPaths.includes(pathname)) {
-      console.log("No token and not in public path, redirecting...");
-      router.push("/login");
-    } else {
-      setIsAuthenticated(!!token);
-    }
+    checkAuth();
+  }, [pathname, router]);
 
-    setChecked(true);
-  }, [pathname]);
-
-  if (!checked) {
-    console.log("AuthGuard: Loading...");
+  if (loading) {
     return <div>Loading...</div>;
   }
 
-  // If not authenticated and not on a public page, block access
   if (!isAuthenticated && !publicPaths.includes(pathname)) {
-    console.log("User not authenticated, blocking access...");
-    return <div>Redirecting...</div>; // או null כדי שלא ייראה כלום
+    return <div>Redirecting...</div>;
   }
 
-  console.log("Rendering children, user is authenticated:", isAuthenticated);
   return <>{children}</>;
 }
