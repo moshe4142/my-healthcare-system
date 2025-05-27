@@ -21,11 +21,15 @@ import ContactMailIcon from "@mui/icons-material/ContactMail";
 import LogoutIcon from "@mui/icons-material/Logout";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 // import LightModeIcon from "@mui/icons-material/LightMode";
-// import DarkModeIcon from "@mui/icons-material/DarkMode";
+// import DarkModeIcon from "@mui/icons-material/LightMode";
 // import { useTheme } from "../context/ThemeContext";
 import { useRouter } from "next/router";
 
-const ButtonAppBar = () => {
+interface ButtonAppBarProps {
+  className?: string;
+}
+
+const ButtonAppBar: React.FC<ButtonAppBarProps> = ({ className = "" }) => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   // const { theme, toggleTheme } = useTheme();
@@ -65,7 +69,11 @@ const ButtonAppBar = () => {
 
   return (
     <>
-      <AppBar position="fixed" sx={{ backgroundColor: "#4db6ac", boxShadow: "none" }}>
+      <AppBar
+        position="fixed"
+        className={className}
+        sx={{ backgroundColor: "#4db6ac", boxShadow: "none" }}
+      >
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <IconButton color="inherit" edge="start" onClick={toggleDrawer(true)}>
