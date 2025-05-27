@@ -30,12 +30,13 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
+<<<<<<<<< Temporary merge branch 1
 
+
+=========
+# env files (can opt-in for committing if needed)
 .env*
-
-
-
-# >>>>>>> 58a8a8e75341621805f5edcbc19084364204de64
+>>>>>>>>> Temporary merge branch 2
 
 # vercel
 .vercel

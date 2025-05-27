@@ -12,7 +12,7 @@ export default function LoginPage() {
   useEffect(() => {
     const token = localStorage.getItem('userToken');
     if (token) {
-      router.push('/');  // אם יש טוקן, מחזיר את המשתמש לדף הבית
+      router.push('/profile'); // או '/' - לפי העדפה שלך
     }
   }, [router]);
 
@@ -21,7 +21,8 @@ export default function LoginPage() {
     setError('');
   };
 
-  const handleLogin = async () => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setError('');
     try {
       const res = await fetch('/api/login', {
@@ -31,35 +32,16 @@ export default function LoginPage() {
       });
 
       const data = await res.json();
-      console.log(data);  // הדפסת התשובה מה-API
-
       if (!res.ok) {
         setError(data.error || 'Login failed');
         return;
       }
 
-      // אם יש טוקן, נשמור אותו ב-localStorage
-      if (data.token) {
-        localStorage.setItem('userToken', data.token);
-      }
-
-      // שמירה של פרטי המשתמש
-      if (data.user) {
-        localStorage.setItem('profileData', JSON.stringify(data.user));
-      }
-
-      // הפנייה לעמוד פרופיל
+      localStorage.setItem('userToken', data.token); // שמירת הטוקן
       router.push('/profile');
     } catch (err) {
-      console.error('Error in login:', err);  // הדפס את השגיאה
+      console.error('Error in login:', err);
       setError('Login failed. Please try again.');
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleLogin();
     }
   };
 
@@ -74,7 +56,7 @@ export default function LoginPage() {
           </div>
         )}
 
-        <form onKeyDown={handleKeyDown}>
+        <form onSubmit={handleLogin}>
           <div className="relative mb-5">
             <input
               name="email"
@@ -83,6 +65,7 @@ export default function LoginPage() {
               placeholder="📧 Email"
               value={formData.email}
               onChange={handleChange}
+              required
               className="px-4 py-2 rounded-xl w-full border border-gray-300 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300"
             />
           </div>
@@ -95,6 +78,7 @@ export default function LoginPage() {
               placeholder="🔒 Password"
               value={formData.password}
               onChange={handleChange}
+              required
               className="px-4 py-2 pr-10 rounded-xl w-full border border-gray-300 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300"
             />
             <div
@@ -105,10 +89,15 @@ export default function LoginPage() {
             </div>
           </div>
 
+          <div className="flex justify-end mb-4">
+            <a href="/reset-password" className="text-sm text-blue-700 hover:underline hover:text-blue-900">
+              שכחת סיסמה?
+            </a>
+          </div>
+
           <button
-            type="button"
+            type="submit"
             className="w-full py-2 bg-blue-700 text-white rounded-xl hover:bg-blue-800 transition"
-            onClick={handleLogin}
           >
             Login
           </button>

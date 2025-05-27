@@ -1,18 +1,15 @@
 "use client";
-
 import { useState, useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
-import Skeleton from "./LoadingSpinner"; // Your loading spinner component
+import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
-  // All hooks must be at the top level
-  const [isLoading, setIsLoading] = useState(true);
   const [checked, setChecked] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
-const publicPaths = ["/login", "/signup", "/reset-password", "/test-send"];
+const publicPaths = ["/login", "/signup", "/reset-password"];
 
   // Simulate initial page load delay (optional)
   useEffect(() => {
@@ -25,27 +22,31 @@ const publicPaths = ["/login", "/signup", "/reset-password", "/test-send"];
 
   // Check auth state
   useEffect(() => {
+    console.log("AuthGuard useEffect triggered");
     const token = localStorage.getItem("userToken");
+    console.log("Token from localStorage:", token);
 
     if (!token && !publicPaths.includes(pathname)) {
+      console.log("No token and not in public path, redirecting...");
       router.push("/login");
     } else {
       setIsAuthenticated(!!token);
     }
 
     setChecked(true);
-  }, [pathname, router]);
+  }, [pathname]);
 
-  // Show skeleton while loading or checking auth
-  if (isLoading || !checked) {
-    return <Skeleton />;
+  if (!checked) {
+    console.log("AuthGuard: Loading...");
+    return <div>Loading...</div>;
   }
 
   // If not authenticated and not on a public page, block access
   if (!isAuthenticated && !publicPaths.includes(pathname)) {
-    return null;
+    console.log("User not authenticated, blocking access...");
+    return <div>Redirecting...</div>; // או null כדי שלא ייראה כלום
   }
 
-  // Otherwise, render children
+  console.log("Rendering children, user is authenticated:", isAuthenticated);
   return <>{children}</>;
 }
