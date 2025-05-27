@@ -135,116 +135,10 @@ const ProfilePage = () => {
       } catch (err) {
         console.error("Upload error:", err);
       }
-<<<<<<< HEAD
-
-      const { imageUrl, public_id } = uploadData;
-      setImage_url(imageUrl); // Update UI
-
-      // Save in DB
-      await fetch(`/api/updateUser/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          full_name: fullName,
-          date_of_birth: dob,
-          phone,
-          email,
-          address,
-          image_url: imageUrl,
-          public_id: public_id,
-        }),
-      });
-
-      // Save in localStorage
-      const updatedProfile = {
-        id,
-        full_name: fullName,
-        date_of_birth: dob,
-        phone,
-        email,
-        address,
-        image_url: imageUrl,
-        public_id: public_id,
-      };
-      localStorage.setItem('profileData', JSON.stringify(updatedProfile));
-    } catch (err) {
-      console.error('Upload error:', err);
-    }
-  };
-
-  reader.readAsDataURL(file);
-};
-
-
-
-
-  const initials = fullName
-    ? fullName
-      .split(" ")
-      .map((n: string) => n[0])
-      .join("")
-    : "👤";
-
-  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
- const handleChangePassword = async () => {
-  setError("");
-
-  if (!currentPassword || !newPassword) {
-    setError("Both fields are required");
-    return;
-  }
-
-  if (newPassword.length < 6) {
-    setError("New password must be at least 6 characters");
-    return;
-  }
-
-  if (currentPassword === newPassword) {
-    setError("New password must be different from current password");
-    return;
-  }
-
-  const profile = JSON.parse(localStorage.getItem("profileData") || "{}");
-  const id = profile.id;
-
-  try {
-    const res = await fetch('/api/changePassword/password', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, currentPassword, newPassword }),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      setError(data.error || 'Failed to change password');
-      return;
-    }
-
-    alert("Password changed successfully");
-
-    setPasswordDialogOpen(false);
-    setCurrentPassword("");
-    setNewPassword("");
-  } catch (err) {
-    console.error("Password change error:", err);
-    setError("Something went wrong");
-  }
-};
-
-=======
     };
 
     reader.readAsDataURL(file);
   };
->>>>>>> 7d74c89019e36353e0b150f885d803b27d6e5663
 
   const deletePhoto = async () => {
     try {
@@ -442,5 +336,3 @@ const ProfilePage = () => {
 };
 
 export default ProfilePage;
-
-
