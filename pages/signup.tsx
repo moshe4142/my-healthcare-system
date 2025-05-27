@@ -106,8 +106,6 @@ export default function SignUpPage() {
         return;
       }
 
-      // Simulate saving token and user data (replace with real token logic if needed)
-      localStorage.setItem('userToken', 'demoToken');
       localStorage.setItem('profileData', JSON.stringify(data.user || formData));
 
       router.push('/profile');

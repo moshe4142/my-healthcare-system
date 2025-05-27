@@ -1,3 +1,5 @@
+// lib/db.ts
+
 import { Pool } from 'pg'; // Import the Pool class from the pg module
 
 const pool = new Pool({

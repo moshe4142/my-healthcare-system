@@ -131,7 +131,12 @@ const PaymentsPage = () => {
       mastercardCode,
     };
 
+    
+    // מסוכן מאוד מאוד מאוד לא לשכוח למחוק את השורה הזאת!!!!!!!!!!!!!!!!!!!!!!
     localStorage.setItem("paymentData", JSON.stringify(paymentData));
+    /////////
+
+
     localStorage.removeItem("cartItems");
     setSuccess(true);
     setError("");
@@ -149,7 +154,10 @@ const PaymentsPage = () => {
         p: { xs: 2, md: 4 },
       }}
     >
-      <Paper elevation={4} sx={{ p: 4, maxWidth: 1000, mx: "auto", borderRadius: 4 }}>
+      <Paper
+        elevation={4}
+        sx={{ p: 4, maxWidth: 1000, mx: "auto", borderRadius: 4 }}
+      >
         <Typography variant="h5" fontWeight="bold" gutterBottom>
           💳 Payment Details
         </Typography>
@@ -183,7 +191,10 @@ const PaymentsPage = () => {
                           {item.name}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          ${typeof item.price === "number" ? item.price.toFixed(2) : "0.00"}
+                          $
+                          {typeof item.price === "number"
+                            ? item.price.toFixed(2)
+                            : "0.00"}
                         </Typography>
                       </CardContent>
                     </Card>
@@ -354,7 +365,12 @@ const PaymentsPage = () => {
                   )}
 
                   <Grid item xs={12}>
-                    <Button type="submit" variant="contained" color="primary" fullWidth>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      fullWidth
+                    >
                       Pay Now
                     </Button>
                   </Grid>
