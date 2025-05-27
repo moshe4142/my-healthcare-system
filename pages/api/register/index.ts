@@ -28,7 +28,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const query = `
       INSERT INTO users (id, full_name, date_of_birth, phone, email, address, password)
       VALUES ($1, $2, $3, $4, $5, $6, $7)
-      RETURNING id, full_name, email
+      RETURNING id, full_name, email, date_of_birth, phone, address 
     `;
     const values = [id, full_name, date_of_birth, phone, email, address, hashedPassword];
 
