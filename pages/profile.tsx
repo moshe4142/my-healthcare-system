@@ -141,7 +141,7 @@ const ProfilePage = () => {
       setImage_url(imageUrl); // Update UI
 
       // Save in DB
-      await fetch(`/api/updateUser/${id}`, {
+      await fetch(`/api/                                                  /${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
