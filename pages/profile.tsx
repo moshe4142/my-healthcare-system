@@ -190,8 +190,8 @@ const ProfilePage = () => {
     }
 
     try {
-      const response = await fetch("/api/change-password", {
-        method: "POST",
+      const response = await fetch("/api/changePassword/password", {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ currentPassword, newPassword }),
       });
