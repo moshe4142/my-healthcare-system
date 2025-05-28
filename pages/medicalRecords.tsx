@@ -102,28 +102,54 @@ const MedicalRecordsPage: React.FC = () => {
     <Box
       sx={{
         background: "linear-gradient(to bottom, #e0f7fa, #ffffff)",
-        minHeight: "100vh",
-        py: 6,
+        minHeight: "70vh",
+        // paddingTop: 8,
+        py: 15,
         px: { xs: 2, md: 6 },
         color: "#212121",
       }}
     >
-      <Paper elevation={3} sx={{ p: { xs: 3, md: 5 }, borderRadius: 3, backgroundColor: "#ffffff", color: "#212121" }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
-          <Typography variant="h4" fontWeight={600}>📂 Medical Records</Typography>
-          <Button variant="contained" component="label" startIcon={<UploadFileIcon />} sx={{ bgcolor: "#0288d1" }}>
+      <Paper
+        elevation={3}
+        sx={{
+          p: { xs: 3, md: 5 },
+          borderRadius: 3,
+          backgroundColor: "#ffffff",
+          color: "#212121",
+        }}
+      >
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Typography variant="h4" fontWeight={600}>
+            📂 Medical Records
+          </Typography>
+          <Button
+            variant="contained"
+            component="label"
+            startIcon={<UploadFileIcon />}
+            sx={{ bgcolor: "#0288d1" }}
+          >
             Upload
             <input hidden type="file" onChange={handleUpload} />
           </Button>
         </Stack>
 
         <Typography variant="body1" sx={{ color: "#212121", my: 2 }}>
-          View and manage your medical documents such as prescriptions, lab results, and doctor reports.
+          View and manage your medical documents such as prescriptions, lab
+          results, and doctor reports.
         </Typography>
 
         <Divider sx={{ mb: 3 }} />
 
-        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ mb: 2 }}
+        >
           <Badge badgeContent={records.length} color="primary">
             <Typography variant="subtitle1" sx={{ color: "#212121" }}>
               🗂️ Total Records
@@ -132,7 +158,11 @@ const MedicalRecordsPage: React.FC = () => {
         </Stack>
 
         {records.length > 0 ? (
-          <TableContainer component={Paper} variant="outlined" sx={{ bgcolor: "#fafafa" }}>
+          <TableContainer
+            component={Paper}
+            variant="outlined"
+            sx={{ bgcolor: "#fafafa" }}
+          >
             <Table>
               <TableHead>
                 <TableRow sx={{ bgcolor: "#e3f2fd" }}>
@@ -140,16 +170,24 @@ const MedicalRecordsPage: React.FC = () => {
                   <TableCell sx={{ color: "#212121" }}>Type</TableCell>
                   <TableCell sx={{ color: "#212121" }}>Doctor</TableCell>
                   <TableCell sx={{ color: "#212121" }}>Notes</TableCell>
-                  <TableCell align="center" sx={{ color: "#212121" }}>Download</TableCell>
+                  <TableCell align="center" sx={{ color: "#212121" }}>
+                    Download
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {records.map((record, index) => (
                   <TableRow key={index} hover>
-                    <TableCell sx={{ color: "#212121" }}>{record.date}</TableCell>
+                    <TableCell sx={{ color: "#212121" }}>
+                      {record.date}
+                    </TableCell>
                     <TableCell>{getTypeChip(record.type)}</TableCell>
-                    <TableCell sx={{ color: "#212121" }}>{record.doctor}</TableCell>
-                    <TableCell sx={{ color: "#212121" }}>{record.notes}</TableCell>
+                    <TableCell sx={{ color: "#212121" }}>
+                      {record.doctor}
+                    </TableCell>
+                    <TableCell sx={{ color: "#212121" }}>
+                      {record.notes}
+                    </TableCell>
                     <TableCell align="center">
                       <IconButton
                         href={`/files/${record.fileName}`}
@@ -167,8 +205,12 @@ const MedicalRecordsPage: React.FC = () => {
           </TableContainer>
         ) : (
           <Paper sx={{ p: 3, mt: 4, textAlign: "center" }} variant="outlined">
-            <InsertDriveFileIcon sx={{ fontSize: 60, color: "#9e9e9e", mb: 1 }} />
-            <Typography variant="h6" sx={{ color: "#212121" }}>No records available</Typography>
+            <InsertDriveFileIcon
+              sx={{ fontSize: 60, color: "#9e9e9e", mb: 1 }}
+            />
+            <Typography variant="h6" sx={{ color: "#212121" }}>
+              No records available
+            </Typography>
             <Typography variant="body2" sx={{ color: "#424242" }}>
               Once your medical records are added, they will appear here.
             </Typography>
