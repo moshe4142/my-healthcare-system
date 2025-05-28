@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
@@ -9,20 +9,13 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  useEffect(() => {
-    const token = localStorage.getItem('userToken');
-    if (token) {
-      router.push('/profile'); // או '/' - לפי העדפה שלך
-    }
-  }, [router]);
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     setError('');
   };
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault(); // חשוב: לא לטעון את הדף מחדש
     setError('');
     try {
       const res = await fetch('/api/login', {
@@ -37,7 +30,6 @@ export default function LoginPage() {
         return;
       }
 
-      localStorage.setItem('userToken', data.token); // שמירת הטוקן
       router.push('/profile');
     } catch (err) {
       console.error('Error in login:', err);
@@ -105,12 +97,8 @@ export default function LoginPage() {
 
         <p className="text-sm text-center mt-4">
           Don&apos;t have an account?{' '}
-          <a href="/signup" className="text-blue-700 underline hover:text-blue-900 mr-2">
+          <a href="/signup" className="text-blue-700 underline hover:text-blue-900">
             Sign Up
-          </a>{' '}
-          |{' '}
-          <a href="/reset-password" className="text-blue-700 underline hover:text-blue-900 ml-2">
-            Forgot Password?
           </a>
         </p>
       </div>
