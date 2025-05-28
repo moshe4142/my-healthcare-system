@@ -153,8 +153,17 @@ const ProfilePage = () => {
       await fetch(`/api/updateUser/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image_url: "", public_id: "" }),
+        body: JSON.stringify({
+          full_name: fullName,
+          date_of_birth: dob,
+          phone,
+          email,
+          address,
+          image_url: "",
+          public_id: "",
+        }),
       });
+
 
       setImage_url("");
       setPublicId("");
