@@ -12,7 +12,6 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useCart } from "../context/shoppingCartContext";
 import { useRouter } from "next/router";
-import Footer from "@/components/Footer";
 
 const CartPage = () => {
   const {
@@ -73,17 +72,18 @@ const CartPage = () => {
     return selectedItems.some((i) => i.id === id);
   };
 
- const getSelectedTotal = () =>
-  selectedItems.reduce((sum, selectedItem) => {
-    const currentItem = cartItems.find((i) => i.id === selectedItem.id);
-    return currentItem ? sum + currentItem.price * currentItem.quantity : sum;
-  }, 0);
-
+  const getSelectedTotal = () =>
+    selectedItems.reduce((sum, selectedItem) => {
+      const currentItem = cartItems.find((i) => i.id === selectedItem.id);
+      return currentItem ? sum + currentItem.price * currentItem.quantity : sum;
+    }, 0);
 
   return (
     <Box
       sx={{
-        minHeight: "100vh",
+        minHeight: "70vh",
+        // paddingTop: 8,
+        py: 10,
         background: "linear-gradient(to bottom, #e0f7fa, #ffffff)",
         display: "flex",
         flexDirection: "column",
@@ -180,7 +180,7 @@ const CartPage = () => {
                       onChange={() => toggleItemSelection(item)}
                       sx={{ color: "#0288d1" }}
                     />
-                    
+
                     <Box
                       component="img"
                       src={item.imageUrl}
@@ -361,7 +361,6 @@ const CartPage = () => {
           </Grid>
         )}
       </Box>
-      <Footer />
     </Box>
   );
 };
