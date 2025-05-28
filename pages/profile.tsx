@@ -90,9 +90,21 @@ const ProfilePage = () => {
   };
 
   const handleLogout = async () => {
-    await fetch("/api/logout");
-    router.push("/login");
-  };
+  try {
+    const res = await fetch("/api/logout/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+
+    if (res.ok) {
+      router.push("/login");
+    } else {
+      console.error("Logout failed");
+    }
+  } catch (error) {
+    console.error("Error logging out:", error);
+  }
+};
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
