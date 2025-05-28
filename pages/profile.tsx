@@ -225,25 +225,28 @@ const ProfilePage = () => {
   };
 
   const handleDeleteAccount = async () => {
-    if (!id) return alert("Missing ID");
+  if (!id) return alert("Missing ID");
 
-    try {
-      const res = await fetch(`/api/delete/${id}`, {
-        method: "DELETE",
-      });
+  try {
+    const res = await fetch(`/api/deleteUser/${id}`, {
+      method: "DELETE",
+    });
 
-      if (!res.ok) {
-        const data = await res.json();
-        alert("Failed to delete: " + data.error);
-        return;
-      }
+    const data = await res.json();
 
-      router.push("/signup");
-    } catch (err) {
-      console.error("Error deleting account:", err);
-      alert("Error deleting account");
+    if (!res.ok) {
+      console.error("Delete failed:", data);
+      alert("Failed to delete: " + (data.error || "Unknown error"));
+      return;
     }
-  };
+
+    router.push("/signup");
+  } catch (err) {
+    console.error("Error deleting account:", err);
+    alert("Error deleting account");
+  }
+};
+
 
   const initials = fullName
     ? fullName.split(" ").map((n) => n[0]).join("")
