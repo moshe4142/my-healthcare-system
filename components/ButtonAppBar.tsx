@@ -3,7 +3,6 @@ import {
   AppBar,
   Toolbar,
   IconButton,
-  Typography,
   Drawer,
   List,
   ListItem,
@@ -12,7 +11,6 @@ import {
   Divider,
   Box,
   Button,
-  Tooltip,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
@@ -29,7 +27,6 @@ interface ButtonAppBarProps {
 const ButtonAppBar: React.FC<ButtonAppBarProps> = ({ className = "" }) => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
-  // const { theme, toggleTheme } = useTheme();
 
   const toggleDrawer = (state: boolean) => () => {
     setOpen(state);
@@ -40,10 +37,21 @@ const ButtonAppBar: React.FC<ButtonAppBarProps> = ({ className = "" }) => {
     setOpen(false);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("userToken");
-    router.push("/login");
-    setOpen(false);
+  const handleLogout = async () => {
+    try {
+      const res = await fetch("/api/logout/logout", { method: "POST", credentials: "include" })
+;
+
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`Logout failed (${res.status}): ${text}`);
+      }
+
+      router.push("/login");
+      setOpen(false);
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
   };
 
   const drawerItems = [
@@ -115,16 +123,6 @@ const ButtonAppBar: React.FC<ButtonAppBarProps> = ({ className = "" }) => {
             >
               Appointments
             </Button>
-            {/* <Button
-              color="inherit"
-              onClick={() => router.push("/payments")}
-              sx={{
-                ":hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
-                transition: "background-color 0.3s ease",
-              }}
-            >
-              Payments
-            </Button> */}
             <Button
               color="inherit"
               onClick={() => router.push("/medicalRecords")}
@@ -145,26 +143,11 @@ const ButtonAppBar: React.FC<ButtonAppBarProps> = ({ className = "" }) => {
             >
               Medical Equipment
             </Button>
-
-            {/* 
-            <Tooltip title={theme === "dark" ? "Light Mode" : "Dark Mode"}>
-              <IconButton
-                onClick={toggleTheme}
-                sx={{
-                  transition: "transform 0.4s ease, color 0.3s",
-                  transform: theme === "dark" ? "rotate(180deg)" : "rotate(0deg)",
-                  color: theme === "dark" ? "#fdd835" : "#ffffff",
-                }}
-              >
-                {theme === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
-              </IconButton>
-            </Tooltip>
-            */}
           </Box>
         </Toolbar>
       </AppBar>
 
-      <Toolbar /> {/* Spacer to push content below AppBar */}
+      <Toolbar />
 
       <Drawer
         anchor="left"
