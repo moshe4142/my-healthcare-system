@@ -151,7 +151,7 @@ const ProfilePage = () => {
 
     reader.readAsDataURL(file);
   };
-
+// בולבוןל ענק לצורך סינק צאנגז
   const deletePhoto = async () => {
     try {
       if (publicId) {
