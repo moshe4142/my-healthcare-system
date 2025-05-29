@@ -21,16 +21,22 @@ interface Equipment {
   name: string;
   description: string;
   price: string;
-  availability: 'In Stock' | 'Out of Stock';
+  status: string; // במקום availability
 }
 
-const getAvailabilityChip = (status: Equipment['availability']) => {
-  return status === 'In Stock' ? (
-    <Chip label="In Stock" color="success" variant="outlined" size="small" />
-  ) : (
-    <Chip label="Out of Stock" color="error" variant="outlined" size="small" />
-  );
+const getStatusChip = (status: string) => {
+  switch (status.toLowerCase()) {
+    case 'available':
+      return <Chip label="Available" color="success" variant="outlined" size="small" />;
+    case 'out of stock':
+      return <Chip label="Out of Stock" color="error" variant="outlined" size="small" />;
+    case 'limited':
+      return <Chip label="Limited Stock" color="warning" variant="outlined" size="small" />;
+    default:
+      return <Chip label={status} color="default" variant="outlined" size="small" />;
+  }
 };
+
 
 const MedicalEquipmentPage = () => {
   const [equipmentData, setEquipmentData] = useState<Equipment[]>([]);
@@ -117,7 +123,7 @@ const MedicalEquipmentPage = () => {
                   <TableCell>{item.name}</TableCell>
                   <TableCell>{item.description}</TableCell>
                   <TableCell>{item.price}</TableCell>
-                  <TableCell>{getAvailabilityChip(item.availability)}</TableCell>
+                  <TableCell>{getStatusChip(item.status)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
