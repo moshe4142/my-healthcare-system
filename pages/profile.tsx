@@ -31,32 +31,54 @@ const ProfilePage = () => {
   const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await fetch("/api/me");
-        if (!res.ok) {
-          router.push("/login");
-          return;
-        }
+  // Helper function to format date for input field
+  const formatDateForInput = (dateString: string) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    // Get local date components to avoid timezone shift
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
-        const data = await res.json();
-        setId(data.id || "");
-        setFullName(data.full_name || "");
-        setDob(data.date_of_birth || "");
-        setPhone(data.phone || "");
-        setEmail(data.email || "");
-        setAddress(data.address || "");
-        setImage_url(data.image_url || "");
-        setPublicId(data.public_id || "");
+  // Helper function to format date for display
+  const formatDateForDisplay = (dateString: string) => {
+    if (!dateString) return "Not specified";
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB'); // DD/MM/YYYY format
+  };
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await fetch("/api/me", {
+          method: "GET",
+          credentials: "include", // Include JWT cookie
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setId(data.id || "");
+          setFullName(data.full_name || "");
+          setDob(formatDateForInput(data.date_of_birth || ""));
+          setPhone(data.phone || "");
+          setEmail(data.email || "");
+          setAddress(data.address || "");
+          setImage_url(data.image_url || "");
+          setPublicId(data.public_id || "");
+        } else {
+          // JWT invalid or expired, redirect to login
+          router.push("/login");
+        }
       } catch (error) {
-        console.error("Failed to fetch user:", error);
+        console.error("Error fetching profile:", error);
         router.push("/login");
       }
     };
 
-    fetchUser();
-  }, []);
+    fetchUserProfile();
+  }, [router]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,19 +89,26 @@ const ProfilePage = () => {
       phone,
       email,
       address,
-      image_url,
+      image_url: image_url,
       public_id: publicId,
     };
 
     try {
       const response = await fetch(`/api/updateUser/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // Include JWT cookie
         body: JSON.stringify(updatedData),
       });
 
       if (response.ok) {
-        router.push("/");
+        const result = await response.json();
+        console.log(result.message);
+        setIsEditing(false);
+        // Optionally redirect to dashboard
+        // router.push("/");
       } else {
         const errorData = await response.json();
         console.error(errorData.error);
@@ -90,21 +119,21 @@ const ProfilePage = () => {
   };
 
   const handleLogout = async () => {
-  try {
-    const res = await fetch("/api/logout/logout", {
-      method: "POST",
-      credentials: "include",
-    });
+    try {
+      const res = await fetch("/api/logout/logout", {
+        method: "POST",
+        credentials: "include",
+      });
 
-    if (res.ok) {
-      router.push("/login");
-    } else {
-      console.error("Logout failed");
+      if (res.ok) {
+        router.push("/login");
+      } else {
+        console.error("Logout failed");
+      }
+    } catch (error) {
+      console.error("Error logging out:", error);
     }
-  } catch (error) {
-    console.error("Error logging out:", error);
-  }
-};
+  };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -115,13 +144,15 @@ const ProfilePage = () => {
       const base64 = reader.result;
 
       try {
-        const uploadRes = await fetch("/api/upload-image", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+        const uploadRes = await fetch('/api/upload-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: "include", // Include JWT cookie
           body: JSON.stringify({ image: base64 }),
         });
 
         const uploadData = await uploadRes.json();
+
         if (!uploadRes.ok) {
           console.error(uploadData.error);
           return;
@@ -131,9 +162,11 @@ const ProfilePage = () => {
         setImage_url(imageUrl);
         setPublicId(public_id);
 
+        // Update user profile with new image
         await fetch(`/api/updateUser/${id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: "include",
           body: JSON.stringify({
             full_name: fullName,
             date_of_birth: dob,
@@ -144,8 +177,9 @@ const ProfilePage = () => {
             public_id: public_id,
           }),
         });
+
       } catch (err) {
-        console.error("Upload error:", err);
+        console.error('Upload error:', err);
       }
     };
 
@@ -158,6 +192,7 @@ const ProfilePage = () => {
         await fetch("/api/delete-image", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify({ public_id: publicId }),
         });
       }
@@ -165,6 +200,7 @@ const ProfilePage = () => {
       await fetch(`/api/updateUser/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           full_name: fullName,
           date_of_birth: dob,
@@ -175,7 +211,6 @@ const ProfilePage = () => {
           public_id: "",
         }),
       });
-
 
       setImage_url("");
       setPublicId("");
@@ -197,7 +232,7 @@ const ProfilePage = () => {
     }
 
     if (currentPassword === newPassword) {
-      setError("New password must be different.");
+      setError("New password must be different from current password.");
       return;
     }
 
@@ -205,48 +240,65 @@ const ProfilePage = () => {
       const response = await fetch("/api/changePassword/password", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ currentPassword, newPassword }),
+        credentials: "include", // Include JWT cookie
+        body: JSON.stringify({ 
+          id, 
+          currentPassword, 
+          newPassword 
+        }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || "Password change failed");
+        setError(data.error || "Failed to change password");
         return;
       }
 
+      alert("Password changed successfully");
       setPasswordDialogOpen(false);
       setCurrentPassword("");
       setNewPassword("");
+      setError(""); // Clear any previous errors
     } catch (err) {
-      console.error("Error changing password:", err);
-      setError("Server error");
+      console.error("Password change error:", err);
+      setError("Something went wrong");
     }
   };
 
   const handleDeleteAccount = async () => {
-  if (!id) return alert("Missing ID");
-
-  try {
-    const res = await fetch(`/api/deleteUser/${id}`, {
-      method: "DELETE",
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      console.error("Delete failed:", data);
-      alert("Failed to delete: " + (data.error || "Unknown error"));
+    if (!id) {
+      alert("User ID is missing");
       return;
     }
 
-    router.push("/signup");
-  } catch (err) {
-    console.error("Error deleting account:", err);
-    alert("Error deleting account");
-  }
-};
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete your account? This action cannot be undone."
+    );
 
+    if (!confirmDelete) return;
+
+    try {
+      const response = await fetch(`/api/deleteUser/${id}`, {
+        method: "DELETE",
+        credentials: "include", // Include JWT cookie
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("Delete failed:", data);
+        alert("Failed to delete: " + (data.error || "Unknown error"));
+        return;
+      }
+
+      // Account deleted successfully, redirect to signup
+      router.push("/signup");
+    } catch (err) {
+      console.error("Error deleting account:", err);
+      alert("Error deleting account");
+    }
+  };
 
   const initials = fullName
     ? fullName.split(" ").map((n) => n[0]).join("")
@@ -279,7 +331,41 @@ const ProfilePage = () => {
           >
             <MenuItem component="label">
               Upload Photo
-              <input type="file" hidden onChange={(e) => { handleImageUpload(e); setAnchorEl(null); }} />
+              <input
+                type="file"
+                hidden
+                accept="image/*"
+                onChange={(e) => {
+                  handleImageUpload(e);
+                  handleClose();
+                }}
+              />
+            </MenuItem>
+
+            <MenuItem
+              onClick={() => {
+                deletePhoto();
+                handleClose();
+              }}
+            >
+              Delete Photo
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setPasswordDialogOpen(true);
+                handleClose();
+              }}
+            >
+              Change Password
+            </MenuItem>
+
+            <MenuItem
+              onClick={() => {
+                handleLogout();
+                handleClose();
+              }}
+            >
+              Logout
             </MenuItem>
             <MenuItem
               onClick={() => {
@@ -294,13 +380,44 @@ const ProfilePage = () => {
 
         <form onSubmit={handleSave} className="space-y-4">
           {[
-            { label: "ID", value: id, setter: setId, type: "text", disabled: true },
-            { label: "Full Name", value: fullName, setter: setFullName, type: "text" },
-            { label: "Date of Birth", value: dob, setter: setDob, type: "date" },
-            { label: "Phone Number", value: phone, setter: setPhone, type: "text" },
-            { label: "Email", value: email, setter: setEmail, type: "email" },
-            { label: "Address", value: address, setter: setAddress, type: "text" },
-          ].map(({ label, value, setter, type, disabled }) => (
+            {
+              label: "ID",
+              value: id,
+              setter: setId,
+              type: "text",
+              disabled: true, // ID should not be editable
+            },
+            {
+              label: "Full Name",
+              value: fullName,
+              setter: setFullName,
+              type: "text",
+            },
+            {
+              label: "Date of Birth",
+              value: dob,
+              setter: setDob,
+              type: "date",
+            },
+            {
+              label: "Phone Number",
+              value: phone,
+              setter: setPhone,
+              type: "text",
+            },
+            {
+              label: "Email",
+              value: email,
+              setter: setEmail,
+              type: "email",
+            },
+            {
+              label: "Address",
+              value: address,
+              setter: setAddress,
+              type: "text",
+            },
+          ].map(({ label, value, setter, type, disabled = false }) => (
             <div key={label}>
               <label className="font-semibold">{label}</label>
               {isEditing && !disabled ? (
@@ -312,7 +429,12 @@ const ProfilePage = () => {
                   required={label !== "Address"} // Make address optional
                 />
               ) : (
-                <p className="mt-1 text-gray-700">{value || "Not specified"}</p>
+                <p className="mt-1 text-gray-700">
+                  {label === "Date of Birth" && value 
+                    ? formatDateForDisplay(new Date(value).toISOString())
+                    : value || "Not specified"
+                  }
+                </p>
               )}
             </div>
           ))}
@@ -372,8 +494,20 @@ const ProfilePage = () => {
           {error && <p className="text-red-500 mt-2">{error}</p>}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleChangePassword} color="primary">Save</Button>
-          <Button onClick={() => setPasswordDialogOpen(false)} color="secondary">Cancel</Button>
+          <Button onClick={handleChangePassword} color="primary">
+            Save
+          </Button>
+          <Button
+            onClick={() => {
+              setPasswordDialogOpen(false);
+              setError("");
+              setCurrentPassword("");
+              setNewPassword("");
+            }}
+            color="secondary"
+          >
+            Cancel
+          </Button>
         </DialogActions>
       </Dialog>
     </div>

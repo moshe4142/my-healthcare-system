@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+// pages/medicalEquipment.tsx
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -13,6 +14,7 @@ import {
   Stack,
   Divider,
   Badge,
+  CircularProgress,
 } from "@mui/material";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
 import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
@@ -22,16 +24,20 @@ interface Equipment {
   name: string;
   description: string;
   price: string;
-  status: string; // במקום availability
+  availability: "In Stock" | "Out of Stock" | "Limited Stock" | string;
 }
 
-const getStatusChip = (status: string) => {
+const getAvailabilityChip = (status: Equipment["availability"]) => {
+  if (!status || typeof status !== "string") {
+    return <Chip label="Unknown" color="default" variant="outlined" size="small" />;
+  }
+
   switch (status.toLowerCase()) {
-    case 'available':
-      return <Chip label="Available" color="success" variant="outlined" size="small" />;
-    case 'out of stock':
+    case "in stock":
+      return <Chip label="In Stock" color="success" variant="outlined" size="small" />;
+    case "out of stock":
       return <Chip label="Out of Stock" color="error" variant="outlined" size="small" />;
-    case 'limited':
+    case "limited stock":
       return <Chip label="Limited Stock" color="warning" variant="outlined" size="small" />;
     default:
       return <Chip label={status} color="default" variant="outlined" size="small" />;
@@ -47,12 +53,16 @@ const MedicalEquipmentPage = () => {
   useEffect(() => {
     const fetchEquipment = async () => {
       try {
-        const res = await fetch('/api/medicalEquipmentProduct');
-        if (!res.ok) throw new Error('Failed to fetch equipment');
+        const res = await fetch("/api/medicalEquipmentProduct", {
+          headers: {
+            // You can optionally pass a JWT cookie here if needed
+          },
+        });
+        if (!res.ok) throw new Error("Failed to fetch equipment");
         const data = await res.json();
         setEquipmentData(data);
       } catch (err: any) {
-        setError(err.message || 'Unknown error');
+        setError(err.message || "Unknown error");
       } finally {
         setLoading(false);
       }
@@ -63,7 +73,7 @@ const MedicalEquipmentPage = () => {
 
   if (loading) {
     return (
-      <Box sx={{ textAlign: 'center', mt: 10 }}>
+      <Box sx={{ textAlign: "center", mt: 10 }}>
         <CircularProgress />
       </Box>
     );
@@ -71,7 +81,7 @@ const MedicalEquipmentPage = () => {
 
   if (error) {
     return (
-      <Typography variant="h6" sx={{ textAlign: 'center', mt: 10 }}>
+      <Typography variant="h6" sx={{ textAlign: "center", mt: 10 }}>
         {error}
       </Typography>
     );
@@ -82,13 +92,19 @@ const MedicalEquipmentPage = () => {
       sx={{
         background: "linear-gradient(to bottom, #e0f7fa, #ffffff)",
         minHeight: "70vh",
-        // paddingTop: 8,
         py: 15,
         px: { xs: 2, md: 6 },
         color: "#212121",
       }}
     >
-      <Paper elevation={3} sx={{ p: { xs: 3, md: 5 }, borderRadius: 3 }}>
+      <Paper
+        elevation={3}
+        sx={{
+          p: { xs: 3, md: 5 },
+          borderRadius: 3,
+          backgroundColor: "#ffffff",
+        }}
+      >
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Typography variant="h4" fontWeight={600}>
             🏥 Medical Equipment Inventory
@@ -114,11 +130,7 @@ const MedicalEquipmentPage = () => {
           </Badge>
         </Stack>
 
-        <TableContainer
-          component={Paper}
-          variant="outlined"
-          sx={{ bgcolor: "#fafafa" }}
-        >
+        <TableContainer component={Paper} variant="outlined" sx={{ bgcolor: "#fafafa" }}>
           <Table>
             <TableHead>
               <TableRow sx={{ bgcolor: "#e3f2fd" }}>
@@ -131,10 +143,10 @@ const MedicalEquipmentPage = () => {
             <TableBody>
               {equipmentData.map((item) => (
                 <TableRow key={item.id} hover>
-                  <TableCell>{item.name}</TableCell>
-                  <TableCell>{item.description}</TableCell>
-                  <TableCell>{item.price}</TableCell>
-                  <TableCell>{getStatusChip(item.status)}</TableCell>
+                  <TableCell sx={{ color: "#212121" }}>{item.name}</TableCell>
+                  <TableCell sx={{ color: "#212121" }}>{item.description}</TableCell>
+                  <TableCell sx={{ color: "#212121" }}>{item.price}</TableCell>
+                  <TableCell>{getAvailabilityChip(item.availability)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
