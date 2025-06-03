@@ -1,5 +1,4 @@
-// pages/medicalEquipment.tsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Typography,
@@ -14,62 +13,69 @@ import {
   Stack,
   Divider,
   Badge,
+  CircularProgress,
 } from '@mui/material';
-import Inventory2Icon from '@mui/icons-material/Inventory2';
-import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 
-// ציוד רפואי לדוגמה
 interface Equipment {
   id: number;
   name: string;
   description: string;
   price: string;
-  availability: 'In Stock' | 'Out of Stock';
+  status: string; // במקום availability
 }
 
-const equipmentData: Equipment[] = [
-  {
-    id: 1,
-    name: 'X-ray Machine',
-    description: 'High-resolution X-ray machine for diagnostic purposes.',
-    price: '$5000',
-    availability: 'In Stock',
-  },
-  {
-    id: 2,
-    name: 'MRI Scanner',
-    description: 'MRI scanner for detailed imaging of internal organs.',
-    price: '$12000',
-    availability: 'Out of Stock',
-  },
-  {
-    id: 3,
-    name: 'Defibrillator',
-    description: 'Delivers electric shock to the heart in emergencies.',
-    price: '$3000',
-    availability: 'In Stock',
-  },
-];
-
-const getAvailabilityChip = (status: Equipment['availability']) => {
-  return status === 'In Stock' ? (
-    <Chip
-      label="In Stock"
-      color="success"
-      variant="outlined"
-      size="small"
-    />
-  ) : (
-    <Chip
-      label="Out of Stock"
-      color="error"
-      variant="outlined"
-      size="small"
-    />
-  );
+const getStatusChip = (status: string) => {
+  switch (status.toLowerCase()) {
+    case 'available':
+      return <Chip label="Available" color="success" variant="outlined" size="small" />;
+    case 'out of stock':
+      return <Chip label="Out of Stock" color="error" variant="outlined" size="small" />;
+    case 'limited':
+      return <Chip label="Limited Stock" color="warning" variant="outlined" size="small" />;
+    default:
+      return <Chip label={status} color="default" variant="outlined" size="small" />;
+  }
 };
 
+
 const MedicalEquipmentPage = () => {
+  const [equipmentData, setEquipmentData] = useState<Equipment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchEquipment = async () => {
+      try {
+        const res = await fetch('/api/medicalEquipmentProduct');
+        if (!res.ok) throw new Error('Failed to fetch equipment');
+        const data = await res.json();
+        setEquipmentData(data);
+      } catch (err: any) {
+        setError(err.message || 'Unknown error');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEquipment();
+  }, []);
+
+  if (loading) {
+    return (
+      <Box sx={{ textAlign: 'center', mt: 10 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Typography variant="h6" sx={{ textAlign: 'center', mt: 10 }}>
+        {error}
+      </Typography>
+    );
+  }
+
   return (
     <Box
       sx={{
@@ -80,15 +86,7 @@ const MedicalEquipmentPage = () => {
         color: '#212121',
       }}
     >
-      <Paper
-        elevation={3}
-        sx={{
-          p: { xs: 3, md: 5 },
-          borderRadius: 3,
-          backgroundColor: '#ffffff',
-          color: '#212121',
-        }}
-      >
+      <Paper elevation={3} sx={{ p: { xs: 3, md: 5 }, borderRadius: 3 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Typography variant="h4" fontWeight={600}>
             🏥 Medical Equipment Inventory
@@ -122,10 +120,10 @@ const MedicalEquipmentPage = () => {
             <TableBody>
               {equipmentData.map((item) => (
                 <TableRow key={item.id} hover>
-                  <TableCell sx={{ color: '#212121' }}>{item.name}</TableCell>
-                  <TableCell sx={{ color: '#212121' }}>{item.description}</TableCell>
-                  <TableCell sx={{ color: '#212121' }}>{item.price}</TableCell>
-                  <TableCell>{getAvailabilityChip(item.availability)}</TableCell>
+                  <TableCell>{item.name}</TableCell>
+                  <TableCell>{item.description}</TableCell>
+                  <TableCell>{item.price}</TableCell>
+                  <TableCell>{getStatusChip(item.status)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
