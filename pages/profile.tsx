@@ -252,11 +252,19 @@ const ProfilePage = () => {
     ? fullName.split(" ").map((n) => n[0]).join("")
     : "👤";
 
+  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <div className="p-6 bg-gradient-to-b from-[#e0f7fa] to-white min-h-screen text-gray-800">
       <div className="max-w-4xl mx-auto bg-white shadow-md rounded-xl p-6 space-y-6">
         <div className="flex justify-center">
-          <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size="large">
+          <IconButton onClick={handleMenu} size="large">
             {image_url ? (
               <Avatar src={image_url} sx={{ width: 64, height: 64 }} />
             ) : (
@@ -264,16 +272,22 @@ const ProfilePage = () => {
             )}
           </IconButton>
 
-          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+          >
             <MenuItem component="label">
               Upload Photo
               <input type="file" hidden onChange={(e) => { handleImageUpload(e); setAnchorEl(null); }} />
             </MenuItem>
-            <MenuItem onClick={() => { deletePhoto(); setAnchorEl(null); }}>Delete Photo</MenuItem>
-            <MenuItem onClick={() => { setPasswordDialogOpen(true); setAnchorEl(null); }}>Change Password</MenuItem>
-            <MenuItem onClick={() => { handleLogout(); setAnchorEl(null); }}>Logout</MenuItem>
-            <MenuItem onClick={() => { handleDeleteAccount(); setAnchorEl(null); }}>
-              <p className="text-red-500">Delete Account</p>
+            <MenuItem
+              onClick={() => {
+                handleDeleteAccount();
+                handleClose();
+              }}
+            >
+              <p className="text-red-400">Delete Account</p>
             </MenuItem>
           </Menu>
         </div>
@@ -295,16 +309,20 @@ const ProfilePage = () => {
                   value={value}
                   onChange={(e) => setter(e.target.value)}
                   className="block w-full border px-4 py-2 mt-1 rounded"
+                  required={label !== "Address"} // Make address optional
                 />
               ) : (
-                <p className="mt-1 text-gray-700">{value}</p>
+                <p className="mt-1 text-gray-700">{value || "Not specified"}</p>
               )}
             </div>
           ))}
 
           {isEditing && (
             <div className="flex justify-end gap-4 pt-6">
-              <button type="submit" className="bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded-md">
+              <button
+                type="submit"
+                className="bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded-md"
+              >
                 Save
               </button>
               <button
@@ -331,7 +349,10 @@ const ProfilePage = () => {
         )}
       </div>
 
-      <Dialog open={passwordDialogOpen} onClose={() => setPasswordDialogOpen(false)}>
+      <Dialog
+        open={passwordDialogOpen}
+        onClose={() => setPasswordDialogOpen(false)}
+      >
         <DialogTitle>Change Password</DialogTitle>
         <DialogContent>
           <input

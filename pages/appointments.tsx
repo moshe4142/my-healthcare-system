@@ -65,7 +65,8 @@ const AppointmentsPage = () => {
   return (
     <Box
       sx={{
-        minHeight: "100vh",
+        minHeight: "70vh",
+        paddingTop: 8,
         display: "flex",
         flexDirection: "column",
         background: "linear-gradient(to bottom, #e0f7fa, #ffffff)",

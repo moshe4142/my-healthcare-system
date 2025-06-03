@@ -132,9 +132,9 @@ const PaymentsPage = () => {
     };
 
     
-    // מסוכן מאוד מאוד מאוד לא לשכוח למחוק את השורה הזאת!!!!!!!!!!!!!!!!!!!!!!
-    localStorage.setItem("paymentData", JSON.stringify(paymentData));
-    /////////
+    // // מסוכן מאוד מאוד מאוד לא לשכוח למחוק את השורה הזאת!!!!!!!!!!!!!!!!!!!!!!
+    // localStorage.setItem("paymentData", JSON.stringify(paymentData));
+    // /////////
 
 
     localStorage.removeItem("cartItems");

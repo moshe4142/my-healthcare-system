@@ -13,8 +13,9 @@ import {
   Stack,
   Divider,
   Badge,
-  CircularProgress,
-} from '@mui/material';
+} from "@mui/material";
+import Inventory2Icon from "@mui/icons-material/Inventory2";
+import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
 
 interface Equipment {
   id: number;
@@ -79,11 +80,12 @@ const MedicalEquipmentPage = () => {
   return (
     <Box
       sx={{
-        background: 'linear-gradient(to bottom, #e0f7fa, #ffffff)',
-        minHeight: '100vh',
-        py: 6,
+        background: "linear-gradient(to bottom, #e0f7fa, #ffffff)",
+        minHeight: "70vh",
+        // paddingTop: 8,
+        py: 15,
         px: { xs: 2, md: 6 },
-        color: '#212121',
+        color: "#212121",
       }}
     >
       <Paper elevation={3} sx={{ p: { xs: 3, md: 5 }, borderRadius: 3 }}>
@@ -93,28 +95,37 @@ const MedicalEquipmentPage = () => {
           </Typography>
         </Stack>
 
-        <Typography variant="body1" sx={{ color: '#212121', my: 2 }}>
+        <Typography variant="body1" sx={{ color: "#212121", my: 2 }}>
           This table displays available equipment for pharmacy technical staff.
         </Typography>
 
         <Divider sx={{ mb: 3 }} />
 
-        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ mb: 2 }}
+        >
           <Badge badgeContent={equipmentData.length} color="primary">
-            <Typography variant="subtitle1" sx={{ color: '#212121' }}>
+            <Typography variant="subtitle1" sx={{ color: "#212121" }}>
               🧰 Total Equipment
             </Typography>
           </Badge>
         </Stack>
 
-        <TableContainer component={Paper} variant="outlined" sx={{ bgcolor: '#fafafa' }}>
+        <TableContainer
+          component={Paper}
+          variant="outlined"
+          sx={{ bgcolor: "#fafafa" }}
+        >
           <Table>
             <TableHead>
-              <TableRow sx={{ bgcolor: '#e3f2fd' }}>
-                <TableCell sx={{ color: '#212121' }}>Name</TableCell>
-                <TableCell sx={{ color: '#212121' }}>Description</TableCell>
-                <TableCell sx={{ color: '#212121' }}>Price</TableCell>
-                <TableCell sx={{ color: '#212121' }}>Availability</TableCell>
+              <TableRow sx={{ bgcolor: "#e3f2fd" }}>
+                <TableCell sx={{ color: "#212121" }}>Name</TableCell>
+                <TableCell sx={{ color: "#212121" }}>Description</TableCell>
+                <TableCell sx={{ color: "#212121" }}>Price</TableCell>
+                <TableCell sx={{ color: "#212121" }}>Availability</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
