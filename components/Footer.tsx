@@ -13,6 +13,7 @@ import {
   AccessTime,
   Star,
 } from "@mui/icons-material";
+import Flight from "@mui/icons-material/Flight";
 
 const Footer = () => {
   return (
@@ -151,7 +152,7 @@ const Footer = () => {
                     <Email sx={{ fontSize: 20 }} />
                   </Box>
                   <Typography variant="body2" sx={{ color: "#bbdefb" }}>
-                    pharmacy@example.com
+                    josef_stalin@gmail.com
                   </Typography>
                 </Paper>
 
@@ -189,7 +190,7 @@ const Footer = () => {
                     <Phone sx={{ fontSize: 20 }} />
                   </Box>
                   <Typography variant="body2" sx={{ color: "#bbdefb" }}>
-                    +1 (234) 567-890
+                    +972 52-283-5881
                   </Typography>
                 </Paper>
 
@@ -227,7 +228,7 @@ const Footer = () => {
                     <LocationOn sx={{ fontSize: 20 }} />
                   </Box>
                   <Typography variant="body2" sx={{ color: "#bbdefb" }}>
-                    123 Health Street, Tel Aviv
+                    Tehran, Iran
                   </Typography>
                 </Paper>
               </Stack>
@@ -254,7 +255,7 @@ const Footer = () => {
                 >
                   <AccessTime sx={{ fontSize: 16, color: "#4fc3f7", mr: 1 }} />
                   <Typography variant="body2" sx={{ color: "#bbdefb" }}>
-                    Mon-Thu: 08:00-20:00
+                    sun-Thu: 08:30-17:00
                   </Typography>
                 </Box>
                 <Box
@@ -382,9 +383,17 @@ const Footer = () => {
           <Box sx={{ textAlign: { xs: "center", md: "right" } }}>
             <Typography
               variant="body2"
-              sx={{ color: "#81d4fa", fontWeight: 500 }}
+              sx={{
+                color: "#81d4fa",
+                fontWeight: 500,
+                display: "flex",
+                alignItems: "center",
+                gap: 1, // רווח בין האייקון לטקסט
+                justifyContent: { xs: "center", md: "flex-end" },
+              }}
             >
-              © 2025 Pharmacy System | All rights reserved
+              <Flight sx={{ fontSize: 18 }} />
+              © 2025 Ma'aT Unit (מע״ת) | All rights reserved
             </Typography>
             <Typography
               variant="caption"
