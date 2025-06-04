@@ -24,11 +24,12 @@ interface Equipment {
   name: string;
   description: string;
   price: string;
-  availability: "In Stock" | "Out of Stock" | "Limited Stock" | string;
+  status: "In Stock" | "Out of Stock" | "Limited Stock" | string;
 }
 
-const getAvailabilityChip = (status: Equipment["availability"]) => {
+const getAvailabilityChip = (status: Equipment["status"]) => {
   if (!status || typeof status !== "string") {
+    console.log(status);
     return <Chip label="Unknown" color="default" variant="outlined" size="small" />;
   }
 
@@ -137,7 +138,7 @@ const MedicalEquipmentPage = () => {
                 <TableCell sx={{ color: "#212121" }}>Name</TableCell>
                 <TableCell sx={{ color: "#212121" }}>Description</TableCell>
                 <TableCell sx={{ color: "#212121" }}>Price</TableCell>
-                <TableCell sx={{ color: "#212121" }}>Availability</TableCell>
+                <TableCell sx={{ color: "#212121" }}>status</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -146,7 +147,7 @@ const MedicalEquipmentPage = () => {
                   <TableCell sx={{ color: "#212121" }}>{item.name}</TableCell>
                   <TableCell sx={{ color: "#212121" }}>{item.description}</TableCell>
                   <TableCell sx={{ color: "#212121" }}>{item.price}</TableCell>
-                  <TableCell>{getAvailabilityChip(item.availability)}</TableCell>
+                  <TableCell>{getAvailabilityChip(item.status)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
