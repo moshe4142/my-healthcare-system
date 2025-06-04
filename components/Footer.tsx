@@ -354,21 +354,28 @@ const Footer = () => {
               <Twitter />
             </IconButton>
 
-            <IconButton
-              sx={{
-                width: 48,
-                height: 48,
-                background: "linear-gradient(45deg, #e1306c, #fd1d1d)",
-                color: "white",
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  transform: "scale(1.1)",
-                  boxShadow: "0 8px 25px rgba(225, 48, 108, 0.3)",
-                },
-              }}
+            <a
+              href="https://www.instagram.com/josefstalinofficial/"
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              <Instagram />
-            </IconButton>
+              <IconButton
+                sx={{
+                  width: 48,
+                  height: 48,
+                  background: "linear-gradient(45deg, #e1306c, #fd1d1d)",
+                  color: "white",
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    transform: "scale(1.1)",
+                    boxShadow: "0 8px 25px rgba(225, 48, 108, 0.3)",
+                  },
+                }}
+              >
+                <Instagram />
+              </IconButton>
+            </a>
+
           </Stack>
 
           {/* Copyright */}
