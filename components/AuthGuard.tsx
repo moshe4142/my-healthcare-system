@@ -2,50 +2,57 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import Skeleton from "./LoadingSpinner"; // Your loading spinner component
+import Skeleton from "./LoadingSpinner"; // Optional spinner component
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
-  // All hooks must be at the top level
-  const [isLoading, setIsLoading] = useState(true);
-  const [checked, setChecked] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
 
-const publicPaths = ["/login", "/signup", "/reset-password"];
+  const publicPaths = ["/login", "/signup", "/reset-password"];
 
-  // Simulate initial page load delay (optional)
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 700);
+    const checkAuth = async () => {
+      console.log("AuthGuard: useEffect triggered");
 
-    return () => clearTimeout(timer);
-  }, []);
+      try {
+        const res = await fetch("/api/auth/check", {
+          method: "GET",
+          credentials: "include", // include cookies with JWT
+        });
 
-  // Check auth state
-  useEffect(() => {
-    const token = localStorage.getItem("userToken");
+        if (res.ok) {
+          const data = await res.json();
+          setIsAuthenticated(true);
+        } else {
+          console.warn("AuthGuard: User not authenticated");
+          if (!publicPaths.includes(pathname)) {
+            router.push("/login");
+          }
+          setIsAuthenticated(false);
+        }
+      } catch (err) {
+        console.error("AuthGuard: Error checking authentication", err);
+        if (!publicPaths.includes(pathname)) {
+          router.push("/login");
+        }
+        setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    if (!token && !publicPaths.includes(pathname)) {
-      router.push("/login");
-    } else {
-      setIsAuthenticated(!!token);
-    }
-
-    setChecked(true);
+    checkAuth();
   }, [pathname, router]);
 
-  // Show skeleton while loading or checking auth
-  if (isLoading || !checked) {
-    return <Skeleton />;
+  if (isLoading) {
+    return <Skeleton />; // or just <div>Loading...</div> if you prefer
   }
 
-  // If not authenticated and not on a public page, block access
   if (!isAuthenticated && !publicPaths.includes(pathname)) {
-    return null;
+    return null; // prevent showing content before redirect
   }
 
-  // Otherwise, render children
   return <>{children}</>;
 }

@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import pool from '@/lib/db'; // עדכן בהתאם למיקום קובץ החיבור שלך
+import pool from '@/lib/db'; // או prisma אם אתה משתמש בו
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query;
@@ -23,6 +23,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (result.rowCount === 0) {
       return res.status(404).json({ error: 'User not found' });
     }
+
+    // כאן מאפסים את העוגיה של הטוקן
+    res.setHeader('Set-Cookie', `token=; Path=/; HttpOnly; Max-Age=0; SameSite=Lax; Secure`);
 
     return res.status(200).json({ message: 'User deleted successfully', user: result.rows[0] });
   } catch (error) {
