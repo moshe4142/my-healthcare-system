@@ -14,8 +14,23 @@ import {
   Star,
 } from "@mui/icons-material";
 import Flight from "@mui/icons-material/Flight";
+import { useRouter } from "next/router"; // ✅ Correct import
 
 const Footer = () => {
+  const router = useRouter(); // ✅ Get router instance
+
+ const handleAction = () => {
+  if (router.pathname === '/') {
+    // Already on homepage, just scroll to top
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  } else {
+    // Navigate to homepage
+    router.push('/');
+  }
+};
   return (
     <Box
       component="footer"
@@ -36,10 +51,10 @@ const Footer = () => {
           right: 0,
           bottom: 0,
           background: `
-            radial-gradient(circle at 20% 20%, rgba(255,255,255,0.1) 0%, transparent 50%),
-            radial-gradient(circle at 80% 80%, rgba(0,255,255,0.1) 0%, transparent 50%),
-            radial-gradient(circle at 50% 50%, rgba(255,255,255,0.05) 0%, transparent 70%)
-          `,
+              radial-gradient(circle at 20% 20%, rgba(255,255,255,0.1) 0%, transparent 50%),
+              radial-gradient(circle at 80% 80%, rgba(0,255,255,0.1) 0%, transparent 50%),
+              radial-gradient(circle at 50% 50%, rgba(255,255,255,0.05) 0%, transparent 70%)
+            `,
           zIndex: 1,
         },
       }}
@@ -61,6 +76,7 @@ const Footer = () => {
             <Box sx={{ textAlign: { xs: "center", md: "left" } }}>
               <Paper
                 elevation={0}
+                onClick={handleAction}
                 sx={{
                   width: 64,
                   height: 64,
@@ -189,9 +205,14 @@ const Footer = () => {
                   >
                     <Phone sx={{ fontSize: 20 }} />
                   </Box>
-                  <Typography variant="body2" sx={{ color: "#bbdefb" }}>
-                    +972 52-283-5881
-                  </Typography>
+                  <a
+                    href="tel:+972584084177"
+                    style={{ textDecoration: "none" }}
+                  >
+                    <Typography variant="body2" sx={{ color: "#bbdefb" }}>
+                      +972 58-408-4177
+                    </Typography>
+                  </a>
                 </Paper>
 
                 <Paper
@@ -227,9 +248,16 @@ const Footer = () => {
                   >
                     <LocationOn sx={{ fontSize: 20 }} />
                   </Box>
-                  <Typography variant="body2" sx={{ color: "#bbdefb" }}>
-                    Tehran, Iran
-                  </Typography>
+                  <a
+                    href="https://www.google.com/maps/place/%D7%98%D7%94%D7%A8%D7%9F,+%D7%90%D7%99%D7%A8%D7%90%D7%9F%E2%80%AD/@35.7077402,51.5124614,11z/data=!3m1!4b1!4m6!3m5!1s0x3f8e00491ff3dcd9:0xf0b3697c567024bc!8m2!3d35.7218583!4d51.3346954!16zL20vMGZ0bHg?entry=ttu&g_ep=EgoyMDI1MDYwMi4wIKXMDSoASAFQAw%3D%3D"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ textDecoration: "none" }}
+                  >
+                    <Typography variant="body2" sx={{ color: "#bbdefb" }}>
+                      Tehran, Iran
+                    </Typography>
+                  </a>
                 </Paper>
               </Stack>
             </Box>
@@ -323,37 +351,49 @@ const Footer = () => {
         >
           {/* Social Icons */}
           <Stack direction="row" spacing={2} sx={{ mb: { xs: 3, md: 0 } }}>
-            <IconButton
-              sx={{
-                width: 48,
-                height: 48,
-                background: "linear-gradient(45deg, #3b5998, #4267b2)",
-                color: "white",
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  transform: "scale(1.1)",
-                  boxShadow: "0 8px 25px rgba(59, 89, 152, 0.3)",
-                },
-              }}
+            <a
+              href="https://www.facebook.com/"
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              <Facebook />
-            </IconButton>
+              <IconButton
+                sx={{
+                  width: 48,
+                  height: 48,
+                  background: "linear-gradient(45deg, #3b5998, #4267b2)",
+                  color: "white",
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    transform: "scale(1.1)",
+                    boxShadow: "0 8px 25px rgba(59, 89, 152, 0.3)",
+                  },
+                }}
+              >
+                <Facebook />
+              </IconButton>
+            </a>
 
-            <IconButton
-              sx={{
-                width: 48,
-                height: 48,
-                background: "linear-gradient(45deg, #1da1f2, #0d8bd9)",
-                color: "white",
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  transform: "scale(1.1)",
-                  boxShadow: "0 8px 25px rgba(29, 161, 242, 0.3)",
-                },
-              }}
+            <a
+              href="https://www.twitter.com"
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              <Twitter />
-            </IconButton>
+              <IconButton
+                sx={{
+                  width: 48,
+                  height: 48,
+                  background: "linear-gradient(45deg, #1da1f2, #0d8bd9)",
+                  color: "white",
+                  transition: "all 0.3s ease",
+                  "&:hover": {
+                    transform: "scale(1.1)",
+                    boxShadow: "0 8px 25px rgba(29, 161, 242, 0.3)",
+                  },
+                }}
+              >
+                <Twitter />
+              </IconButton>
+            </a>
 
             <a
               href="https://www.instagram.com/josefstalinofficial/"
@@ -376,7 +416,6 @@ const Footer = () => {
                 <Instagram />
               </IconButton>
             </a>
-
           </Stack>
 
           {/* Copyright */}
@@ -392,8 +431,8 @@ const Footer = () => {
                 justifyContent: { xs: "center", md: "flex-end" },
               }}
             >
-              <Flight sx={{ fontSize: 18 }} />
-              © 2025 Ma'aT Unit (מע״ת) | All rights reserved
+              <Flight sx={{ fontSize: 18 }} />© 2025 Ma'aT Unit (מע״ת) | All
+              rights reserved
             </Typography>
             <Typography
               variant="caption"
