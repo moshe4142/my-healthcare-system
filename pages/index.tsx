@@ -181,11 +181,23 @@ const HomePage = () => {
     [handleSearch]
   );
 
+
+  const scrollToTop = useCallback(() => {
+    window.scrollTo({
+      top: 550,
+      behavior: "smooth",
+    });
+  }, []);
+
+
   const toggleViewAll = useCallback(() => {
     setViewAll(!viewAll);
     if (viewAll) {
       setCurrentPage(1);
+          scrollToTop();
+
     }
+    scrollToTop();
   }, [viewAll]);
 
   // הפונקציה המתוקנת עם טיפוס מפורש
@@ -235,34 +247,7 @@ const HomePage = () => {
         </Typography>
       </Box>
 
-      <Box sx={{ display: "flex", justifyContent: "center", my: 5, px: 2 }}>
-        <TextField
-          variant="outlined"
-          placeholder="Search for medicines, supplements, products..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          onKeyDown={handleKeyDown}
-          sx={{
-            width: { xs: "100%", sm: "60%", md: "50%" },
-            backgroundColor: "white",
-            borderRadius: 2,
-          }}
-        />
-        <IconButton
-          onClick={handleSearch}
-          sx={{
-            width: 56,
-            ml: 2,
-            backgroundColor: "#1976d2",
-            color: "white",
-            borderRadius: 2,
-            "&:hover": { backgroundColor: "#115293" },
-          }}
-        >
-          <Search />
-        </IconButton>
-      </Box>
-
+     
       {/* Services Section */}
       <Box sx={{ px: 5, py: 6, backgroundColor: "#f8f9fa" }}>
         <Typography
@@ -330,6 +315,35 @@ const HomePage = () => {
           </Grid>
         </Grid>
       </Box>
+
+       <Box sx={{ display: "flex", justifyContent: "center", my: 5, px: 2 }}>
+        <TextField
+          variant="outlined"
+          placeholder="Search for medicines, supplements, products..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          onKeyDown={handleKeyDown}
+          sx={{
+            width: { xs: "100%", sm: "60%", md: "50%" },
+            backgroundColor: "white",
+            borderRadius: 2,
+          }}
+        />
+        {/* <IconButton */}
+          {/* onClick={handleSearch}
+          sx={{
+            width: 56,
+            ml: 2,
+            backgroundColor: "#1976d2",
+            color: "white",
+            borderRadius: 2,
+            "&:hover": { backgroundColor: "#115293" },
+          }}
+        > */}
+          {/* <Search /> */}
+        {/* </IconButton> */}
+      </Box>
+
 
       <Box sx={{ px: 5, pb: 4 }}>
         <Typography
