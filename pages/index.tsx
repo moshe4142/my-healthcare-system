@@ -243,7 +243,7 @@ const HomePage = () => {
               fontSize: { xs: "2.5rem", md: "3.5rem" },
             }}
           >
-            ברוכים הבאים למערכת בית המרקחת
+            Welcome to the Pharmacy System
           </Typography>
           <Typography
             variant="h6"
@@ -253,7 +253,7 @@ const HomePage = () => {
               fontWeight: 400,
             }}
           >
-            פתרונות בריאות מהימנים למשפחתכם
+            Trusted health solutions for your family
           </Typography>
         </Box>
 
@@ -267,7 +267,7 @@ const HomePage = () => {
           >
             <TextField
               variant="outlined"
-              placeholder="חפש תרופות, תוספי תזונה, מוצרים..."
+              placeholder="Search medications, supplements, products..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyDown={handleKeyDown}
@@ -311,7 +311,7 @@ const HomePage = () => {
               WebkitTextFillColor: "transparent",
             }}
           >
-            מוצרים פופולריים
+            Popular Products
           </Typography>
 
           <Grid container spacing={4} justifyContent="center">
@@ -427,7 +427,7 @@ const HomePage = () => {
 
                         {/* Sale Badge */}
                         <Chip
-                          label="מבצע"
+                          label="Sale"
                           color="error"
                           size="small"
                           icon={<LocalOffer />}
@@ -518,7 +518,7 @@ const HomePage = () => {
                               fontSize: "1.3rem",
                             }}
                           >
-                            ₪{product.price.toFixed(2)}
+                            ${product.price.toFixed(2)}
                           </Typography>
                           <Typography
                             variant="body2"
@@ -528,7 +528,7 @@ const HomePage = () => {
                               fontSize: "0.9rem",
                             }}
                           >
-                            ₪{(product.price * 1.2).toFixed(2)}
+                            ${(product.price * 1.2).toFixed(2)}
                           </Typography>
                         </Box>
 
@@ -552,7 +552,7 @@ const HomePage = () => {
                               transition: "all 0.3s ease",
                             }}
                           >
-                            צפה במוצר
+                            View Product
                           </Button>
                           <Button
                             variant="contained"
@@ -573,7 +573,7 @@ const HomePage = () => {
                               transition: "all 0.3s ease",
                             }}
                           >
-                            הוסף לעגלה
+                            Add to Cart
                           </Button>
                         </Stack>
                       </CardContent>
@@ -585,7 +585,7 @@ const HomePage = () => {
               <Grid item xs={12}>
                 <Box sx={{ textAlign: "center", py: 8 }}>
                   <Typography sx={{ color: "#888", fontSize: "1.1rem" }}>
-                    לא נמצאו מוצרים עבור "{searchTerm}"
+                    No products found for "{searchTerm}"
                   </Typography>
                 </Box>
               </Grid>
@@ -653,7 +653,7 @@ const HomePage = () => {
                 transition: "all 0.3s ease",
               }}
             >
-              {viewAll ? "חזור לעימוד" : "צפה בכל המוצרים"}
+              {viewAll ? "Back to Pagination" : "View All Products"}
             </Button>
           </Box>
         </Box>
@@ -678,7 +678,7 @@ const HomePage = () => {
             boxShadow: "0 8px 25px rgba(76, 175, 80, 0.3)",
           }}
         >
-          🛒 "{addedProductName}" נוסף לעגלה בהצלחה!
+          🛒 "{addedProductName}" successfully added to cart!
         </Alert>
       </Snackbar>
 
