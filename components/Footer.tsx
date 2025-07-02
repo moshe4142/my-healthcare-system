@@ -14,8 +14,11 @@ import {
   Star,
 } from "@mui/icons-material";
 import Flight from "@mui/icons-material/Flight";
+import { useTheme } from "@mui/material";
 
 const Footer = () => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
   return (
     <Box
       component="footer"
@@ -23,8 +26,9 @@ const Footer = () => {
         minHeight: "70vh",
         // paddingTop: 8,
         py: 15,
-        background:
-          "linear-gradient(135deg, #1a237e 0%, #0d47a1 50%, #1565c0 100%)",
+         background: isDark
+          ? "linear-gradient(135deg, #0d1b4d 0%, #0b2e63 50%, #104e82 100%)"
+          : "linear-gradient(135deg, #1a237e 0%, #0d47a1 50%, #1565c0 100%)",
         color: "white",
         position: "relative",
         overflow: "hidden",
@@ -376,7 +380,6 @@ const Footer = () => {
                 <Instagram />
               </IconButton>
             </a>
-
           </Stack>
 
           {/* Copyright */}
@@ -392,8 +395,8 @@ const Footer = () => {
                 justifyContent: { xs: "center", md: "flex-end" },
               }}
             >
-              <Flight sx={{ fontSize: 18 }} />
-              © 2025 Ma'aT Unit (מע״ת) | All rights reserved
+              <Flight sx={{ fontSize: 18 }} />© 2025 Ma'aT Unit (מע״ת) | All
+              rights reserved
             </Typography>
             <Typography
               variant="caption"

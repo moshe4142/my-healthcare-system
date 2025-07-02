@@ -1,15 +1,18 @@
 @import "tailwindcss";
 
+/* Fonts */
 @theme {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
+/* צבעים דיפולטיים */
 :root {
   --background: #ffffff;
   --foreground: #171717;
 }
 
+/* מצב כהה לפי מערכת הפעלה (עדיף שתשתמש במצב מותאם אישית עם toggle) */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
@@ -17,13 +20,18 @@
   }
 }
 
+/* רקע וטקסט דיפולטי */
 body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
-}
-html, body {
+  transition: background-color 0.4s ease, color 0.4s ease;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+/* גם root wrapper (ל־Next.js) */
+#__next {
+  transition: background-color 0.4s ease, color 0.4s ease;
 }

@@ -1,5 +1,3 @@
-// MedicalRecordsPage.tsx (client component)
-
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -20,6 +18,7 @@ import {
   Button,
   Badge,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import DownloadIcon from "@mui/icons-material/Download";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
@@ -43,7 +42,11 @@ const getTypeChip = (type: string) => {
           icon={<LocalHospitalIcon />}
           label="Prescription"
           variant="outlined"
-          sx={{ bgcolor: "#e3f2fd", color: "#0d47a1", borderColor: "#90caf9" }}
+          sx={{
+            bgcolor: "#e3f2fd",
+            color: "#0d47a1",
+            borderColor: "#90caf9",
+          }}
           size="small"
         />
       );
@@ -53,7 +56,11 @@ const getTypeChip = (type: string) => {
           icon={<ScienceIcon />}
           label="Blood Test"
           variant="outlined"
-          sx={{ bgcolor: "#fce4ec", color: "#880e4f", borderColor: "#f48fb1" }}
+          sx={{
+            bgcolor: "#fce4ec",
+            color: "#880e4f",
+            borderColor: "#f48fb1",
+          }}
           size="small"
         />
       );
@@ -64,11 +71,12 @@ const getTypeChip = (type: string) => {
 
 const MedicalRecordsPage: React.FC = () => {
   const [records, setRecords] = useState<MedicalRecord[]>([]);
+  const theme = useTheme();
 
   useEffect(() => {
     const fetchRecords = async () => {
       try {
-        const res = await axios.get(`/api/medical-records/1`); // Replace with auth-based ID
+        const res = await axios.get(`/api/medical-records/1`);
         const transformed = res.data.map((rec: any) => ({
           date: rec.record_date,
           type: rec.prescription ? "Prescription" : "Other",
@@ -101,12 +109,14 @@ const MedicalRecordsPage: React.FC = () => {
   return (
     <Box
       sx={{
-        background: "linear-gradient(to bottom, #e0f7fa, #ffffff)",
+        background:
+          theme.palette.mode === "dark"
+            ? "linear-gradient(to bottom, #121212, #1e1e1e)"
+            : "linear-gradient(to bottom, #e0f7fa, #ffffff)",
         minHeight: "70vh",
-        // paddingTop: 8,
         py: 15,
         px: { xs: 2, md: 6 },
-        color: "#212121",
+        color: theme.palette.text.primary,
       }}
     >
       <Paper
@@ -114,15 +124,11 @@ const MedicalRecordsPage: React.FC = () => {
         sx={{
           p: { xs: 3, md: 5 },
           borderRadius: 3,
-          backgroundColor: "#ffffff",
-          color: "#212121",
+          backgroundColor: theme.palette.background.paper,
+          color: theme.palette.text.primary,
         }}
       >
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-        >
+        <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Typography variant="h4" fontWeight={600}>
             📂 Medical Records
           </Typography>
@@ -130,28 +136,25 @@ const MedicalRecordsPage: React.FC = () => {
             variant="contained"
             component="label"
             startIcon={<UploadFileIcon />}
-            sx={{ bgcolor: "#0288d1" }}
+            sx={{
+              bgcolor: "#0288d1",
+              "&:hover": { bgcolor: "#0277bd" },
+            }}
           >
             Upload
             <input hidden type="file" onChange={handleUpload} />
           </Button>
         </Stack>
 
-        <Typography variant="body1" sx={{ color: "#212121", my: 2 }}>
-          View and manage your medical documents such as prescriptions, lab
-          results, and doctor reports.
+        <Typography variant="body1" sx={{ color: theme.palette.text.primary, my: 2 }}>
+          View and manage your medical documents such as prescriptions, lab results, and doctor reports.
         </Typography>
 
         <Divider sx={{ mb: 3 }} />
 
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-          sx={{ mb: 2 }}
-        >
+        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
           <Badge badgeContent={records.length} color="primary">
-            <Typography variant="subtitle1" sx={{ color: "#212121" }}>
+            <Typography variant="subtitle1" sx={{ color: theme.palette.text.primary }}>
               🗂️ Total Records
             </Typography>
           </Badge>
@@ -161,16 +164,21 @@ const MedicalRecordsPage: React.FC = () => {
           <TableContainer
             component={Paper}
             variant="outlined"
-            sx={{ bgcolor: "#fafafa" }}
+            sx={{ bgcolor: theme.palette.background.default }}
           >
             <Table>
               <TableHead>
-                <TableRow sx={{ bgcolor: "#e3f2fd" }}>
-                  <TableCell sx={{ color: "#212121" }}>Date</TableCell>
-                  <TableCell sx={{ color: "#212121" }}>Type</TableCell>
-                  <TableCell sx={{ color: "#212121" }}>Doctor</TableCell>
-                  <TableCell sx={{ color: "#212121" }}>Notes</TableCell>
-                  <TableCell align="center" sx={{ color: "#212121" }}>
+                <TableRow
+                  sx={{
+                    bgcolor:
+                      theme.palette.mode === "dark" ? "#2c2c2c" : "#e3f2fd",
+                  }}
+                >
+                  <TableCell sx={{ color: theme.palette.text.primary }}>Date</TableCell>
+                  <TableCell sx={{ color: theme.palette.text.primary }}>Type</TableCell>
+                  <TableCell sx={{ color: theme.palette.text.primary }}>Doctor</TableCell>
+                  <TableCell sx={{ color: theme.palette.text.primary }}>Notes</TableCell>
+                  <TableCell align="center" sx={{ color: theme.palette.text.primary }}>
                     Download
                   </TableCell>
                 </TableRow>
@@ -178,16 +186,10 @@ const MedicalRecordsPage: React.FC = () => {
               <TableBody>
                 {records.map((record, index) => (
                   <TableRow key={index} hover>
-                    <TableCell sx={{ color: "#212121" }}>
-                      {record.date}
-                    </TableCell>
+                    <TableCell sx={{ color: theme.palette.text.primary }}>{record.date}</TableCell>
                     <TableCell>{getTypeChip(record.type)}</TableCell>
-                    <TableCell sx={{ color: "#212121" }}>
-                      {record.doctor}
-                    </TableCell>
-                    <TableCell sx={{ color: "#212121" }}>
-                      {record.notes}
-                    </TableCell>
+                    <TableCell sx={{ color: theme.palette.text.primary }}>{record.doctor}</TableCell>
+                    <TableCell sx={{ color: theme.palette.text.primary }}>{record.notes}</TableCell>
                     <TableCell align="center">
                       <IconButton
                         href={`/files/${record.fileName}`}
@@ -204,14 +206,27 @@ const MedicalRecordsPage: React.FC = () => {
             </Table>
           </TableContainer>
         ) : (
-          <Paper sx={{ p: 3, mt: 4, textAlign: "center" }} variant="outlined">
+          <Paper
+            sx={{
+              p: 3,
+              mt: 4,
+              textAlign: "center",
+              backgroundColor: theme.palette.background.default,
+              color: theme.palette.text.secondary,
+            }}
+            variant="outlined"
+          >
             <InsertDriveFileIcon
-              sx={{ fontSize: 60, color: "#9e9e9e", mb: 1 }}
+              sx={{
+                fontSize: 60,
+                color: theme.palette.text.disabled,
+                mb: 1,
+              }}
             />
-            <Typography variant="h6" sx={{ color: "#212121" }}>
+            <Typography variant="h6" sx={{ color: theme.palette.text.primary }}>
               No records available
             </Typography>
-            <Typography variant="body2" sx={{ color: "#424242" }}>
+            <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
               Once your medical records are added, they will appear here.
             </Typography>
           </Paper>

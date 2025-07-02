@@ -8,6 +8,7 @@ import AuthGuard from "../components/AuthGuard";
 import Layout from "../components/Layout";
 import Skeleton from "../components/LoadingSpinner"; // the spinner component
 import "../styles/globals.css";
+import { ThemeProvider } from "../context/ThemeContext";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
@@ -29,14 +30,16 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   }, [router]);
 
   return (
-    <CartProvider>
-      <ProductsProvider>
-        <AuthGuard>
-          <Layout>
-            {isRouteLoading ? <Skeleton /> : <Component {...pageProps} />}
-          </Layout>
-        </AuthGuard>
-      </ProductsProvider>
-    </CartProvider>
+    <ThemeProvider>
+      <CartProvider>
+        <ProductsProvider>
+          <AuthGuard>
+            <Layout>
+              {isRouteLoading ? <Skeleton /> : <Component {...pageProps} />}
+            </Layout>
+          </AuthGuard>
+        </ProductsProvider>
+      </CartProvider>
+    </ThemeProvider>
   );
 }

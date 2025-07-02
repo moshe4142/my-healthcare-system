@@ -19,6 +19,8 @@ import ContactMailIcon from "@mui/icons-material/ContactMail";
 import LogoutIcon from "@mui/icons-material/Logout";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { useRouter } from "next/router";
+import ThemeToggleButton from "../context/ThemeToggle";
+import { useTheme } from "@mui/material"; // ✅
 
 interface ButtonAppBarProps {
   className?: string;
@@ -27,6 +29,8 @@ interface ButtonAppBarProps {
 const ButtonAppBar: React.FC<ButtonAppBarProps> = ({ className = "" }) => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const theme = useTheme(); // ✅
+  const isDark = theme.palette.mode === "dark"; // ✅
 
   const toggleDrawer = (state: boolean) => () => {
     setOpen(state);
@@ -39,8 +43,10 @@ const ButtonAppBar: React.FC<ButtonAppBarProps> = ({ className = "" }) => {
 
   const handleLogout = async () => {
     try {
-      const res = await fetch("/api/logout/logout", { method: "POST", credentials: "include" })
-;
+      const res = await fetch("/api/logout/logout", {
+        method: "POST",
+        credentials: "include",
+      });
 
       if (!res.ok) {
         const text = await res.text();
@@ -77,11 +83,16 @@ const ButtonAppBar: React.FC<ButtonAppBarProps> = ({ className = "" }) => {
       <AppBar
         position="fixed"
         className={className}
-        sx={{ backgroundColor: "#4db6ac", boxShadow: "none" }}
-      >
-        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <IconButton color="inherit" edge="start" onClick={toggleDrawer(true)}>
+        sx={{
+          background: isDark
+            ? "linear-gradient(135deg, #004d40 0%, #00695c 50%, #00796b 100%)"
+            : "linear-gradient(135deg, #4db6ac 0%, #26a69a 50%, #009688 100%)",
+            boxShadow: "none",
+          }}
+        >
+          <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <IconButton color="inherit" edge="start" onClick={toggleDrawer(true)}>
               <MenuIcon />
             </IconButton>
 
@@ -133,6 +144,7 @@ const ButtonAppBar: React.FC<ButtonAppBarProps> = ({ className = "" }) => {
             >
               Medical Records
             </Button>
+
             <Button
               color="inherit"
               onClick={() => router.push("/medicalEquipment")}
@@ -143,6 +155,8 @@ const ButtonAppBar: React.FC<ButtonAppBarProps> = ({ className = "" }) => {
             >
               Medical Equipment
             </Button>
+                          <ThemeToggleButton />
+
           </Box>
         </Toolbar>
       </AppBar>

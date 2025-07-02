@@ -16,6 +16,7 @@ import {
   Badge,
   CircularProgress,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
 import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
 
@@ -45,20 +46,16 @@ const getAvailabilityChip = (status: Equipment["status"]) => {
   }
 };
 
-
 const MedicalEquipmentPage = () => {
   const [equipmentData, setEquipmentData] = useState<Equipment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const theme = useTheme();
 
   useEffect(() => {
     const fetchEquipment = async () => {
       try {
-        const res = await fetch("/api/medicalEquipmentProduct", {
-          headers: {
-            // You can optionally pass a JWT cookie here if needed
-          },
-        });
+        const res = await fetch("/api/medicalEquipmentProduct");
         if (!res.ok) throw new Error("Failed to fetch equipment");
         const data = await res.json();
         setEquipmentData(data);
@@ -72,13 +69,13 @@ const MedicalEquipmentPage = () => {
     fetchEquipment();
   }, []);
 
-  if (loading) {
-    return (
-      <Box sx={{ textAlign: "center", mt: 10 }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <Box sx={{ textAlign: "center", mt: 10 }}>
+  //       <CircularProgress />
+  //     </Box>
+  //   );
+  // }
 
   if (error) {
     return (
@@ -91,11 +88,14 @@ const MedicalEquipmentPage = () => {
   return (
     <Box
       sx={{
-        background: "linear-gradient(to bottom, #e0f7fa, #ffffff)",
+        background:
+          theme.palette.mode === "dark"
+            ? "linear-gradient(to bottom, #121212, #1e1e1e)"
+            : "linear-gradient(to bottom, #e0f7fa, #ffffff)",
         minHeight: "70vh",
         py: 15,
         px: { xs: 2, md: 6 },
-        color: "#212121",
+        color: theme.palette.text.primary,
       }}
     >
       <Paper
@@ -103,7 +103,7 @@ const MedicalEquipmentPage = () => {
         sx={{
           p: { xs: 3, md: 5 },
           borderRadius: 3,
-          backgroundColor: "#ffffff",
+          backgroundColor: theme.palette.background.paper,
         }}
       >
         <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -112,7 +112,7 @@ const MedicalEquipmentPage = () => {
           </Typography>
         </Stack>
 
-        <Typography variant="body1" sx={{ color: "#212121", my: 2 }}>
+        <Typography variant="body1" sx={{ color: theme.palette.text.primary, my: 2 }}>
           This table displays available equipment for pharmacy technical staff.
         </Typography>
 
@@ -125,28 +125,37 @@ const MedicalEquipmentPage = () => {
           sx={{ mb: 2 }}
         >
           <Badge badgeContent={equipmentData.length} color="primary">
-            <Typography variant="subtitle1" sx={{ color: "#212121" }}>
+            <Typography variant="subtitle1" sx={{ color: theme.palette.text.primary }}>
               🧰 Total Equipment
             </Typography>
           </Badge>
         </Stack>
 
-        <TableContainer component={Paper} variant="outlined" sx={{ bgcolor: "#fafafa" }}>
+        <TableContainer
+          component={Paper}
+          variant="outlined"
+          sx={{ bgcolor: theme.palette.background.default }}
+        >
           <Table>
             <TableHead>
-              <TableRow sx={{ bgcolor: "#e3f2fd" }}>
-                <TableCell sx={{ color: "#212121" }}>Name</TableCell>
-                <TableCell sx={{ color: "#212121" }}>Description</TableCell>
-                <TableCell sx={{ color: "#212121" }}>Price</TableCell>
-                <TableCell sx={{ color: "#212121" }}>status</TableCell>
+              <TableRow
+                sx={{
+                  bgcolor:
+                    theme.palette.mode === "dark" ? "#2c2c2c" : "#e3f2fd",
+                }}
+              >
+                <TableCell sx={{ color: theme.palette.text.primary }}>Name</TableCell>
+                <TableCell sx={{ color: theme.palette.text.primary }}>Description</TableCell>
+                <TableCell sx={{ color: theme.palette.text.primary }}>Price</TableCell>
+                <TableCell sx={{ color: theme.palette.text.primary }}>status</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {equipmentData.map((item) => (
                 <TableRow key={item.id} hover>
-                  <TableCell sx={{ color: "#212121" }}>{item.name}</TableCell>
-                  <TableCell sx={{ color: "#212121" }}>{item.description}</TableCell>
-                  <TableCell sx={{ color: "#212121" }}>{item.price}</TableCell>
+                  <TableCell sx={{ color: theme.palette.text.primary }}>{item.name}</TableCell>
+                  <TableCell sx={{ color: theme.palette.text.primary }}>{item.description}</TableCell>
+                  <TableCell sx={{ color: theme.palette.text.primary }}>{item.price}</TableCell>
                   <TableCell>{getAvailabilityChip(item.status)}</TableCell>
                 </TableRow>
               ))}

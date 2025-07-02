@@ -37,8 +37,7 @@ import {
   Info,
 } from "@mui/icons-material";
 import { useCart } from "../../context/shoppingCartContext";
-import Footer from "@/components/Footer";
-
+import { useTheme } from "@mui/material/styles";
 interface Product {
   id: number;
   name: string;
@@ -56,6 +55,7 @@ const ProductPage = () => {
   const { productId } = router.query;
   const { addToCart } = useCart();
 
+  const theme = useTheme();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -101,7 +101,8 @@ const ProductPage = () => {
             borderRadius: 3,
             textAlign: "center",
             backgroundColor: "#ffffff",
-            boxShadow: "0 10px 40px rgba(0, 188, 212, 0.15), 0 4px 15px rgba(0, 150, 136, 0.1)",
+            boxShadow:
+              "0 10px 40px rgba(0, 188, 212, 0.15), 0 4px 15px rgba(0, 150, 136, 0.1)",
           }}
         >
           <CircularProgress size={60} sx={{ mb: 2 }} />
@@ -130,7 +131,8 @@ const ProductPage = () => {
             borderRadius: 3,
             textAlign: "center",
             backgroundColor: "#ffffff",
-            boxShadow: "0 10px 40px rgba(0, 188, 212, 0.15), 0 4px 15px rgba(0, 150, 136, 0.1)",
+            boxShadow:
+              "0 10px 40px rgba(0, 188, 212, 0.15), 0 4px 15px rgba(0, 150, 136, 0.1)",
           }}
         >
           <Typography variant="h4" color="error" gutterBottom>
@@ -146,17 +148,16 @@ const ProductPage = () => {
 
   return (
     <>
-      {/* Hero Section with White Background and Soft Shadows */}
       <Box
         sx={{
-          backgroundColor: "#ffffff",
+          backgroundColor: theme.palette.background.default,
           minHeight: "70vh",
-        paddingTop: 8,
+          paddingTop: 8,
           position: "relative",
           overflow: "hidden",
         }}
       >
-        {/* Soft Turquoise Shadow Elements */}
+        {/* Floating background shadows */}
         <Box
           sx={{
             position: "absolute",
@@ -165,7 +166,10 @@ const ProductPage = () => {
             width: 400,
             height: 400,
             borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(0, 188, 212, 0.08) 0%, rgba(0, 188, 212, 0.02) 50%, transparent 100%)",
+            background:
+              theme.palette.mode === "light"
+                ? "radial-gradient(circle, rgba(0, 188, 212, 0.08) 0%, rgba(0, 188, 212, 0.02) 50%, transparent 100%)"
+                : "radial-gradient(circle, rgba(0, 188, 212, 0.03) 0%, rgba(0, 188, 212, 0.01) 50%, transparent 100%)",
             filter: "blur(40px)",
             animation: "float 8s ease-in-out infinite",
           }}
@@ -178,7 +182,10 @@ const ProductPage = () => {
             width: 500,
             height: 500,
             borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(0, 150, 136, 0.06) 0%, rgba(0, 150, 136, 0.01) 50%, transparent 100%)",
+            background:
+              theme.palette.mode === "light"
+                ? "radial-gradient(circle, rgba(0, 150, 136, 0.06) 0%, rgba(0, 150, 136, 0.01) 50%, transparent 100%)"
+                : "radial-gradient(circle, rgba(0, 150, 136, 0.03) 0%, rgba(0, 150, 136, 0.01) 50%, transparent 100%)",
             filter: "blur(60px)",
             animation: "float 12s ease-in-out infinite reverse",
           }}
@@ -191,34 +198,50 @@ const ProductPage = () => {
             width: 300,
             height: 300,
             borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(79, 172, 254, 0.05) 0%, rgba(79, 172, 254, 0.01) 50%, transparent 100%)",
+            background:
+              theme.palette.mode === "light"
+                ? "radial-gradient(circle, rgba(79, 172, 254, 0.05) 0%, rgba(79, 172, 254, 0.01) 50%, transparent 100%)"
+                : "radial-gradient(circle, rgba(79, 172, 254, 0.02) 0%, rgba(79, 172, 254, 0.005) 50%, transparent 100%)",
             filter: "blur(50px)",
             animation: "float 10s ease-in-out infinite",
           }}
         />
 
-        <Container maxWidth="lg" sx={{ py: { xs: 4, md: 8 }, position: "relative", zIndex: 1 }}>
+        <Container
+          maxWidth="lg"
+          sx={{ py: { xs: 4, md: 8 }, position: "relative", zIndex: 1 }}
+        >
           <Fade in={true} timeout={800}>
             <Card
               elevation={0}
               sx={{
                 borderRadius: 4,
                 overflow: "hidden",
-                backgroundColor: "#ffffff",
-                boxShadow: "0 10px 40px rgba(0, 188, 212, 0.15), 0 4px 15px rgba(0, 150, 136, 0.1)",
+                backgroundColor: theme.palette.background.paper,
+                boxShadow:
+                  theme.palette.mode === "light"
+                    ? "0 10px 40px rgba(0, 188, 212, 0.15), 0 4px 15px rgba(0, 150, 136, 0.1)"
+                    : "0 10px 40px rgba(0, 188, 212, 0.08), 0 4px 15px rgba(0, 150, 136, 0.05)",
                 border: "1px solid rgba(0, 188, 212, 0.08)",
               }}
             >
               <Grid container>
-                {/* Product Image Section */}
                 <Grid item xs={12} md={6}>
-                  <Box sx={{ position: "relative", height: { xs: 400, md: 600 } }}>
+                  <Box
+                    sx={{ position: "relative", height: { xs: 400, md: 600 } }}
+                  >
                     {!imageLoaded && (
                       <Skeleton
                         variant="rectangular"
                         height="100%"
                         animation="wave"
-                        sx={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
+                        sx={{
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                        }}
                       />
                     )}
                     <CardMedia
@@ -234,8 +257,6 @@ const ProductPage = () => {
                         transition: "opacity 0.5s ease-in-out",
                       }}
                     />
-                    
-                    {/* Floating Action Buttons */}
                     <Box
                       sx={{
                         position: "absolute",
@@ -248,32 +269,14 @@ const ProductPage = () => {
                     >
                       <Tooltip title="הוסף למועדפים">
                         <IconButton
-                          sx={{
-                            bgcolor: "rgba(255,255,255,0.95)",
-                            boxShadow: "0 4px 12px rgba(0, 188, 212, 0.2)",
-                            "&:hover": { 
-                              bgcolor: "rgba(255,255,255,1)",
-                              boxShadow: "0 6px 16px rgba(0, 188, 212, 0.3)",
-                              transform: "translateY(-2px)",
-                            },
-                            transition: "all 0.3s ease",
-                          }}
+                          sx={{ bgcolor: "background.paper", boxShadow: 2 }}
                         >
                           <FavoriteBorder />
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="שתף">
                         <IconButton
-                          sx={{
-                            bgcolor: "rgba(255,255,255,0.95)",
-                            boxShadow: "0 4px 12px rgba(0, 188, 212, 0.2)",
-                            "&:hover": { 
-                              bgcolor: "rgba(255,255,255,1)",
-                              boxShadow: "0 6px 16px rgba(0, 188, 212, 0.3)",
-                              transform: "translateY(-2px)",
-                            },
-                            transition: "all 0.3s ease",
-                          }}
+                          sx={{ bgcolor: "background.paper", boxShadow: 2 }}
                         >
                           <Share />
                         </IconButton>
@@ -282,17 +285,16 @@ const ProductPage = () => {
                   </Box>
                 </Grid>
 
-                {/* Product Details Section */}
                 <Grid item xs={12} md={6}>
                   <CardContent sx={{ p: { xs: 3, md: 5 }, height: "100%" }}>
                     <Stack spacing={3} height="100%">
-                      {/* Product Header */}
                       <Box>
                         <Typography
                           variant="h3"
                           fontWeight={700}
                           sx={{
-                            background: "linear-gradient(45deg, #00bcd4, #009688)",
+                            background:
+                              "linear-gradient(45deg, #00bcd4, #009688)",
                             backgroundClip: "text",
                             WebkitBackgroundClip: "text",
                             WebkitTextFillColor: "transparent",
@@ -302,15 +304,29 @@ const ProductPage = () => {
                         >
                           {product.name}
                         </Typography>
-
                         {product.reviews && product.reviewCount && (
-                          <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                            <Box sx={{ display: "flex", alignItems: "center", mr: 2 }}>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              mb: 2,
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                mr: 2,
+                              }}
+                            >
                               {[...Array(5)].map((_, i) => (
                                 <Star
                                   key={i}
                                   sx={{
-                                    color: i < Math.floor(product.reviews!) ? "#ffb300" : "#e0e0e0",
+                                    color:
+                                      i < Math.floor(product.reviews ?? 0)
+                                        ? "#ffb300"
+                                        : "#e0e0e0",
                                     fontSize: "1.2rem",
                                   }}
                                 />
@@ -323,7 +339,6 @@ const ProductPage = () => {
                         )}
                       </Box>
 
-                      {/* Description */}
                       <Typography
                         variant="body1"
                         sx={{
@@ -335,7 +350,6 @@ const ProductPage = () => {
                         {product.description}
                       </Typography>
 
-                      {/* Price */}
                       <Box>
                         <Typography
                           variant="h4"
@@ -364,7 +378,6 @@ const ProductPage = () => {
                         />
                       </Box>
 
-                      {/* Trust Indicators */}
                       <Stack direction="row" spacing={2} sx={{ py: 2 }}>
                         <Chip
                           icon={<LocalShipping />}
@@ -382,7 +395,6 @@ const ProductPage = () => {
                         />
                       </Stack>
 
-                      {/* Add to Cart Button */}
                       <Box sx={{ mt: "auto" }}>
                         <Button
                           onClick={handleAddToCart}
@@ -395,16 +407,18 @@ const ProductPage = () => {
                             fontSize: "1.1rem",
                             fontWeight: 600,
                             borderRadius: 3,
-                            background: "linear-gradient(45deg, #00bcd4, #009688)",
+                            background:
+                              "linear-gradient(45deg, #00bcd4, #009688)",
                             "&:hover": {
-                              background: "linear-gradient(45deg, #00acc1, #00897b)",
+                              background:
+                                "linear-gradient(45deg, #00acc1, #00897b)",
                               transform: "translateY(-2px)",
                               boxShadow: "0 8px 25px rgba(0, 188, 212, 0.4)",
                             },
                             transition: "all 0.3s ease",
                           }}
                         >
-                         Add To Cart
+                          Add To Cart
                         </Button>
                       </Box>
                     </Stack>
@@ -413,132 +427,18 @@ const ProductPage = () => {
               </Grid>
             </Card>
           </Fade>
-
-          {/* Benefits and Ingredients Section */}
-          {/* <Fade in={true} timeout={1200}>
-            <Grid container spacing={4} sx={{ mt: 4 }}>
-              
-              <Grid item xs={12} md={6}>
-                <Card
-                  elevation={0}
-                  sx={{
-                    borderRadius: 3,
-                    backgroundColor: "#ffffff",
-                    boxShadow: "0 8px 32px rgba(0, 188, 212, 0.12), 0 4px 12px rgba(0, 150, 136, 0.08)",
-                    border: "1px solid rgba(0, 188, 212, 0.06)",
-                  }}
-                >
-                  <CardContent sx={{ p: 4 }}>
-                    <Typography
-                      variant="h5"
-                      fontWeight={700}
-                      color="primary"
-                      gutterBottom
-                      sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                    >
-                      <ThumbUp />
-                      יתרונות המוצר 
-                    </Typography>
-                    <Divider sx={{ mb: 3 }} />
-                    <List sx={{ p: 0 }}>
-                      {product.benefits?.map((benefit, index) => (
-                        <ListItem
-                          key={index}
-                          sx={{
-                            px: 0,
-                            py: 1.5,
-                            "&:hover": {
-                              backgroundColor: "rgba(0, 188, 212, 0.04)",
-                              borderRadius: 2,
-                            },
-                            transition: "all 0.3s ease",
-                          }}
-                        >
-                          <ListItemIcon>
-                            <Avatar
-                              sx={{
-                                bgcolor: "success.main",
-                                width: 32,
-                                height: 32,
-                              }}
-                            >
-                              <CheckCircleOutline sx={{ fontSize: "1rem" }} />
-                            </Avatar>
-                          </ListItemIcon>
-                          <ListItemText
-                            primary={benefit}
-                            sx={{
-                              "& .MuiListItemText-primary": {
-                                fontWeight: 500,
-                                fontSize: "1rem",
-                              },
-                            }}
-                          />
-                        </ListItem>
-                      ))}
-                    </List>
-                  </CardContent>
-                </Card>
-              </Grid>
-
-              
-              <Grid item xs={12} md={6}>
-                <Card
-                  elevation={0}
-                  sx={{
-                    borderRadius: 3,
-                    backgroundColor: "#ffffff",
-                    boxShadow: "0 8px 32px rgba(0, 188, 212, 0.12), 0 4px 12px rgba(0, 150, 136, 0.08)",
-                    border: "1px solid rgba(0, 188, 212, 0.06)",
-                  }}
-                >
-                  <CardContent sx={{ p: 4 }}>
-                    <Typography
-                      variant="h5"
-                      fontWeight={700}
-                      color="primary"
-                      gutterBottom
-                      sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                    >
-                      <Info />
-                      רכיבים
-                    </Typography>
-                    <Divider sx={{ mb: 3 }} />
-                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5 }}>
-                      {product.ingredients?.map((ingredient, index) => (
-                        <Chip
-                          key={index}
-                          label={ingredient}
-                          variant="filled"
-                          sx={{
-                            background: "linear-gradient(45deg, #00bcd4, #009688)",
-                            color: "white",
-                            fontWeight: 500,
-                            fontSize: "0.9rem",
-                            "&:hover": {
-                              transform: "scale(1.05)",
-                              boxShadow: "0 4px 15px rgba(0, 188, 212, 0.3)",
-                            },
-                            transition: "all 0.3s ease",
-                          }}
-                        />
-                      ))}
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
-            </Grid>
-          </Fade> */}
         </Container>
       </Box>
 
-      
-
-      {/* CSS Animations */}
       <style jsx global>{`
         @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-20px) rotate(10deg); }
+          0%,
+          100% {
+            transform: translateY(0px) rotate(0deg);
+          }
+          50% {
+            transform: translateY(-20px) rotate(10deg);
+          }
         }
       `}</style>
     </>

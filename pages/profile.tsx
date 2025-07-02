@@ -12,9 +12,11 @@ import {
   DialogActions,
   Button,
 } from "@mui/material";
+import { useTheme } from "../context/ThemeContext"; // Update path as needed
 
 const ProfilePage = () => {
   const router = useRouter();
+  const { theme } = useTheme(); // Use your theme context
   const [id, setId] = useState("");
   const [fullName, setFullName] = useState("");
   const [dob, setDob] = useState("");
@@ -31,22 +33,19 @@ const ProfilePage = () => {
   const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState("");
 
-  // Helper function to format date for input field
   const formatDateForInput = (dateString: string) => {
     if (!dateString) return "";
     const date = new Date(dateString);
-    // Get local date components to avoid timezone shift
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
 
-  // Helper function to format date for display
   const formatDateForDisplay = (dateString: string) => {
     if (!dateString) return "Not specified";
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-GB'); // DD/MM/YYYY format
+    return date.toLocaleDateString("en-GB");
   };
 
   useEffect(() => {
@@ -54,7 +53,7 @@ const ProfilePage = () => {
       try {
         const response = await fetch("/api/me", {
           method: "GET",
-          credentials: "include", // Include JWT cookie
+          credentials: "include",
         });
 
         if (response.ok) {
@@ -68,7 +67,6 @@ const ProfilePage = () => {
           setImage_url(data.image_url || "");
           setPublicId(data.public_id || "");
         } else {
-          // JWT invalid or expired, redirect to login
           router.push("/login");
         }
       } catch (error) {
@@ -99,7 +97,7 @@ const ProfilePage = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include", // Include JWT cookie
+        credentials: "include",
         body: JSON.stringify(updatedData),
       });
 
@@ -107,8 +105,6 @@ const ProfilePage = () => {
         const result = await response.json();
         console.log(result.message);
         setIsEditing(false);
-        // Optionally redirect to dashboard
-        // router.push("/");
       } else {
         const errorData = await response.json();
         console.error(errorData.error);
@@ -144,10 +140,10 @@ const ProfilePage = () => {
       const base64 = reader.result;
 
       try {
-        const uploadRes = await fetch('/api/upload-image', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: "include", // Include JWT cookie
+        const uploadRes = await fetch("/api/upload-image", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify({ image: base64 }),
         });
 
@@ -162,10 +158,9 @@ const ProfilePage = () => {
         setImage_url(imageUrl);
         setPublicId(public_id);
 
-        // Update user profile with new image
         await fetch(`/api/updateUser/${id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
           credentials: "include",
           body: JSON.stringify({
             full_name: fullName,
@@ -177,9 +172,8 @@ const ProfilePage = () => {
             public_id: public_id,
           }),
         });
-
       } catch (err) {
-        console.error('Upload error:', err);
+        console.error("Upload error:", err);
       }
     };
 
@@ -240,11 +234,11 @@ const ProfilePage = () => {
       const response = await fetch("/api/changePassword/password", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", // Include JWT cookie
-        body: JSON.stringify({ 
-          id, 
-          currentPassword, 
-          newPassword 
+        credentials: "include",
+        body: JSON.stringify({
+          id,
+          currentPassword,
+          newPassword,
         }),
       });
 
@@ -259,7 +253,7 @@ const ProfilePage = () => {
       setPasswordDialogOpen(false);
       setCurrentPassword("");
       setNewPassword("");
-      setError(""); // Clear any previous errors
+      setError("");
     } catch (err) {
       console.error("Password change error:", err);
       setError("Something went wrong");
@@ -281,7 +275,7 @@ const ProfilePage = () => {
     try {
       const response = await fetch(`/api/deleteUser/${id}`, {
         method: "DELETE",
-        credentials: "include", // Include JWT cookie
+        credentials: "include",
       });
 
       const data = await response.json();
@@ -292,7 +286,6 @@ const ProfilePage = () => {
         return;
       }
 
-      // Account deleted successfully, redirect to signup
       router.push("/signup");
     } catch (err) {
       console.error("Error deleting account:", err);
@@ -301,7 +294,10 @@ const ProfilePage = () => {
   };
 
   const initials = fullName
-    ? fullName.split(" ").map((n) => n[0]).join("")
+    ? fullName
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
     : "👤";
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -313,8 +309,14 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="p-6 bg-gradient-to-b from-[#e0f7fa] to-white min-h-screen text-gray-800">
-      <div className="max-w-4xl mx-auto bg-white shadow-md rounded-xl p-6 space-y-6">
+    <div className={`p-6 min-h-screen ${
+      theme === 'dark' 
+        ? 'bg-gradient-to-b from-gray-900 to-gray-950 text-gray-100' 
+        : 'bg-gradient-to-b from-[#e0f7fa] to-white text-gray-800'
+    }`}>
+      <div className={`max-w-4xl mx-auto shadow-md rounded-xl p-6 space-y-6 ${
+        theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+      }`}>
         <div className="flex justify-center">
           <IconButton onClick={handleMenu} size="large">
             {image_url ? (
@@ -385,7 +387,7 @@ const ProfilePage = () => {
               value: id,
               setter: setId,
               type: "text",
-              disabled: true, // ID should not be editable
+              disabled: true,
             },
             {
               label: "Full Name",
@@ -425,15 +427,20 @@ const ProfilePage = () => {
                   type={type}
                   value={value}
                   onChange={(e) => setter(e.target.value)}
-                  className="block w-full border px-4 py-2 mt-1 rounded"
-                  required={label !== "Address"} // Make address optional
+                  className={`block w-full px-4 py-2 mt-1 rounded border ${
+                    theme === 'dark'
+                      ? 'border-gray-600 bg-gray-700 text-white'
+                      : 'border-gray-300 bg-white text-gray-900'
+                  }`}
+                  required={label !== "Address"}
                 />
               ) : (
-                <p className="mt-1 text-gray-700">
-                  {label === "Date of Birth" && value 
+                <p className={`mt-1 ${
+                  theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                }`}>
+                  {label === "Date of Birth" && value
                     ? formatDateForDisplay(new Date(value).toISOString())
-                    : value || "Not specified"
-                  }
+                    : value || "Not specified"}
                 </p>
               )}
             </div>
@@ -482,14 +489,22 @@ const ProfilePage = () => {
             placeholder="Current Password"
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
-            className="block w-full border px-4 py-2 mt-2 rounded"
+            className={`block w-full px-4 py-2 mt-2 rounded border ${
+              theme === 'dark'
+                ? 'border-gray-600 bg-gray-700 text-white'
+                : 'border-gray-300 bg-white text-gray-900'
+            }`}
           />
           <input
             type="password"
             placeholder="New Password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            className="block w-full border px-4 py-2 mt-2 rounded"
+            className={`block w-full px-4 py-2 mt-2 rounded border ${
+              theme === 'dark'
+                ? 'border-gray-600 bg-gray-700 text-white'
+                : 'border-gray-300 bg-white text-gray-900'
+            }`}
           />
           {error && <p className="text-red-500 mt-2">{error}</p>}
         </DialogContent>

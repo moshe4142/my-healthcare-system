@@ -20,6 +20,8 @@ import {
   Public as PublicIcon,
 } from "@mui/icons-material";
 import Link from "next/link";  // Import Link for routing
+import { useTheme } from "@mui/material/styles";
+
 
 export default function ContactPage() {
   const [form, setForm] = useState({
@@ -27,6 +29,7 @@ export default function ContactPage() {
     message: "",
   });
 
+  const theme = useTheme();
   const [message, setMessage] = useState("");
 
   const handleChange = (
@@ -58,11 +61,13 @@ export default function ContactPage() {
   return (
     <Box
       sx={{
-        background: "linear-gradient(to bottom, #e0f7fa, #ffffff)",
+        background: theme.palette.mode === "light"
+          ? "linear-gradient(to bottom, #e0f7fa, #ffffff)"
+          : "linear-gradient(to bottom, #121212, #1e1e1e)",
         minHeight: "100vh",
         py: 6,
         px: { xs: 2, md: 6 },
-        color: "#212121",
+        color: theme.palette.text.primary,
       }}
     >
       <Paper
@@ -70,90 +75,97 @@ export default function ContactPage() {
         sx={{
           p: { xs: 3, md: 5 },
           borderRadius: 5,
-          backgroundColor: "#ffffffee",
+          backgroundColor:
+            theme.palette.mode === "light"
+              ? "#ffffffee"
+              : "#1c1c1cee",
           backdropFilter: "blur(6px)",
           maxWidth: 1000,
           mx: "auto",
           boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
         }}
       >
-        <Typography variant="h4" fontWeight="bold" gutterBottom sx={{ color: "#1a1a1a" }}>
+        <Typography variant="h4" fontWeight="bold" gutterBottom>
           Contact Firemaster
         </Typography>
 
-        <Typography variant="body1" mb={3} sx={{ fontSize: "1.1rem", color: "#1a1a1a" }}>
+        <Typography variant="body1" mb={3} sx={{ fontSize: "1.1rem" }}>
           We would love to hear from you! You can contact us by phone, email, or leave a message via the form.
         </Typography>
 
         <Divider sx={{ my: 3 }} />
 
-        <List sx={{ color: "#1a1a1a" }}>
+        <List>
           <ListItem>
-            <EmailIcon sx={{ mr: 2, color: "#1976d2" }} />
+            <EmailIcon sx={{ mr: 2, color: theme.palette.primary.main }} />
             <ListItemText
-              primary={<Link href="mailto:support@firemaster.com" style={{ color: "#1976d2" }}>support@firemaster.com</Link>}
+              primary={
+                <Link href="mailto:support@firemaster.com" color="primary">
+                  support@firemaster.com
+                </Link>
+              }
               secondary="Customer Service Email"
-              primaryTypographyProps={{ sx: { color: "#1a1a1a" } }}
-              secondaryTypographyProps={{ sx: { color: "#333" } }}
             />
           </ListItem>
           <ListItem>
-            <PhoneIcon sx={{ mr: 2, color: "#1976d2" }} />
+            <PhoneIcon sx={{ mr: 2, color: theme.palette.primary.main }} />
             <ListItemText
-              primary={<Link href="tel:+972-3-1234567" style={{ color: "#1976d2" }}>+972-3-1234567</Link>}
+              primary={
+                <Link href="tel:+972-3-1234567" color="primary">
+                  +972-3-1234567
+                </Link>
+              }
               secondary="Main phone"
-              primaryTypographyProps={{ sx: { color: "#1a1a1a" } }}
-              secondaryTypographyProps={{ sx: { color: "#333" } }}
             />
           </ListItem>
           <ListItem>
-            <SupportAgentIcon sx={{ mr: 2, color: "#1976d2" }} />
+            <SupportAgentIcon sx={{ mr: 2, color: theme.palette.primary.main }} />
             <ListItemText
-              primary={<Link href="mailto:tech@firemaster.com" style={{ color: "#1976d2" }}>tech@firemaster.com</Link>}
+              primary={
+                <Link href="mailto:tech@firemaster.com" color="primary">
+                  tech@firemaster.com
+                </Link>
+              }
               secondary="Technical Support"
-              primaryTypographyProps={{ sx: { color: "#1a1a1a" } }}
-              secondaryTypographyProps={{ sx: { color: "#333" } }}
             />
           </ListItem>
           <ListItem>
-            <LocationOnIcon sx={{ mr: 2, color: "#1976d2" }} />
+            <LocationOnIcon sx={{ mr: 2, color: theme.palette.primary.main }} />
             <ListItemText
               primary={
                 <Link
                   href="https://www.google.com/maps?q=Tehran,+Iran"
-                  style={{ color: "#1976d2" }}
+                  color="primary"
                 >
                   Tehran, Iran
                 </Link>
               }
               secondary="Main branch location"
-              primaryTypographyProps={{ sx: { color: "#1a1a1a" } }}
-              secondaryTypographyProps={{ sx: { color: "#333" } }}
             />
           </ListItem>
           <ListItem>
-            <AccessTimeIcon sx={{ mr: 2, color: "#1976d2" }} />
+            <AccessTimeIcon sx={{ mr: 2, color: theme.palette.primary.main }} />
             <ListItemText
               primary="Hours of operation"
               secondary="Sun–Thu: 09:00–17:00 | Fri: 09:00–12:00 | Sat: Closed"
-              primaryTypographyProps={{ sx: { color: "#1a1a1a" } }}
-              secondaryTypographyProps={{ sx: { color: "#333" } }}
             />
           </ListItem>
           <ListItem>
-            <PublicIcon sx={{ mr: 2, color: "#1976d2" }} />
+            <PublicIcon sx={{ mr: 2, color: theme.palette.primary.main }} />
             <ListItemText
-              primary={<Link href="https://www.instagram.com/Firemaster" style={{ color: "#1976d2" }}>@Firemaster</Link>}
+              primary={
+                <Link href="https://www.instagram.com/Firemaster" color="primary">
+                  @Firemaster
+                </Link>
+              }
               secondary="Follow us on social media"
-              primaryTypographyProps={{ sx: { color: "#1a1a1a" } }}
-              secondaryTypographyProps={{ sx: { color: "#333" } }}
             />
           </ListItem>
         </List>
 
         <Divider sx={{ my: 5 }} />
 
-        <Typography variant="h5" fontWeight={600} gutterBottom sx={{ color: "#1a1a1a" }}>
+        <Typography variant="h5" fontWeight={600} gutterBottom>
           Send a message directly
         </Typography>
 
@@ -165,9 +177,9 @@ export default function ContactPage() {
               fullWidth
               value={form.subject}
               onChange={handleChange}
-              InputLabelProps={{ sx: { color: "#1a1a1a" } }}
-              InputProps={{ sx: { color: "#212121" } }}
-              sx={{ backgroundColor: "#f5f5f5" }}
+              InputLabelProps={{ sx: { color: theme.palette.text.primary } }}
+              InputProps={{ sx: { color: theme.palette.text.primary } }}
+              sx={{ backgroundColor: theme.palette.background.default }}
             />
             <TextField
               required
@@ -178,14 +190,13 @@ export default function ContactPage() {
               fullWidth
               value={form.message}
               onChange={handleChange}
-              InputLabelProps={{ sx: { color: "#1a1a1a" } }}
-              InputProps={{ sx: { color: "#212121" } }}
-              sx={{ backgroundColor: "#f5f5f5" }}
+              InputLabelProps={{ sx: { color: theme.palette.text.primary } }}
+              InputProps={{ sx: { color: theme.palette.text.primary } }}
+              sx={{ backgroundColor: theme.palette.background.default }}
             />
             <Button
               type="submit"
               variant="contained"
-              color="primary"
               disabled={!isFormValid}
               sx={{
                 width: "fit-content",
@@ -197,9 +208,9 @@ export default function ContactPage() {
                 boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                 opacity: !isFormValid ? 0.5 : 1,
                 cursor: !isFormValid ? "not-allowed" : "pointer",
-                backgroundColor: "#1976d2",
+                backgroundColor: theme.palette.primary.main,
                 "&:hover": {
-                  backgroundColor: "#1565c0",
+                  backgroundColor: theme.palette.primary.dark,
                 },
               }}
             >
@@ -209,7 +220,7 @@ export default function ContactPage() {
             {message && (
               <Typography
                 variant="body2"
-                sx={{ color: "#4caf50", mt: 2, fontWeight: "bold" }}
+                sx={{ color: theme.palette.success.main, mt: 2, fontWeight: "bold" }}
               >
                 {message}
               </Typography>
@@ -219,7 +230,7 @@ export default function ContactPage() {
 
         <Divider sx={{ my: 5 }} />
 
-        <Typography variant="h5" fontWeight={600} gutterBottom sx={{ color: "#1a1a1a" }}>
+        <Typography variant="h5" fontWeight={600} gutterBottom>
           Our location on the map
         </Typography>
 

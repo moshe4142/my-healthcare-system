@@ -30,6 +30,8 @@ import {
   Star,
   LocalOffer,
 } from "@mui/icons-material";
+import { useTheme } from "@mui/material/styles";
+
 
 interface Product {
   id: number;
@@ -55,6 +57,8 @@ const HomePage = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [addedProductName, setAddedProductName] = useState("");
   const productsPerPage = 3;
+    const theme = useTheme();
+
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -192,7 +196,7 @@ const HomePage = () => {
   return (
     <Box
       sx={{
-        backgroundColor: "#ffffff",
+        backgroundColor: theme.palette.mode === "dark" ? "#121212" : "#ffffff",
         minHeight: "100vh",
         position: "relative",
         overflow: "hidden",
@@ -211,6 +215,7 @@ const HomePage = () => {
             "radial-gradient(circle, rgba(0, 188, 212, 0.06) 0%, rgba(0, 188, 212, 0.01) 50%, transparent 100%)",
           filter: "blur(80px)",
           animation: "float 15s ease-in-out infinite",
+          opacity: theme.palette.mode === "dark" ? 0.15 : 1,
         }}
       />
       <Box
@@ -225,6 +230,7 @@ const HomePage = () => {
             "radial-gradient(circle, rgba(0, 150, 136, 0.04) 0%, rgba(0, 150, 136, 0.01) 50%, transparent 100%)",
           filter: "blur(100px)",
           animation: "float 20s ease-in-out infinite reverse",
+          opacity: theme.palette.mode === "dark" ? 0.15 : 1,
         }}
       />
 
@@ -241,6 +247,7 @@ const HomePage = () => {
               WebkitTextFillColor: "transparent",
               mb: 2,
               fontSize: { xs: "2.5rem", md: "3.5rem" },
+              color: theme.palette.mode === "dark" ? "#e0f7fa" : undefined,
             }}
           >
             Welcome to the Pharmacy System
@@ -248,7 +255,7 @@ const HomePage = () => {
           <Typography
             variant="h6"
             sx={{
-              color: "#666",
+              color: theme.palette.mode === "dark" ? "#aaa" : "#666",
               fontSize: "1.2rem",
               fontWeight: 400,
             }}
@@ -273,21 +280,38 @@ const HomePage = () => {
               onKeyDown={handleKeyDown}
               fullWidth
               sx={{
-                backgroundColor: "white",
+                backgroundColor:
+                  theme.palette.mode === "dark" ? "#1e1e1e" : "white",
                 borderRadius: 4,
-                boxShadow: "0 8px 32px rgba(0, 188, 212, 0.1)",
-                border: "1px solid rgba(0, 188, 212, 0.08)",
+                boxShadow:
+                  theme.palette.mode === "dark"
+                    ? "0 8px 32px rgba(0,188,212,0.3)"
+                    : "0 8px 32px rgba(0, 188, 212, 0.1)",
+                border:
+                  theme.palette.mode === "dark"
+                    ? "1px solid rgba(0, 188, 212, 0.4)"
+                    : "1px solid rgba(0, 188, 212, 0.08)",
                 "& .MuiOutlinedInput-root": {
                   borderRadius: 4,
                   "& fieldset": {
-                    borderColor: "rgba(0, 188, 212, 0.2)",
+                    borderColor:
+                      theme.palette.mode === "dark"
+                        ? "rgba(0, 188, 212, 0.6)"
+                        : "rgba(0, 188, 212, 0.2)",
                   },
                   "&:hover fieldset": {
-                    borderColor: "rgba(0, 188, 212, 0.4)",
+                    borderColor:
+                      theme.palette.mode === "dark"
+                        ? "rgba(0, 188, 212, 0.8)"
+                        : "rgba(0, 188, 212, 0.4)",
                   },
                   "&.Mui-focused fieldset": {
                     borderColor: "#00bcd4",
                   },
+                  color: theme.palette.text.primary,
+                },
+                input: {
+                  color: theme.palette.text.primary,
                 },
               }}
               InputProps={{
@@ -309,6 +333,7 @@ const HomePage = () => {
               backgroundClip: "text",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
+              color: theme.palette.mode === "dark" ? "#e0f7fa" : undefined,
             }}
           >
             Popular Products
@@ -324,7 +349,13 @@ const HomePage = () => {
                       maxWidth: 350,
                       mx: "auto",
                       borderRadius: 3,
-                      boxShadow: "0 8px 32px rgba(0, 188, 212, 0.12)",
+                      boxShadow:
+                        theme.palette.mode === "dark"
+                          ? "0 4px 20px rgba(0, 188, 212, 0.5)"
+                          : "0 8px 32px rgba(0, 188, 212, 0.12)",
+                      backgroundColor:
+                        theme.palette.mode === "dark" ? "#1e1e1e" : "#ffffff",
+                      color: theme.palette.text.primary,
                     }}
                   >
                     <Skeleton variant="rectangular" height={220} />
@@ -352,20 +383,34 @@ const HomePage = () => {
                         maxWidth: 350,
                         mx: "auto",
                         borderRadius: 3,
-                        backgroundColor: "#ffffff",
+                        backgroundColor:
+                          theme.palette.mode === "dark"
+                            ? "#1e1e1e"
+                            : "#ffffff",
                         boxShadow:
-                          "0 8px 32px rgba(0, 188, 212, 0.12), 0 4px 12px rgba(0, 150, 136, 0.08)",
-                        border: "1px solid rgba(0, 188, 212, 0.06)",
+                          theme.palette.mode === "dark"
+                            ? "0 4px 20px rgba(0, 188, 212, 0.5)"
+                            : "0 8px 32px rgba(0, 188, 212, 0.12), 0 4px 12px rgba(0, 150, 136, 0.08)",
+                        border:
+                          theme.palette.mode === "dark"
+                            ? "1px solid rgba(0,188,212,0.4)"
+                            : "1px solid rgba(0, 188, 212, 0.06)",
                         transition:
                           "all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
                         "&:hover": {
                           transform: "translateY(-8px) scale(1.02)",
                           boxShadow:
-                            "0 20px 40px rgba(0, 188, 212, 0.2), 0 8px 20px rgba(0, 150, 136, 0.15)",
-                          border: "1px solid rgba(0, 188, 212, 0.15)",
+                            theme.palette.mode === "dark"
+                              ? "0 20px 40px rgba(0, 188, 212, 0.7), 0 8px 20px rgba(0, 150, 136, 0.6)"
+                              : "0 20px 40px rgba(0, 188, 212, 0.2), 0 8px 20px rgba(0, 150, 136, 0.15)",
+                          border:
+                            theme.palette.mode === "dark"
+                              ? "1px solid rgba(0, 188, 212, 0.6)"
+                              : "1px solid rgba(0, 188, 212, 0.15)",
                         },
                         position: "relative",
                         overflow: "hidden",
+                        color: theme.palette.text.primary,
                       }}
                     >
                       {/* Product Image with Loading State */}
@@ -447,7 +492,7 @@ const HomePage = () => {
                           variant="h6"
                           sx={{
                             fontWeight: 700,
-                            color: "#333",
+                            color: theme.palette.text.primary,
                             mb: 1.5,
                             fontSize: "1.1rem",
                             lineHeight: 1.3,
@@ -489,7 +534,9 @@ const HomePage = () => {
                         <Typography
                           variant="body2"
                           sx={{
-                            color: "#666",
+                            color: theme.palette.mode === "dark"
+                              ? "#bbb"
+                              : "#666",
                             mb: 2,
                             lineHeight: 1.5,
                             display: "-webkit-box",
@@ -698,6 +745,7 @@ const HomePage = () => {
       `}</style>
     </Box>
   );
+
 };
 
 export default HomePage;
