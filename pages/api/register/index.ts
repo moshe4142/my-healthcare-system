@@ -26,16 +26,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // הכנסת משתמש לטבלת users
     const result = await pool.query(
       `
       INSERT INTO users (id, full_name, date_of_birth, phone, email, address, password)
       VALUES ($1, $2, $3, $4, $5, $6, $7)
       RETURNING id, full_name, email, date_of_birth, phone, address 
-    `,
+      `,
       [id, full_name, date_of_birth, phone, email, address, hashedPassword]
     );
 
     const user = result.rows[0];
+
+    // הכנסת נתוני מטופל לטבלת patients
+    await pool.query(
+      `
+      INSERT INTO patients (user_id, full_name, date_of_birth, phone)
+      VALUES ($1, $2, $3, $4)
+      `,
+      [user.id, full_name, date_of_birth, phone]
+    );
 
     // יצירת JWT
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET!, { expiresIn: '1d' });

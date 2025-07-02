@@ -6,28 +6,43 @@ import {
   Card,
   CardContent,
   CircularProgress,
-  useTheme,
   TextField,
   MenuItem,
   Paper,
   Button,
   IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Alert,
+  Fab,
+  useTheme,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 
 interface Appointment {
   id?: number;
-  date: string;
-  time: string;
-  department: string;
-  type: string;
-  location: string;
-  duration: string;
-  priority: string;
+  date?: string;
+  time?: string;
+  department?: string;
+  type?: string;
+  location?: string;
+  duration?: string;
+  priority?: string;
   status: string;
-  notes: string;
+  notes?: string;
   appointment_date?: string;
+  patient_id?: number;
+  doctor_id?: number;
+}
+
+interface NewAppointment {
+  patient_id: number;
+  doctor_id: number;
+  appointment_date: string;
+  status?: string;
+  notes?: string;
 }
 
 const departments = ["Cardiology", "Tech Support", "HR", "Radiology", "Dermatology"];
@@ -39,147 +54,134 @@ const AppointmentsPage = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [formData, setFormData] = useState<Appointment>({
-    date: "",
-    time: "",
-    department: "",
-    type: "",
-    location: "",
-    duration: "",
-    priority: "Medium",
-    status: "Scheduled",
+  const [openDialog, setOpenDialog] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState<string | null>(null);
+
+  const [formData, setFormData] = useState<NewAppointment>({
+    patient_id: 0,
+    doctor_id: 0,
+    appointment_date: "",
+    status: "pending",
     notes: "",
   });
-  const [editIndex, setEditIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    const fetchAppointments = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          setError("No token found");
-          setLoading(false);
-          return;
-        }
-
-        const res = await fetch("/api/appointments", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!res.ok) throw new Error("Failed to fetch appointments");
-
-        const data = await res.json();
-        setAppointments(data);
-      } catch (err: any) {
-        setError(err.message || "Something went wrong");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchAppointments();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const fetchAppointments = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/appointments", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch appointments");
+
+      const { appointments } = await res.json();
+      setAppointments(appointments);
+    } catch (err: any) {
+      setError(err.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const validateForm = () => {
-    const { date, time, department, type, location, duration } = formData;
-    return date && time && department && type && location && duration;
+  const handleInputChange = (field: keyof NewAppointment, value: string | number) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
-  const saveAppointments = (data: Appointment[]) => {
-    setAppointments(data);
-    localStorage.setItem("appointments", JSON.stringify(data));
-  };
-
-  const handleAppointment = () => {
-    if (!validateForm()) {
-      alert("Please fill in all required fields.");
+  const handleSubmit = async () => {
+    if (!formData.patient_id || !formData.doctor_id || !formData.appointment_date) {
+      setError("אנא מלא את כל השדות הנדרשים");
       return;
     }
 
-    const appointment = {
-      ...formData,
-      date: new Date(formData.date).toDateString(),
-    };
+    try {
+      setSubmitting(true);
+      setError(null);
 
-    if (editIndex !== null) {
-      const updated = appointments.map((a, i) => (i === editIndex ? appointment : a));
-      saveAppointments(updated);
-      setEditIndex(null);
-    } else {
-      saveAppointments([...appointments, appointment]);
+      const res = await fetch("/api/appointments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(formData),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to create appointment");
+      }
+
+      const data = await res.json();
+      const newAppointment = data.appointment || data;
+      setAppointments((prev) => [...prev, newAppointment]);
+
+      setFormData({
+        patient_id: 0,
+        doctor_id: 0,
+        appointment_date: "",
+        status: "pending",
+        notes: "",
+      });
+      setOpenDialog(false);
+      setSuccess("הפגישה נוספה בהצלחה!");
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err: any) {
+      setError(err.message || "שגיאה ביצירת הפגישה");
+    } finally {
+      setSubmitting(false);
     }
+  };
 
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
     setFormData({
-      date: "",
-      time: "",
-      department: "",
-      type: "",
-      location: "",
-      duration: "",
-      priority: "Medium",
-      status: "Scheduled",
+      patient_id: 0,
+      doctor_id: 0,
+      appointment_date: "",
+      status: "pending",
       notes: "",
     });
+    setError(null);
   };
 
-  const handleEdit = (index: number) => {
-    const item = appointments[index];
-    setFormData({
-      ...item,
-      date: new Date(item.date).toISOString().split("T")[0],
-    });
-    setEditIndex(index);
-  };
-
-  const handleRemove = (index: number) => {
-    saveAppointments(appointments.filter((_, i) => i !== index));
+  const formatDateTimeForInput = (date: string) => {
+    if (!date) return "";
+    const d = new Date(date);
+    return d.toISOString().slice(0, 16);
   };
 
   return (
-    <Box
-      sx={{
-        py: 10,
-        px: { xs: 2, md: 6 },
-        minHeight: "100vh",
-        background:
-          theme.palette.mode === "dark"
-            ? "linear-gradient(to bottom, #121212, #1e1e1e)"
-            : "linear-gradient(to bottom, #e0f7fa, #ffffff)",
-        color: theme.palette.text.primary,
-        transition: "all 0.3s ease",
-      }}
-    >
-      <Typography variant="h4" mb={3} fontWeight={600}>
-        📋 Your Appointments
-      </Typography>
+    <Box sx={{ p: 4, position: "relative", minHeight: "100vh" }}>
+      <Typography variant="h4" mb={3} fontWeight={600}>📋 הפגישות שלך</Typography>
+
+      {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
 
       {loading ? (
         <CircularProgress />
       ) : error ? (
         <Typography color="error">{error}</Typography>
       ) : appointments.length === 0 ? (
-        <Typography>No appointments at the moment.</Typography>
+        <Typography>אין פגישות כרגע</Typography>
       ) : (
         <Grid container spacing={2} mb={6}>
           {appointments.map((appt) => {
-            const date = new Date(appt.appointment_date || appt.date).toLocaleString();
+            const date = new Date(appt.appointment_date || appt.date || '').toLocaleString("he-IL");
             return (
               <Grid item xs={12} md={6} key={appt.id || `${appt.date}-${appt.time}`}>
                 <Card sx={{ backgroundColor: theme.palette.background.paper }}>
                   <CardContent>
-                    <Typography>
-                      <strong>📅 Date:</strong> {date}
-                    </Typography>
-                    <Typography>
-                      <strong>📌 Status:</strong> {appt.status}
-                    </Typography>
+                    <Typography><strong>📅 תאריך:</strong> {date}</Typography>
+                    <Typography><strong>📌 סטטוס:</strong> {appt.status}</Typography>
+                    {appt.notes && <Typography><strong>📝 הערות:</strong> {appt.notes}</Typography>}
                   </CardContent>
                 </Card>
               </Grid>
@@ -188,154 +190,75 @@ const AppointmentsPage = () => {
         </Grid>
       )}
 
-      <Paper sx={{ p: 4, borderRadius: 2, maxWidth: 1000, mx: "auto", mb: 8 }}>
-        <Typography variant="h5" fontWeight={600} textAlign="center" mb={1}>
-          Make an Appointment
-        </Typography>
-        <Typography sx={{ textAlign: "center", mb: 4, color: "#555" }}>
-          Manage advanced appointment details below.
-        </Typography>
+      <Fab color="primary" aria-label="add" sx={{ position: "fixed", bottom: 16, right: 16 }} onClick={() => setOpenDialog(true)}>
+        <AddIcon />
+      </Fab>
 
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={6}>
+      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+        <DialogTitle>➕ הוספת פגישה חדשה</DialogTitle>
+        <DialogContent>
+          {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 1 }}>
             <TextField
-              type="date"
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              label="Date"
+              label="מספר מטופל"
+              type="number"
+              value={formData.patient_id || ""}
+              onChange={(e) => handleInputChange("patient_id", parseInt(e.target.value) || 0)}
+              required
+              fullWidth
+            />
+
+            <TextField
+              label="מספר רופא"
+              type="number"
+              value={formData.doctor_id || ""}
+              onChange={(e) => handleInputChange("doctor_id", parseInt(e.target.value) || 0)}
+              required
+              fullWidth
+            />
+
+            <TextField
+              label="תאריך ושעת הפגישה"
+              type="datetime-local"
+              value={formatDateTimeForInput(formData.appointment_date)}
+              onChange={(e) => handleInputChange("appointment_date", e.target.value)}
+              required
               fullWidth
               InputLabelProps={{ shrink: true }}
             />
-          </Grid>
-          <Grid item xs={12} sm={6}>
+
             <TextField
-              type="time"
-              name="time"
-              value={formData.time}
-              onChange={handleChange}
-              label="Time"
+              label="סטטוס"
+              select
+              value={formData.status || "pending"}
+              onChange={(e) => handleInputChange("status", e.target.value)}
               fullWidth
-              InputLabelProps={{ shrink: true }}
+            >
+              <MenuItem value="pending">בהמתנה</MenuItem>
+              <MenuItem value="confirmed">אושר</MenuItem>
+              <MenuItem value="completed">הושלם</MenuItem>
+              <MenuItem value="cancelled">בוטל</MenuItem>
+            </TextField>
+
+            <TextField
+              label="הערות (אופציונלי)"
+              multiline
+              rows={3}
+              value={formData.notes}
+              onChange={(e) => handleInputChange("notes", e.target.value)}
+              fullWidth
             />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField select name="department" value={formData.department} onChange={handleChange} label="Department" fullWidth>
-              {departments.map((d) => (
-                <MenuItem key={d} value={d}>
-                  {d}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField select name="type" value={formData.type} onChange={handleChange} label="Appointment Type" fullWidth>
-              {types.map((t) => (
-                <MenuItem key={t} value={t}>
-                  {t}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField name="location" value={formData.location} onChange={handleChange} label="Location" fullWidth />
-          </Grid>
-          <Grid item xs={12} sm={3}>
-            <TextField name="duration" type="number" value={formData.duration} onChange={handleChange} label="Duration (min)" fullWidth />
-          </Grid>
-          <Grid item xs={12} sm={3}>
-            <TextField select name="priority" value={formData.priority} onChange={handleChange} label="Priority" fullWidth>
-              {priorities.map((p) => (
-                <MenuItem key={p} value={p}>
-                  {p}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-          <Grid item xs={12}>
-            <TextField name="notes" value={formData.notes} onChange={handleChange} label="Notes" fullWidth multiline rows={3} />
-          </Grid>
-        </Grid>
+          </Box>
+        </DialogContent>
 
-        <Button
-          variant="contained"
-          onClick={handleAppointment}
-          fullWidth
-          sx={{
-            mt: 3,
-            py: 1.5,
-            backgroundColor: "#0288d1",
-            color: "#fff",
-            "&:hover": { backgroundColor: "#0277bd" },
-          }}
-        >
-          {editIndex !== null ? "✏️ Update Appointment" : "➕ Book Appointment"}
-        </Button>
-
-        <Box mt={5}>
-          <Typography variant="h5" fontWeight={600} mb={2}>
-            📖 All Appointments
-          </Typography>
-
-          {appointments.length === 0 ? (
-            <Typography textAlign="center" color="text.secondary">
-              No appointments found.
-            </Typography>
-          ) : (
-            <Grid container spacing={2}>
-              {appointments.map((a, index) => (
-                <Grid item xs={12} sm={6} md={4} key={index}>
-                  <Card
-                    sx={{
-                      borderRadius: 2,
-                      boxShadow: 3,
-                      bgcolor: "#f9f9f9",
-                      height: "100%",
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <CardContent>
-                      <Typography variant="h6" textAlign="center" mb={1}>
-                        {a.date} at {a.time}
-                      </Typography>
-                      <Typography>
-                        <b>Department:</b> {a.department}
-                      </Typography>
-                      <Typography>
-                        <b>Type:</b> {a.type}
-                      </Typography>
-                      <Typography>
-                        <b>Location:</b> {a.location}
-                      </Typography>
-                      <Typography>
-                        <b>Duration:</b> {a.duration} min
-                      </Typography>
-                      <Typography>
-                        <b>Priority:</b> {a.priority}
-                      </Typography>
-                      {a.notes && (
-                        <Typography>
-                          <b>Notes:</b> {a.notes}
-                        </Typography>
-                      )}
-                      <Box mt={2} display="flex" justifyContent="center" gap={2}>
-                        <IconButton onClick={() => handleEdit(index)} sx={{ bgcolor: "#e3f2fd" }}>
-                          <EditIcon />
-                        </IconButton>
-                        <IconButton onClick={() => handleRemove(index)} sx={{ bgcolor: "#ffebee" }}>
-                          <DeleteIcon />
-                        </IconButton>
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-          )}
-        </Box>
-      </Paper>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} disabled={submitting}>ביטול</Button>
+          <Button onClick={handleSubmit} variant="contained" disabled={submitting}>
+            {submitting ? <CircularProgress size={20} /> : "שמור פגישה"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
