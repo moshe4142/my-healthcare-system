@@ -106,12 +106,12 @@ const validateField = (name: string, value: string) => {
   }
 
   // בדיקת כתובת מלאה (עיר ורחוב)
-  if (name === 'address') {
-    const [city, street] = trimmed.split('|');
-    if (!city || !street) return 'Please select both city and street.';
-    if (!cityStreetMap[city]) return 'Selected city is not supported.';
-    if (!cityStreetMap[city].includes(street)) return 'Selected street is invalid for this city.';
-  }
+  // if (name === 'address') {
+  //   const [city, street] = trimmed.split('|');
+  //   if (!city || !street) return 'Please select both city and street.';
+  //   if (!cityStreetMap[city]) return 'Selected city is not supported.';
+  //   if (!cityStreetMap[city].includes(street)) return 'Selected street is invalid for this city.';
+  // }
 
   return '';
 };

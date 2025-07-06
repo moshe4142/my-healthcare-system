@@ -25,6 +25,7 @@ interface ShoppingCartContextType {
   clearSelectedItems: () => void;
   getTotalPrice: () => number;
   clearCart: () => void;
+  getTotalItems: () => number;  // הוספתי את השורה הזו
 }
 
 const ShoppingCartContext = createContext<ShoppingCartContextType | undefined>(undefined);
@@ -117,6 +118,11 @@ export const CartProvider: React.FC<ShoppingCartProviderProps> = ({ children }) 
     return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
   };
 
+  // הפונקציה החדשה שמחזירה את סך כל הפריטים בעגלה
+  const getTotalItems = () => {
+    return cartItems.reduce((total, item) => total + item.quantity, 0);
+  };
+
   return (
     <ShoppingCartContext.Provider
       value={{
@@ -130,6 +136,7 @@ export const CartProvider: React.FC<ShoppingCartProviderProps> = ({ children }) 
         clearSelectedItems,
         getTotalPrice,
         clearCart,
+        getTotalItems,  // הוספתי כאן
       }}
     >
       {children}
