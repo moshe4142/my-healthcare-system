@@ -25,6 +25,7 @@ import EmailIcon from "@mui/icons-material/Email";
 import { FaCcVisa, FaCcMastercard, FaPaypal } from "react-icons/fa";
 import { useCart } from "../context/shoppingCartContext";
 import { useRouter } from "next/router";
+import { useTheme } from "@mui/material/styles";
 
 const PaymentsPage = () => {
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
@@ -40,6 +41,7 @@ const PaymentsPage = () => {
   const [success, setSuccess] = useState(false);
   const { cartItems, getTotalPrice } = useCart();
   const router = useRouter();
+  const theme = useTheme();
 
   useEffect(() => {
     const saved = localStorage.getItem("paymentData");
@@ -150,7 +152,7 @@ const PaymentsPage = () => {
     <Box
       sx={{
         minHeight: "100vh",
-        background: "linear-gradient(to bottom, #e0f7fa, #ffffff)",
+        backgroundColor: theme.palette.mode === "dark" ? "#121212" : "#ffffff",
         p: { xs: 2, md: 4 },
       }}
     >
