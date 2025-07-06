@@ -54,14 +54,69 @@ export default function SignUpPage() {
     address: '🏠 Address',
   };
 
-  const validateField = (name: string, value: string) => {
-    if (!value.trim()) return `${placeholders[name] || name} is required.`;
-    if (name === 'id' && !/^\d{8,10}$/.test(value)) return 'Invalid ID number format.';
-    if (name === 'phone' && !/^\+?\d{7,15}$/.test(value)) return 'Invalid phone number format.';
-    if (name === 'email' && !/^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/.test(value)) return 'Invalid email format.';
-    if (name === 'password' && value.length < 6) return 'Password must be at least 6 characters.';
-    return '';
-  };
+ const cityStreetMap: { [city: string]: string[] } = {
+  "תל אביב": ["דיזנגוף", "הרצל", "אבן גבירול"],
+  "ירושלים": ["יפו", "הלל", "הנביאים"],
+  "חיפה": ["שדרות בן גוריון", "הנמל", "הכרמל"],
+  "באר שבע": ["רגר", "יצחק רגר", "השלום"],
+};
+
+const validateField = (name: string, value: string) => {
+  const trimmed = value.trim();
+  if (!trimmed) return `${placeholders[name] || name} is required.`;
+
+  if (name === 'id') {
+    if (!/^\d{9}$/.test(trimmed)) return 'ID must be exactly 9 digits.';
+    const isValidIsraeliID = (id: string) => {
+      let sum = 0;
+      for (let i = 0; i < 9; i++) {
+        let num = Number(id[i]) * ((i % 2) + 1);
+        if (num > 9) num -= 9;
+        sum += num;
+      }
+      return sum % 10 === 0;
+    };
+    if (!isValidIsraeliID(trimmed)) return 'Invalid Israeli ID.';
+  }
+
+  if (name === 'phone') {
+    if (!/^(\+972|0)?(([23489]{1}\d{7})|(5[0-9]{8}))$/.test(trimmed)) {
+      return 'Invalid Israeli phone number.';
+    }
+  }
+
+  if (name === 'email') {
+    if (!/^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/.test(trimmed)) {
+      return 'Invalid email format.';
+    }
+  }
+
+  if (name === 'password') {
+    if (trimmed.length < 6) return 'Password must be at least 6 characters.';
+  }
+
+  if (name === 'date_of_birth') {
+    const birthDate = new Date(trimmed);
+    const now = new Date();
+    const minDate = new Date(now.getFullYear() - 120, now.getMonth(), now.getDate());
+
+    if (isNaN(birthDate.getTime())) return 'Invalid birth date.';
+    if (birthDate > now) return 'Date of birth cannot be in the future.';
+    if (birthDate < minDate) return 'Date of birth is too far in the past.';
+  }
+
+  // בדיקת כתובת מלאה (עיר ורחוב)
+  if (name === 'address') {
+    const [city, street] = trimmed.split('|');
+    if (!city || !street) return 'Please select both city and street.';
+    if (!cityStreetMap[city]) return 'Selected city is not supported.';
+    if (!cityStreetMap[city].includes(street)) return 'Selected street is invalid for this city.';
+  }
+
+  return '';
+};
+
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -214,7 +269,7 @@ export default function SignUpPage() {
           Already have an account?{" "}
           <a
             href="/login"
-            className={`
+            className={`  
               underline transition-colors
               ${isDark
                 ? 'text-blue-300 hover:text-blue-100'
