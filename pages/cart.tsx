@@ -44,23 +44,27 @@ const CartPage = () => {
 
   // Load selected items from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem("selectedCartItems");
-    if (saved) {
-      try {
-        const parsed: Item[] = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
-          const filtered = parsed.filter((savedItem) =>
-            cartItems.some((cartItem) => cartItem.id === savedItem.id)
-          );
-          setSelectedItems(filtered);
-        }
-      } catch (e) {
-        console.error("Failed to parse selected items:", e);
+  const saved = localStorage.getItem("selectedCartItems");
+  if (saved) {
+    try {
+      const parsed: Item[] = JSON.parse(saved);
+      if (Array.isArray(parsed)) {
+        const filtered = parsed.filter((savedItem) =>
+          cartItems.some((cartItem) => cartItem.id === savedItem.id)
+        );
+        setSelectedItems(filtered.length > 0 ? filtered : cartItems);
+      } else {
+        setSelectedItems(cartItems);
       }
-    } else {
-      setSelectedItems([]);
+    } catch (e) {
+      console.error("Failed to parse selected items:", e);
+      setSelectedItems(cartItems);
     }
-  }, [cartItems]);
+  } else {
+    setSelectedItems(cartItems);
+  }
+}, [cartItems]);
+
 
   // Save selected items to localStorage
   useEffect(() => {
