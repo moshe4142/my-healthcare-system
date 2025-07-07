@@ -1,5 +1,3 @@
-// PaymentsPage.tsx
-
 import React, { useState, useEffect } from "react";
 import {
   Box,
@@ -39,7 +37,7 @@ const PaymentsPage = () => {
   const [mastercardCode, setMastercardCode] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
-  const { cartItems, getTotalPrice } = useCart();
+  const { getTotalPrice } = useCart();
   const router = useRouter();
   const theme = useTheme();
 
@@ -59,9 +57,16 @@ const PaymentsPage = () => {
   }, []);
 
   useEffect(() => {
-    const savedSelections = localStorage.getItem("selectedCartItems");
+    const savedSelections = localStorage.getItem("itemsToCheckout");
     if (savedSelections) {
-      setSelectedItems(JSON.parse(savedSelections));
+      try {
+        const parsed = JSON.parse(savedSelections);
+        if (Array.isArray(parsed)) {
+          setSelectedItems(parsed);
+        }
+      } catch (err) {
+        console.error("Failed to load itemsToCheckout:", err);
+      }
     }
   }, []);
 
@@ -86,7 +91,6 @@ const PaymentsPage = () => {
       setError("Invalid email address.");
       return false;
     }
-
     if (paymentMethod === "paypal" && !paypalUsername) {
       setError("Please enter your PayPal username.");
       return false;
@@ -133,19 +137,23 @@ const PaymentsPage = () => {
       mastercardCode,
     };
 
-    
-    // // מסוכן מאוד מאוד מאוד לא לשכוח למחוק את השורה הזאת!!!!!!!!!!!!!!!!!!!!!!
     // localStorage.setItem("paymentData", JSON.stringify(paymentData));
-    // /////////
-
-
+    localStorage.removeItem("itemsToCheckout");
     localStorage.removeItem("cartItems");
+
     setSuccess(true);
     setError("");
 
     setTimeout(() => {
       router.push("/");
     }, 2000);
+  };
+
+  const getTotalSelectedPrice = () => {
+    return selectedItems.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
   };
 
   return (
@@ -193,10 +201,8 @@ const PaymentsPage = () => {
                           {item.name}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          $
-                          {typeof item.price === "number"
-                            ? item.price.toFixed(2)
-                            : "0.00"}
+                          {item.quantity} × ${item.price.toFixed(2)} = $
+                          {(item.quantity * item.price).toFixed(2)}
                         </Typography>
                       </CardContent>
                     </Card>
@@ -206,7 +212,7 @@ const PaymentsPage = () => {
             </Grid>
 
             <Typography variant="h6" mt={3} fontWeight="bold">
-              Total Price: ${getTotalPrice().toFixed(2)}
+              Total Price: ${getTotalSelectedPrice().toFixed(2)}
             </Typography>
 
             <Button

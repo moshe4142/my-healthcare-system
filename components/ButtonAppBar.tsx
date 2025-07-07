@@ -97,37 +97,42 @@ const ButtonAppBar = () => {
       {/* Main AppBar */}
       <AppBar
         position="fixed"
-        sx={{
-          background: isDark
-            ? "linear-gradient(135deg, #0d1b2a 0%, #1b263b 25%, #2d3748 50%, #1a365d 75%, #2c5aa0 100%)"
-            : "linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%)",
-          backdropFilter: "blur(20px)",
-          borderBottom: isDark
-            ? "1px solid rgba(255,255,255,0.1)"
-            : "1px solid rgba(255,255,255,0.2)",
-          boxShadow: isDark
-            ? "0 8px 32px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.2)"
-            : "0 8px 32px rgba(102, 126, 234, 0.3), 0 4px 16px rgba(118, 75, 162, 0.2)",
-          "&::before": {
-            content: '""',
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: isDark
-              ? "linear-gradient(45deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)"
-              : "linear-gradient(45deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%)",
-            zIndex: -1,
-          },
-        }}
+     sx={{
+  background: isDark
+    ? "linear-gradient(135deg, #0d1b2a 0%, #1b263b 25%, #2d3748 50%, #1a365d 75%, #2c5aa0 100%)"
+    : "linear-gradient(135deg, #667eea 0%, #7f72ff 25%, #a084f9 50%, #caa8ff 75%, #e0d4ff 100%)",
+  backdropFilter: "blur(20px)",
+  borderBottom: isDark
+    ? "1px solid rgba(255,255,255,0.1)"
+    : "1px solid rgba(255,255,255,0.2)",
+  boxShadow: isDark
+    ? "0 8px 32px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.2)"
+    : "0 8px 32px rgba(102, 126, 234, 0.25), 0 4px 16px rgba(160, 132, 249, 0.15)",
+  "&::before": {
+    content: '""',
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: isDark
+      ? "linear-gradient(45deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)"
+      : "linear-gradient(45deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.08) 100%)",
+    zIndex: -1,
+  },
+}}
+
+
+
       >
-        <Toolbar sx={{ 
-          display: "flex", 
-          justifyContent: "space-between",
-          minHeight: "72px !important",
-          px: 3,
-        }}>
+        <Toolbar
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            minHeight: "72px !important",
+            px: 3,
+          }}
+        >
           {/* Left Section */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             <Tooltip title="Menu" placement="bottom" TransitionComponent={Zoom}>
@@ -152,7 +157,11 @@ const ButtonAppBar = () => {
               </IconButton>
             </Tooltip>
 
-            <Tooltip title="Shopping Cart" placement="bottom" TransitionComponent={Zoom}>
+            <Tooltip
+              title="Shopping Cart"
+              placement="bottom"
+              TransitionComponent={Zoom}
+            >
               <Badge
                 badgeContent={cartItemsCount}
                 color="error"
@@ -163,7 +172,7 @@ const ButtonAppBar = () => {
                     fontSize: "0.75rem",
                     fontWeight: "bold",
                     boxShadow: "0 2px 8px rgba(255, 71, 87, 0.4)",
-                    animation: "pulse 2s infinite",
+                    // animation: "pulse 2s infinite",
                   },
                 }}
               >
@@ -190,12 +199,14 @@ const ButtonAppBar = () => {
           </Box>
 
           {/* Center Section - Logo */}
-          <Box sx={{ 
-            flexGrow: 1, 
-            display: "flex", 
-            justifyContent: "center",
-            position: "relative",
-          }}>
+          <Box
+            sx={{
+              flexGrow: 1,
+              display: "flex",
+              justifyContent: "center",
+              position: "relative",
+            }}
+          >
             <Button
               onClick={() => router.push("/")}
               sx={{
@@ -228,7 +239,11 @@ const ButtonAppBar = () => {
 
           {/* Right Section - Navigation */}
           <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-            <Tooltip title="Book appointments" placement="bottom" TransitionComponent={Zoom}>
+            <Tooltip
+              title="Book appointments"
+              placement="bottom"
+              TransitionComponent={Zoom}
+            >
               <Button
                 color="inherit"
                 onClick={() => router.push("/appointments")}
@@ -254,7 +269,11 @@ const ButtonAppBar = () => {
               </Button>
             </Tooltip>
 
-            <Tooltip title="View medical records" placement="bottom" TransitionComponent={Zoom}>
+            <Tooltip
+              title="View medical records"
+              placement="bottom"
+              TransitionComponent={Zoom}
+            >
               <Button
                 color="inherit"
                 onClick={() => router.push("/medicalRecords")}
@@ -280,7 +299,11 @@ const ButtonAppBar = () => {
               </Button>
             </Tooltip>
 
-            <Tooltip title="Browse medical equipment" placement="bottom" TransitionComponent={Zoom}>
+            <Tooltip
+              title="Browse medical equipment"
+              placement="bottom"
+              TransitionComponent={Zoom}
+            >
               <Button
                 color="inherit"
                 onClick={() => router.push("/medicalEquipment")}
@@ -306,19 +329,25 @@ const ButtonAppBar = () => {
               </Button>
             </Tooltip>
 
-            <Tooltip title="Toggle theme" placement="bottom" TransitionComponent={Zoom}>
-              <Box sx={{ 
-                ml: 2, 
-                p: 1, 
-                background: "rgba(255,255,255,0.1)",
-                backdropFilter: "blur(10px)",
-                borderRadius: 2,
-                border: "1px solid rgba(255,255,255,0.1)",
-                "&:hover": {
-                  transform: "rotate(15deg)",
-                },
-                transition: "all 0.3s ease",
-              }}>
+            <Tooltip
+              title="Toggle theme"
+              placement="bottom"
+              TransitionComponent={Zoom}
+            >
+              <Box
+                sx={{
+                  ml: 2,
+                  p: 1,
+                  background: "rgba(255,255,255,0.1)",
+                  backdropFilter: "blur(10px)",
+                  borderRadius: 2,
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  // "&:hover": {
+                  //   transform: "rotate(15deg)",
+                  // },
+                  transition: "all 0.3s ease",
+                }}
+              >
                 <ThemeToggleButton />
               </Box>
             </Tooltip>
@@ -410,8 +439,8 @@ const ButtonAppBar = () => {
                 fontSize: "1.4rem",
                 color: isDark ? "#f0f0f0" : "#1b1b1b",
                 letterSpacing: "0.5px",
-                textShadow: isDark 
-                  ? "0 2px 4px rgba(0,0,0,0.3)" 
+                textShadow: isDark
+                  ? "0 2px 4px rgba(0,0,0,0.3)"
                   : "0 1px 2px rgba(0,0,0,0.1)",
               }}
             >
@@ -433,9 +462,7 @@ const ButtonAppBar = () => {
             onClick={toggleDrawer(false)}
             sx={{
               color: isDark ? "#f0f0f0" : "#1b1b1b",
-              background: isDark
-                ? "rgba(255,255,255,0.1)"
-                : "rgba(0,0,0,0.05)",
+              background: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
               backdropFilter: "blur(10px)",
               "&:hover": {
                 background: isDark
@@ -600,7 +627,8 @@ const ButtonAppBar = () => {
               left: "-100%",
               width: "100%",
               height: "100%",
-              background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)",
+              background:
+                "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)",
               animation: "shimmer 3s infinite",
             },
             "@keyframes shimmer": {
@@ -614,9 +642,15 @@ const ButtonAppBar = () => {
       {/* Global Styles for Pulse Animation */}
       <style jsx global>{`
         @keyframes pulse {
-          0% { transform: scale(1); }
-          50% { transform: scale(1.1); }
-          100% { transform: scale(1); }
+          0% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.1);
+          }
+          100% {
+            transform: scale(1);
+          }
         }
       `}</style>
     </>
