@@ -8,9 +8,7 @@ import {
   CircularProgress,
   TextField,
   MenuItem,
-  Paper,
   Button,
-  IconButton,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -19,7 +17,7 @@ import {
   Fab,
   useTheme,
 } from "@mui/material";
-import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import { Add as AddIcon } from "@mui/icons-material";
 
 interface Appointment {
   id?: number;
@@ -44,10 +42,6 @@ interface NewAppointment {
   status?: string;
   notes?: string;
 }
-
-const departments = ["Cardiology", "Tech Support", "HR", "Radiology", "Dermatology"];
-const types = ["Consultation", "Follow-up", "Maintenance", "Diagnosis"];
-const priorities = ["Low", "Medium", "High"];
 
 const AppointmentsPage = () => {
   const theme = useTheme();
@@ -96,9 +90,20 @@ const AppointmentsPage = () => {
     }));
   };
 
+  const isFutureDate = (dateStr: string) => {
+    const selected = new Date(dateStr);
+    const now = new Date();
+    return selected.getTime() > now.getTime();
+  };
+
   const handleSubmit = async () => {
     if (!formData.patient_id || !formData.doctor_id || !formData.appointment_date) {
-      setError("אנא מלא את כל השדות הנדרשים");
+      setError("Please fill in all required fields.");
+      return;
+    }
+
+    if (!isFutureDate(formData.appointment_date)) {
+      setError("Appointment date and time must be in the future.");
       return;
     }
 
@@ -132,10 +137,10 @@ const AppointmentsPage = () => {
         notes: "",
       });
       setOpenDialog(false);
-      setSuccess("הפגישה נוספה בהצלחה!");
+      setSuccess("Appointment created successfully!");
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
-      setError(err.message || "שגיאה ביצירת הפגישה");
+      setError(err.message || "Error creating appointment.");
     } finally {
       setSubmitting(false);
     }
@@ -161,7 +166,9 @@ const AppointmentsPage = () => {
 
   return (
     <Box sx={{ p: 4, position: "relative", minHeight: "100vh" }}>
-      <Typography variant="h4" mb={3} fontWeight={600}>📋 הפגישות שלך</Typography>
+      <Typography variant="h4" mb={3} fontWeight={600}>
+        📋 Your Appointments
+      </Typography>
 
       {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
 
@@ -170,18 +177,31 @@ const AppointmentsPage = () => {
       ) : error ? (
         <Typography color="error">{error}</Typography>
       ) : appointments.length === 0 ? (
-        <Typography>אין פגישות כרגע</Typography>
+        <Typography>No appointments found.</Typography>
       ) : (
         <Grid container spacing={2} mb={6}>
           {appointments.map((appt) => {
-            const date = new Date(appt.appointment_date || appt.date || '').toLocaleString("he-IL");
+            const date = new Date(appt.appointment_date || appt.date || '').toLocaleString("en-GB");
             return (
               <Grid item xs={12} md={6} key={appt.id || `${appt.date}-${appt.time}`}>
-                <Card sx={{ backgroundColor: theme.palette.background.paper }}>
+                <Card
+                  sx={{
+                    backgroundColor: theme.palette.background.paper,
+                    border: `1px solid ${theme.palette.divider}`,
+                    borderRadius: 2,
+                    boxShadow: 3,
+                  }}
+                >
                   <CardContent>
-                    <Typography><strong>📅 תאריך:</strong> {date}</Typography>
-                    <Typography><strong>📌 סטטוס:</strong> {appt.status}</Typography>
-                    {appt.notes && <Typography><strong>📝 הערות:</strong> {appt.notes}</Typography>}
+                    <Typography variant="h6" gutterBottom>
+                      🗓️ Date: {date}
+                    </Typography>
+                    <Typography><strong>Status:</strong> {appt.status}</Typography>
+                    {appt.notes && (
+                      <Typography sx={{ mt: 1 }}>
+                        <strong>Notes:</strong> {appt.notes}
+                      </Typography>
+                    )}
                   </CardContent>
                 </Card>
               </Grid>
@@ -195,13 +215,13 @@ const AppointmentsPage = () => {
       </Fab>
 
       <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
-        <DialogTitle>➕ הוספת פגישה חדשה</DialogTitle>
+        <DialogTitle>➕ New Appointment</DialogTitle>
         <DialogContent>
           {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 1 }}>
             <TextField
-              label="מספר מטופל"
+              label="Patient ID"
               type="number"
               value={formData.patient_id || ""}
               onChange={(e) => handleInputChange("patient_id", parseInt(e.target.value) || 0)}
@@ -210,7 +230,7 @@ const AppointmentsPage = () => {
             />
 
             <TextField
-              label="מספר רופא"
+              label="Doctor ID"
               type="number"
               value={formData.doctor_id || ""}
               onChange={(e) => handleInputChange("doctor_id", parseInt(e.target.value) || 0)}
@@ -219,7 +239,7 @@ const AppointmentsPage = () => {
             />
 
             <TextField
-              label="תאריך ושעת הפגישה"
+              label="Appointment Date & Time"
               type="datetime-local"
               value={formatDateTimeForInput(formData.appointment_date)}
               onChange={(e) => handleInputChange("appointment_date", e.target.value)}
@@ -229,20 +249,20 @@ const AppointmentsPage = () => {
             />
 
             <TextField
-              label="סטטוס"
+              label="Status"
               select
               value={formData.status || "pending"}
               onChange={(e) => handleInputChange("status", e.target.value)}
               fullWidth
             >
-              <MenuItem value="pending">בהמתנה</MenuItem>
-              <MenuItem value="confirmed">אושר</MenuItem>
-              <MenuItem value="completed">הושלם</MenuItem>
-              <MenuItem value="cancelled">בוטל</MenuItem>
+              <MenuItem value="pending">Pending</MenuItem>
+              <MenuItem value="confirmed">Confirmed</MenuItem>
+              <MenuItem value="completed">Completed</MenuItem>
+              <MenuItem value="cancelled">Cancelled</MenuItem>
             </TextField>
 
             <TextField
-              label="הערות (אופציונלי)"
+              label="Notes (optional)"
               multiline
               rows={3}
               value={formData.notes}
@@ -253,9 +273,9 @@ const AppointmentsPage = () => {
         </DialogContent>
 
         <DialogActions>
-          <Button onClick={handleCloseDialog} disabled={submitting}>ביטול</Button>
+          <Button onClick={handleCloseDialog} disabled={submitting}>Cancel</Button>
           <Button onClick={handleSubmit} variant="contained" disabled={submitting}>
-            {submitting ? <CircularProgress size={20} /> : "שמור פגישה"}
+            {submitting ? <CircularProgress size={20} /> : "Save Appointment"}
           </Button>
         </DialogActions>
       </Dialog>
