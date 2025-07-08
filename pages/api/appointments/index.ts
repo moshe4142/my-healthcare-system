@@ -1,3 +1,5 @@
+// This file handles appointment-related API requests, including fetching and creating appointments.
+// api/appointments/index.ts
 import type { NextApiRequest, NextApiResponse } from 'next';
 import pool from '@/lib/db';
 import jwt from 'jsonwebtoken';
